@@ -1579,10 +1579,11 @@ namespace NicoTools
                     option += ((option != "" ? "&" : "?") + "sort=r");
                     break;
                 case SearchSortMethod.ResNew:
-                    if (!is_tag) // タグ検索のときはオプションをつけない
-                    {
+                    //if (!is_tag) // タグ検索のときはオプションをつけない
+                    //{
+                    //2018/09/02 Update marky タグ検索でもオプションが必須になった
                         option += ((option != "" ? "&" : "?") + "sort=n");
-                    }
+                    //}
                     break;
                 case SearchSortMethod.Mylist:
                     option += ((option != "" ? "&" : "?") + "sort=m");
@@ -1597,10 +1598,11 @@ namespace NicoTools
             }
             else
             {
-                if (!is_tag) // キーワード検索のときだけつける
-                {
+                //if (!is_tag) // キーワード検索のときだけつける
+                //{
+                //2018/09/02 Update marky タグ検索の降順でもorderが必須になった
                     option += ((option != "" ? "&" : "?") + "order=d");
-                }
+                //}
             }
             return option;
         }
