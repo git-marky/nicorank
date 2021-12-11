@@ -1,0 +1,27 @@
+version	2
+all	all	総合	10	10	10	3	1
+ent	ent	エンターテイメント	3	1	1	1	0
+music	mus	音楽	3	1	1	1	0
+sport	spt	スポーツ	3	1	1	1	0
+animal	anl	動物	3	1	1	1	0
+cooking	cok	料理	3	1	1	1	0
+diary	dia	日記	3	1	1	1	0
+nature	nat	自然	3	1	1	1	0
+science	sci	科学	3	1	1	1	0
+history	his	歴史	3	1	1	1	0
+radio	rad	ラジオ	3	1	1	1	0
+lecture	lec	ニコニコ動画講座	3	1	1	1	0
+politics	pol	政治	3	1	1	1	0
+sing	sng	歌ってみた	3	1	1	1	0
+play	ply	演奏してみた	3	1	1	1	0
+dance	dnc	踊ってみた	3	1	1	1	0
+draw	drw	描いてみた	3	1	1	1	0
+tech	tec	ニコニコ技術部	3	1	1	1	0
+anime	ame	アニメ	3	1	1	1	0
+game	gam	ゲーム	3	1	1	1	0
+imas	ims	アイドルマスター	3	1	1	1	0
+toho	toh	東方	3	1	1	1	0
+vocaloid	voc	VOCALOID	3	1	1	1	0
+are	are	例のアレ	3	1	1	1	0
+other	oth	その他	3	1	1	1	0
+r18	r18	R-18	3	1	1	1	0

@@ -1,0 +1,284 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D9431B04-C385-42B2-A710-B6200FB3C67F}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>nicorank</RootNamespace>
+    <AssemblyName>nicorank</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <ApplicationIcon>sister.ico</ApplicationIcon>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>ExternalLib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Runtime.Remoting" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AvisynthScriptGenerator.cs" />
+    <Compile Include="FilterTester\LengthInput.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FilterTester\LengthInput.Designer.cs">
+      <DependentUpon>LengthInput.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FilterTester\FormFilterTester.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FilterTester\FormFilterTester.Designer.cs">
+      <DependentUpon>FormFilterTester.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBrowser.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormBrowser.Designer.cs">
+      <DependentUpon>FormBrowser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormMultipleMylist.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMultipleMylist.Designer.cs">
+      <DependentUpon>FormMultipleMylist.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormSearchingTicketSelector.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSearchingTicketSelector.Designer.cs">
+      <DependentUpon>FormSearchingTicketSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormShowingCand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormShowingCand.Designer.cs">
+      <DependentUpon>FormShowingCand.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTransOption.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTransOption.Designer.cs">
+      <DependentUpon>FormTransOption.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FFmpeg.cs" />
+    <Compile Include="FormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormMain.Designer.cs">
+      <DependentUpon>FormMain.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormChoicePic.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormChoicePic.Designer.cs">
+      <DependentUpon>FormChoicePic.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormLayout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormLayout.Designer.cs">
+      <DependentUpon>FormLayout.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IJLib\Expression.cs" />
+    <Compile Include="IJLib\IJAviManager.cs" />
+    <Compile Include="IJLib\IJLib.cs" />
+    <Compile Include="IJLib\IJNetwork.cs" />
+    <Compile Include="IJLib\Vfw.cs" />
+    <Compile Include="Layout.cs" />
+    <Compile Include="MessageBoxWithCheckBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageBoxWithCheckBox.Designer.cs">
+      <DependentUpon>MessageBoxWithCheckBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NicoRankMakerUtility.cs" />
+    <Compile Include="NicoRankManager.cs">
+    </Compile>
+    <Compile Include="NicoTools\CustomFormat.cs" />
+    <Compile Include="NicoTools\Filter.cs" />
+    <Compile Include="NicoTools\Filter2.cs" />
+    <Compile Include="NicoTools\NicoListManager.cs" />
+    <Compile Include="NicoTools\NicoNetwork.cs" />
+    <Compile Include="NicoTools\NicoNetworkManager.cs" />
+    <Compile Include="NicoTools\NicoUtil.cs" />
+    <Compile Include="NicoTools\RankFile.cs" />
+    <Compile Include="NicoTools\SearchingTicketManager.cs" />
+    <Compile Include="NicoTools\Video.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FilterTester\LengthInput.resx">
+      <DependentUpon>LengthInput.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FilterTester\FormFilterTester.resx">
+      <DependentUpon>FormFilterTester.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormBrowser.resx">
+      <DependentUpon>FormBrowser.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormChoicePic.resx">
+      <DependentUpon>FormChoicePic.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormLayout.resx">
+      <DependentUpon>FormLayout.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormMultipleMylist.resx">
+      <DependentUpon>FormMultipleMylist.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSearchingTicketSelector.resx">
+      <DependentUpon>FormSearchingTicketSelector.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormShowingCand.resx">
+      <DependentUpon>FormShowingCand.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTransOption.resx">
+      <DependentUpon>FormTransOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageBoxWithCheckBox.resx">
+      <DependentUpon>MessageBoxWithCheckBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectFileBox.resx">
+      <DependentUpon>SelectFileBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="app.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="IJLib\Swf2.cs" />
+    <Compile Include="SelectFileBox.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SelectFileBox.Designer.cs">
+      <DependentUpon>SelectFileBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UtilityFormMain.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows インストーラ 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\category.txt" />
+    <None Include="Resources\category1.txt" />
+    <Content Include="sister.ico" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

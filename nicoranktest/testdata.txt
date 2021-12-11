@@ -1,0 +1,40 @@
+ok_mail=XXX@XXX.XXX
+ok_pass=XXXXXXXX
+
+video_id=smXXXXXXX
+video_title=XXXXX
+video_description=XXXXX
+video_submit_date=2009-01-01T00:00:00
+video_length=1:23
+video_local=.\video\smXXXXXXX.flv
+
+thumbnail_local=.\thumb\smXXXXXXX.jpg
+mylist_id=XXXXXXXX
+search_keyword=XXXXXXXXXX YYYYYYYYYY ZZZZZZZZZZ
+search_tag=XXXXXXXXXX YYYYYYYYYY ZZZZZZZZZZ
+
+access_wait_milliseconds=1000
+
+ng_mail=error@mailaddress.com
+ng_pass=testtesttest
+
+temp_directory=.\temp
+
+video_id_nm=nm6876660
+video_id_swf=nm6877305
+video_id_so=so5558738
+
+video_local_nm=.\video\nm6876660.swf
+video_local_swf=.\video\nm6877305.swf
+video_local_so=.\video\so5558738.mp4
+
+browser_ie=iexplorer.exe
+
+browser_firefox=C:\Program Files\Mozilla Firefox\firefox.exe
+firefox_profile_name=
+
+browser_opera=C:\Program Files\Opera\opera.exe
+opera_settings_file_path=
+
+browser_chrome=chrome.exe
+chrome_profile_dir=
