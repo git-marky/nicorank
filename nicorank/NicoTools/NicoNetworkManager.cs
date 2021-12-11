@@ -894,7 +894,9 @@ namespace NicoTools
             List<Video> list = new List<Video>();
             int count = 0;
 
-            while ((index = html.IndexOf("videoList01Wrap\">", index + 1)) >= 0)
+            //while ((index = html.IndexOf("videoList01Wrap\">", index + 1)) >= 0)
+            // 2018/12/12 Update marky 広告枠を取得しないようキーワード変更
+            while ((index = html.IndexOf("data-video-id", index + 1)) >= 0)
             {
                 Video video = new Video();
 
@@ -903,7 +905,9 @@ namespace NicoTools
                 string dateStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html).Trim();
                 if (!DateTime.TryParseExact(dateStr, "MM/dd HH:mm", null, System.Globalization.DateTimeStyles.None, out video.submit_date))
                 {
-                    video.submit_date = DateTime.ParseExact(dateStr, "yy/MM/dd HH:mm", null);
+                    //video.submit_date = DateTime.ParseExact(dateStr, "yy/MM/dd HH:mm", null);
+                    // 2018/12/12 Update marky 投稿年の表記変更に対応
+                    video.submit_date = DateTime.ParseExact(dateStr, "yyyy/MM/dd HH:mm", null);
                 }
 
                 //動画ID
@@ -915,6 +919,7 @@ namespace NicoTools
                     end = c;
                 }
                 video.video_id = html.Substring(start, end - start);
+                index = end;    // 2018/12/12 ADD marky 再生時間が取得出来ていなかったのでインデックスを進める
 
                 //再生時間
                 video.length = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
