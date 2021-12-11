@@ -12,6 +12,9 @@ using System.Threading;
 using System.Xml;
 using IJLib;
 using System.Text.RegularExpressions;
+using System.Runtime.Serialization;     //2018/09/14 Add marky Dmcサーバ対応
+using System.Runtime.Serialization.Json;//2018/09/14 Add marky Dmcサーバ対応
+using System.Timers;                    //2018/09/14 Add marky Dmcサーバ対応
 
 namespace NicoTools
 {
@@ -93,13 +96,17 @@ namespace NicoTools
             string str = network_.PostAndReadFromWebUTF8("https://secure.nicovideo.jp/secure/login?site=niconico", post_data);
             is_loaded_cookie_ = true;
 
-            if (str.IndexOf("入力したメールアドレスまたはパスワードが間違っています") >= 0) // login failed
+            //if (str.IndexOf("入力したメールアドレスまたはパスワードが間違っています") >= 0) // login failed
+            //2018/09/14 Update marky
+            if (str.IndexOf("メールアドレスまたはパスワードが間違っています") >= 0) // login failed
             { 
                 return false;
             }
             else
             {
-                Match m = Regex.Match(str, "var User = \\{ id: [0-9]+");
+                //Match m = Regex.Match(str, "var User = \\{ id: [0-9]+");
+                //2018/09/14 Update marky
+                Match m = Regex.Match(str, "user.user_id = parseInt\\('[0-9]+");
 
                 if (m.Success) // login succeeded
                 {
@@ -266,7 +273,7 @@ namespace NicoTools
         /// <param name="save_flv_filename">ダウンロードしたファイルを保存するファイル名</param>
         /// <param name="dlg">ダウンロード最中に呼び出されるコールバックメソッド。null でもよい。</param>
         /// <exception cref="System.Exception">erer</exception>
-        public void DownloadAndSaveFlv(string video_id, string save_flv_filename, IJNetwork.DownloadingEventDelegate dlg)
+        public void DownloadAndSaveFlv_old(string video_id, string save_flv_filename, IJNetwork.DownloadingEventDelegate dlg)
         {
             CheckCookie();
             GetVideoPage(video_id); // クッキーのために HTML のページを取得しておく
@@ -291,6 +298,330 @@ namespace NicoTools
             {
                 network_.Reset();
             }
+        }
+
+        /// <summary>
+        /// 動画をダウンロードする
+        /// </summary>
+        /// <param name="video_id">ダウンロードする動画ID</param>
+        /// <param name="save_flv_filename">ダウンロードしたファイルを保存するファイル名</param>
+        /// <param name="dlg">ダウンロード最中に呼び出されるコールバックメソッド。null でもよい。</param>
+        /// <exception cref="System.Exception">erer</exception>
+        public void DownloadAndSaveFlv(string video_id, string save_flv_filename, IJNetwork.DownloadingEventDelegate dlg)
+        {
+
+            string api_url = "";
+            string res = "";
+
+            CheckCookie();
+            String page = GetVideoPage(video_id); // クッキーのために HTML のページを取得しておく
+
+            //smileInfo&quot;:{&quot;url&quot;:&quot;https:\\/\\/smile-pow64.sv.nicovideo.jp\\/smile?m=33806951.42570&quot;,
+            //int index = page.IndexOf("smileInfo");
+            //int start = page.IndexOf("url", index) +16;
+            //int end = page.IndexOf(",", start) - 7;
+
+            //String video_url = page.Substring(start, end - start);
+
+            //if (video_url == "")
+            //{
+            //    throw new NiconicoAccessFailedException();
+            //}
+
+            //video_url = video_url.Replace("\\", "");  //リテラル文字除去
+
+            int index = page.IndexOf("js-initial-watch-data");
+            if (index == -1)
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            //<div id="js-initial-watch-data" data-api-data="{
+            String startstr = "data-api-data=\"";
+            //}" hidden></div>
+            String endtstr = "\" hidden></div>";
+            if (page.IndexOf(startstr, index) == -1)
+            {
+                throw new NiconicoAccessFailedException();
+            }
+            int start = page.IndexOf(startstr, index) + startstr.Length;
+            int end = page.IndexOf(endtstr, start);
+            if (end == -1)
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            String data = page.Substring(start, end - start);
+
+            data = data.Replace("&quot;","\"");  //リテラル文字除去
+
+            //startstr = "\"dmcInfo\":";
+            //endtstr = ",\"backCommentType";
+            //start = data.IndexOf(startstr) + startstr.Length;
+            //end = data.IndexOf(endtstr, start);
+
+            //data = data.Substring(start, end - start);
+
+            //sessionが取得できないケース
+            if (data.IndexOf("\"dmcInfo\":null") != -1)
+            {
+                DownloadAndSaveFlv_old(video_id, save_flv_filename, dlg);
+                return;
+            }
+
+            startstr = "\"session_api\":";
+            endtstr = ",\"storyboard_session_api";
+            if (data.IndexOf(startstr) == -1)
+            {
+                throw new NiconicoAccessFailedException();
+            }
+            start = data.IndexOf(startstr) + startstr.Length;
+            end = data.IndexOf(endtstr, start);
+            if (end == -1)
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            data = data.Substring(start, end - start);
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(sessionAPI));
+            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(data)))
+            {
+                sessionAPI result = (sessionAPI)serializer.ReadObject(ms);
+                if (result.urls == null)
+                {
+                    throw new NiconicoAccessFailedException();
+                }
+
+                XmlWriterSettings settings = new XmlWriterSettings();
+                settings.OmitXmlDeclaration = true;
+                StringBuilder post_str = new StringBuilder();
+                using (TextWriter tw = new StringWriter(post_str))
+                using (XmlWriter writer = XmlWriter.Create(tw, settings))
+                {
+                    writer.WriteStartElement("session");
+
+                    writer.WriteStartElement("recipe_id");
+                    writer.WriteString(result.recipe_id);
+                    writer.WriteEndElement(); // <recipe_id ... />
+
+                    writer.WriteStartElement("content_id");
+                    writer.WriteString(result.content_id);
+                    writer.WriteEndElement(); // <content_id ... />
+
+                    writer.WriteStartElement("content_type");
+                    writer.WriteString("movie");
+                    writer.WriteEndElement(); // <content_type ... />
+
+                    writer.WriteStartElement("protocol");
+
+                    writer.WriteStartElement("name");
+                    //writer.WriteString(result.protocols[0]);
+                    writer.WriteString("http"); //固定でいいんじゃね？
+                    writer.WriteEndElement(); // <name ... />
+
+                    writer.WriteStartElement("parameters");
+                    writer.WriteStartElement("http_parameters");
+
+                    writer.WriteStartElement("method");
+                    writer.WriteString("GET");
+                    writer.WriteEndElement(); // <method ... />
+
+                    writer.WriteStartElement("parameters");
+                    writer.WriteStartElement("http_output_download_parameters");
+
+                    writer.WriteStartElement("file_extension");
+                    //writer.WriteString("flv");
+                    writer.WriteString("mp4");
+                    writer.WriteEndElement(); // <file_extension ... />
+
+                    writer.WriteStartElement("use_well_known_port");
+                    writer.WriteString((result.urls[0].is_well_known_port ? "yes" : "no"));
+                    writer.WriteEndElement(); // <use_well_known_port ... />
+
+                    writer.WriteEndElement(); // <http_output_download_parameters ... />
+                    writer.WriteEndElement(); // <parameters ... />
+                    writer.WriteEndElement(); // <http_parameters ... />
+                    writer.WriteEndElement(); // <parameters ... />
+
+                    writer.WriteEndElement(); // <protocol ... />
+
+                    writer.WriteStartElement("priority");
+                    writer.WriteString(result.priority.ToString());
+                    writer.WriteEndElement(); // <priority ... />
+
+                    writer.WriteStartElement("content_src_id_sets");
+                    writer.WriteStartElement("content_src_id_set");
+                    writer.WriteStartElement("content_src_ids");
+                    writer.WriteStartElement("src_id_to_mux");
+
+                    writer.WriteStartElement("video_src_ids");
+                    foreach (string e in result.videos){
+                        writer.WriteStartElement("string");
+                        writer.WriteString(e);
+                        writer.WriteEndElement(); // <string ... />
+                    };
+                    writer.WriteEndElement(); // <video_src_ids ... />
+
+                    writer.WriteStartElement("audio_src_ids");
+                    foreach (string e in result.audios)
+                    {
+                        writer.WriteStartElement("string");
+                        writer.WriteString(e);
+                        writer.WriteEndElement(); // <string ... />
+                    };
+                    writer.WriteEndElement(); // <audio_src_ids ... />
+
+                    writer.WriteEndElement(); // <src_id_to_mux ... />
+                    writer.WriteEndElement(); // <content_src_ids ... />
+                    writer.WriteEndElement(); // <content_src_id_set ... />
+                    writer.WriteEndElement(); // <content_src_id_sets ... />
+
+                    writer.WriteStartElement("keep_method");
+                    writer.WriteStartElement("heartbeat");
+
+                    writer.WriteStartElement("lifetime");
+                    writer.WriteString(result.heartbeat_lifetime.ToString());
+                    writer.WriteEndElement(); // <lifetime ... />
+
+                    writer.WriteEndElement(); // <heartbeat ... />
+                    writer.WriteEndElement(); // <keep_method ... />
+
+                    writer.WriteStartElement("timing_constraint");
+                    writer.WriteString("unlimited");
+                    writer.WriteEndElement(); // <timing_constraint ... />
+
+                    writer.WriteStartElement("session_operation_auth");
+                    writer.WriteStartElement("session_operation_auth_by_signature");
+
+                    writer.WriteStartElement("token");
+                    writer.WriteString(result.token);
+                    writer.WriteEndElement(); // <token ... />
+
+                    writer.WriteStartElement("signature");
+                    writer.WriteString(result.signature);
+                    writer.WriteEndElement(); // <signature ... />
+
+                    writer.WriteEndElement(); // <session_operation_auth_by_signature ... />
+                    writer.WriteEndElement(); // <session_operation_auth ... />
+
+                    writer.WriteStartElement("content_auth");
+
+                    writer.WriteStartElement("auth_type");
+                    writer.WriteString(result.auth_types.http);
+                    writer.WriteEndElement(); // <auth_type ... />
+
+                    writer.WriteStartElement("service_id");
+                    writer.WriteString("nicovideo");
+                    writer.WriteEndElement(); // <service_id ... />
+
+                    writer.WriteStartElement("service_user_id");
+                    writer.WriteString(result.service_user_id);
+                    writer.WriteEndElement(); // <service_user_id ... />
+
+                    writer.WriteStartElement("max_content_count");
+                    writer.WriteString("10");
+                    writer.WriteEndElement(); // <max_content_count ... />
+
+                    writer.WriteStartElement("content_key_timeout");
+                    writer.WriteString(result.content_key_timeout.ToString());
+                    writer.WriteEndElement(); // <content_key_timeout ... />
+
+                    writer.WriteEndElement(); // <content_auth ... />
+
+                    writer.WriteStartElement("client_info");
+
+                    writer.WriteStartElement("player_id");
+                    writer.WriteString(result.player_id);
+                    writer.WriteEndElement(); // <player_id ... />
+
+                    writer.WriteEndElement(); // <client_info ... />
+
+                    writer.WriteEndElement(); // <session ... />
+                }
+
+                api_url = result.urls[0].url;
+                res = network_.PostAndReadFromWebUTF8(api_url + "?_format=xml", post_str.ToString());
+            }
+
+            if (res == "")
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            String video_url = "";
+            String id = "";
+            String post_url = "";
+            String post_data = "";
+
+            Match m = Regex.Match(res, "<content_uri>([^<]*)</content_uri>");
+            if (m.Success)
+            {
+                video_url = m.Groups[1].Value;
+            }
+            else
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+
+            Match m2 = Regex.Match(res, "<id>([^<]*)</id>");
+            if (m2.Success)
+            {
+                id = m2.Groups[1].Value;
+                post_url = api_url + "/" + id + "?_format=xml&_method=PUT";
+            }
+            else
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            Match m3 = Regex.Match(res, "<session>(.+)</session>");
+            if (m3.Success)
+            {
+                post_data = m3.Groups[0].Value;
+            }
+            else
+            {
+                throw new NiconicoAccessFailedException();
+            }
+
+            //network_.SetContentType("video/mp4");
+            //network_.SetReferer("");
+            network_.SetDownloadingEventDelegate(dlg);
+
+            // 開始時に間隔を指定する
+            var timer = new System.Timers.Timer(60000);
+
+            // Elapsedイベントにタイマー発生時の処理を設定する
+            timer.Elapsed += (sender, e) =>
+            {
+                network_.PostAndReadFromWebUTF8(post_url, post_data);
+            };
+
+            // タイマーを開始する
+            timer.Start();
+
+            try
+            {
+                Thread.Sleep(1000);
+                network_.GetAndSaveToFile(video_url, save_flv_filename);
+            }
+            finally
+            {
+                // タイマーを停止する
+                timer.Stop();
+
+                // 資源の解放
+                using (timer) { }
+
+                network_.Reset();
+            }
+        }
+
+        public string PostSessionAPI(string api_url, string post)
+        {
+            return network_.PostAndReadFromWebUTF8(api_url, post);
         }
 
         /// <summary>
@@ -2429,6 +2760,76 @@ namespace NicoTools
             : base("HTMLの解析に失敗しました。")
         {
 
+        }
+    }
+
+    //2018-09-14 ADD marky 検索API v2
+    [DataContract]
+    class sessionAPI
+    {
+        [DataMember]
+        public string recipe_id = "";
+
+        [DataMember]
+        public string player_id = "";
+
+        [DataMember]
+        public  List<string> videos = null;
+
+        [DataMember]
+        public List<string> audios = null;
+
+        [DataMember]
+        public List<string> movies = null;
+
+        [DataMember]
+        public List<string> protocols = null;
+
+        [DataMember]
+        public auth_typesC auth_types = null;
+
+        [DataContract]
+        public class auth_typesC
+        {
+            [DataMember]
+            public string http = "";
+        }
+
+        [DataMember]
+        public string service_user_id = "";
+
+        [DataMember]
+        public string token = "";
+
+        [DataMember]
+        public string signature = "";
+
+        [DataMember]
+        public string content_id = "";
+
+        [DataMember]
+        public long heartbeat_lifetime = 0;
+
+        [DataMember]
+        public long content_key_timeout = 0;
+
+        [DataMember]
+        public float priority = 0;
+
+        [DataMember]
+        public List<urlC> urls = null;
+
+        [DataContract]
+        public class urlC
+        {
+            [DataMember]
+            public string url = "";
+
+            [DataMember]
+            public Boolean is_well_known_port = false;
+
+            [DataMember]
+            public Boolean is_ssl = false;
         }
     }
 }
