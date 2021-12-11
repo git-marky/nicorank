@@ -1400,8 +1400,9 @@ namespace NicoTools
             [DataMember]
             public string title = "";
 
-            [DataMember]
-            public string description = "";
+            //2018/02/27 DELETE marky 動画説明文にHTMLタグが入る仕様変更に対応
+            //[DataMember]
+            //public string description = "";
 
             [DataMember]
             public string tags = "";

@@ -1498,7 +1498,9 @@ namespace NicoTools
                 { // keyword search
                     json += "title,description,tags";
                 }
-                json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+                //json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+                //2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
+                json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
 
                 json += "&_sort=";
                 if (order == SearchOrder.Asc)
