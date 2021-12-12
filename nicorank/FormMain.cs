@@ -42,13 +42,18 @@ namespace nicorank
         private int post_comment_counter = 3;
 
         private TransDetailOption trans_detail_option_ = new TransDetailOption();
-        private CategoryManagerWithCListBox category_manager_;
+        //private CategoryManagerWithCListBox category_manager_;
+        // 2019/06/26 Update marky
+        private GenreTagManager category_manager_;
 
         public FormMain()
         {
             
             InitializeComponent();
-            category_manager_ = new CategoryManagerWithCListBox(checkedListBoxDlRankCategory);
+            //category_manager_ = new CategoryManagerWithCListBox(checkedListBoxDlRankCategory);
+            // 2019/06/26 Update marky
+            category_manager_ = new GenreTagManager(checkedListBoxDlRankCategory, comboBoxGenre);
+
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -110,7 +115,12 @@ namespace nicorank
                 textBoxPassword.Text = IJStringUtil.DecryptString(sArray[1], "dailyvocaran");
             }
 
-            category_manager_.ParseCategoryFile2(this);
+            //category_manager_.ParseCategoryFile2(this);
+            // 2019/06/26 Update marky ジャンル、人気のタグ対応
+            category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+            dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
+            dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
+            checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
 
             SetPath();
             SetButtonDialog();
@@ -255,6 +265,13 @@ namespace nicorank
 
         private void buttonRankDl_Click(object sender, EventArgs e)
         {
+
+            // 2019/06/26 ADD marky
+            if (dateTimePickerDlRankDate1.Enabled && !CheckRankDlDate())
+            {
+                dateTimePickerDlRankDate1.Focus();
+                return;
+            }
             DownloadKind download_kind = new DownloadKind();
             download_kind.SetDuration(checkBoxDlRankDurationTotal.Checked,
                 checkBoxDlRankDurationMonthly.Checked, 
@@ -264,6 +281,7 @@ namespace nicorank
             download_kind.SetTarget(false, checkBoxDlRankView.Checked, checkBoxDlRankRes.Checked, checkBoxDlRankMylist.Checked); // 「総合」には未対応
 
             download_kind.CategoryList = category_manager_.GetDownloadCategoryItemList();
+            download_kind.GetDate = category_manager_.GetDate;  // 2019/06/26 ADD marky
 
             if (radioButtonDlRankRss.Checked)
             {
@@ -1511,6 +1529,36 @@ namespace nicorank
         {
             labelRedundantSearch.Enabled = radioButtonSearchGetKindHTML.Checked;
             comboBoxRedundantSearchMethod.Enabled = radioButtonSearchGetKindHTML.Checked;
+        }
+
+        // 2019/06/26 ADD marky
+        private void comboBoxGenre_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // タグリスト再作成
+            category_manager_.SetTagList((string)comboBoxGenre.SelectedItem);
+        }
+
+        // 2019/06/26 ADD marky
+        private void dateTimePickerDlRankDate1_ValueChanged(object sender, EventArgs e)
+        {
+            if (!CheckRankDlDate()){return;}
+
+            if (dateTimePickerDlRankDate1.Value != category_manager_.GetDate)
+            {
+                // ログ日付変更
+                category_manager_.GetDate = dateTimePickerDlRankDate1.Value;
+                // タグリスト再作成
+                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                category_manager_.SetTagList((string)comboBoxGenre.SelectedItem);
+            }
+        }
+
+        // 2019/06/26 ADD marky
+        private void radioButtonDlRank_CheckedChanged(object sender, EventArgs e)
+        {
+            dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
+            checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
+            if (radioButtonDlRankRss.Checked) { dateTimePickerDlRankDate1.Value = DateTime.Now.Date; } //RSSは当日に戻す
         }
     }
 }

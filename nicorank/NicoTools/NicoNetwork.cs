@@ -45,8 +45,10 @@ namespace NicoTools
         private bool is_no_cache_ = false; // HTTP通信でキャッシュをしないように HttpWebRequest に強制させるか
         private string firefox_profile_dir_ = ""; // Firefox のプロファイルディレクトリ（空ならデフォルト値を採用）
 
-        private const string nicovideo_uri_ = "http://www.nicovideo.jp"; // ニコニコ動画URL
+        //private const string nicovideo_uri_ = "http://www.nicovideo.jp"; // ニコニコ動画URL
+        private const string nicovideo_uri_ = "https://www.nicovideo.jp"; // ニコニコ動画URL     // 2019/06/26 Update marky
         private const string nicovideo_ext_uri_ = "http://ext.nicovideo.jp";
+        private const string ranklog_url_ = "https://dcdn.cdn.nimg.jp/nicovideo/old-ranking/";   //過去ログURL 2019/06/26 ADD marky
 
         private const string nicovideo_cookie_domain_ = ".nicovideo.jp"; // ニコニコ動画クッキードメイン
 
@@ -147,12 +149,22 @@ namespace NicoTools
 
             string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_);
 
-            if (str.IndexOf("var User = { id: false") < 0)
+            //if (str.IndexOf("var User = { id: false") < 0)
+            //{
+            //    is_loaded_cookie_ = true;
+            //    return true;
+            //}
+            //else if (str.IndexOf("User = { id: ") >= 0)
+            //{
+            //    return false;
+            //}
+            // 2019/01/21 Update marky
+            if (str.IndexOf("user.login_status = 'login'") > 0)
             {
                 is_loaded_cookie_ = true;
                 return true;
             }
-            else if (str.IndexOf("User = { id: ") >= 0)
+            else if (str.IndexOf("user.login_status") >= 0)
             {
                 return false;
             }
@@ -254,11 +266,47 @@ namespace NicoTools
             List<string> name_list = new List<string>();
             List<string> filename_list = new List<string>();
 
-            download_kind.GetRankingNameList(ref name_list, ref filename_list);
+            //download_kind.GetRankingNameList(ref name_list, ref filename_list);
+            // 2019/06/26 Update marky
+            download_kind.GetRankingRssList(ref name_list, ref filename_list);
 
             for (int i = 0; i < name_list.Count; ++i)
             {
                 DownloadRankingOnePage(name_list[i], saved_dir, filename_list[i], -1, download_kind.IsRss);
+                if (dlg != null)
+                {
+                    dlg(name_list[i], i + 1, name_list.Count);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ニコニコ動画公式ランキング過去ログをダウンロードする。 2019/06/26 ADD marky
+        /// </summary>
+        /// <param name="saved_dir">ランキング過去ログを保存するディレクトリ</param>
+        /// <param name="download_kind">ダウンロードするランキングの種類</param>
+        /// <param name="ranking_method">ランキングファイルオプション</param>
+        /// <param name="dlg">1件ダウンロードするごとに呼び出されるイベント関数</param>
+        public void DownloadRankingLog(string saved_dir, DownloadKind download_kind, NetworkWaitDelegate dlg)
+        {
+            if (!saved_dir.EndsWith("\\") && saved_dir != "")
+            {
+                saved_dir += "\\";
+            }
+
+            if (saved_dir != "")
+            {
+                Directory.CreateDirectory(saved_dir);
+            }
+
+            List<string> name_list = new List<string>();
+            List<string> filename_list = new List<string>();
+
+            download_kind.GetRankingLogList(ref name_list, ref filename_list);
+
+            for (int i = 0; i < name_list.Count; ++i)
+            {
+                DownloadRankingLog(name_list[i], saved_dir, filename_list[i]);
                 if (dlg != null)
                 {
                     dlg(name_list[i], i + 1, name_list.Count);
@@ -1629,6 +1677,17 @@ namespace NicoTools
             }
         }
 
+        // ジャンル＋人気のタグ ファイル一覧を取得
+        // 2019/06/26 ADD marky
+        public string GetGenreTag(DateTime getdate)
+        {
+            string url = ranklog_url_ + "daily/" + getdate.ToString("yyyy-MM-dd") + "/file_name_list.json";
+            ////テスト用
+            //string json = File.ReadAllText("D:\\dev\\file_name_list.json", Encoding.UTF8); 
+            string json = network_.GetAndReadFromWebUTF8(url);
+
+            return json;
+        }
 
         public string GetDataFromNicoApi() // 実験用メソッド
         {
@@ -1705,6 +1764,31 @@ namespace NicoTools
                 save_filename += (is_xml ? ".xml" : ".html");
 
                 File.WriteAllText(save_filename, html, Encoding.UTF8);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+        }
+
+        // 2019/06/26 ADD marky
+        private void DownloadRankingLog(string url, string dir_name, string filename)
+        {
+            DateTime current_datetime = DateTime.Now;
+
+            if (is_no_cache_)
+            {
+                network_.SetMaxAgeZero();
+            }
+
+            try
+            {
+                ////テスト用
+                //string json = File.ReadAllText("D:\\dev\\entertainment.json", Encoding.UTF8);
+                string json = network_.GetAndReadFromWebUTF8(ranklog_url_ + url);
+                string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm") + ".json";
+
+                File.WriteAllText(save_filename, json, Encoding.UTF8);
             }
             finally
             {
@@ -2034,6 +2118,7 @@ namespace NicoTools
             int end = html.IndexOf('"', start);
             return html.Substring(start, end - start);
         }
+
     }
 
     /// <summary>
@@ -2131,6 +2216,19 @@ namespace NicoTools
         public string short_name;
         public string name;
         public int[] page;
+        public string genre; // 2019/06/26 ADD marky
+    }
+
+    /// <summary>
+    /// ランキングジャンル、人気のタグの情報を表す構造体 2019/06/26 ADD marky
+    /// </summary>
+    public struct GenreTagItem
+    {
+        public string id;
+        public string genre;
+        public string tag;
+        public string file;
+        public string name;
     }
 
     /// <summary>
@@ -2145,8 +2243,10 @@ namespace NicoTools
         protected static string[] target_short_name = { "fav", "vie", "res", "myl" };
         protected static string[] duration_name = { "total", "monthly", "weekly", "daily", "hourly" };
         protected static string[] duration_short_name = { "tot", "mon", "wek", "day", "hou" };
+        protected static string[] term_name = { "total", "month", "week", "24h", "hour" }; //新RSS用 2019/06/26 ADD marky
         
         protected List<CategoryItem> category_list;
+        protected DateTime getdate_; //過去ログ日付 2019/06/26 ADD marky
         protected bool[] target_ = new bool[target_name.Length];
         protected bool[] duration_ = new bool[duration_name.Length];
 
@@ -2174,6 +2274,13 @@ namespace NicoTools
         {
             get { return format_kind_ == FormatKind.Rss; }
             set { format_kind_ = (value ? FormatKind.Rss : FormatKind.Html); }
+        }
+
+        //過去ログ日付 2019/06/26 ADD marky
+        public DateTime GetDate
+        {
+            get { return getdate_; }
+            set { getdate_ = value; }
         }
 
         /// <summary>
@@ -2264,6 +2371,94 @@ namespace NicoTools
                 }
             }
         }
+
+        /// <summary>
+        /// ダウンロードするランキングRSSのURLをリストで取得 2019/06/26 ADD marky
+        /// </summary>
+        /// <param name="name_list">URL のリスト</param>
+        /// <param name="filename_list">ある規則に従ったファイル名のリスト</param>
+        public virtual void GetRankingRssList(ref List<string> name_list, ref List<string> filename_list)
+        {
+            for (int j = 0; j < duration_name.Length; ++j)
+            {
+                if (!duration_[j])
+                {
+                    continue;
+                }
+                for (int k = 0; k < category_list.Count; ++k)
+                {
+                    string genre = category_list[k].id;
+                    string option = "?";
+                    if (category_list[k].short_name != "")  //人気のタグの場合
+                    {
+                        genre = genre.Substring(0, genre.Length - 3);
+                        string name = category_list[k].name;
+                        option += "tag=";
+                        option += name.Substring(name.IndexOf("：") + 1);
+                    }
+                    option += "&term=" + term_name[j];
+                    option += "&rss=2.0&lang=ja-jp";
+                    if (name_list != null)
+                    {
+                        name_list.Add("genre/" + genre + option);
+                    }
+                    if (filename_list != null)
+                    {
+                        filename_list.Add(duration_short_name[j] + "_" + category_list[k].name +  "_");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// ダウンロードするランキング過去ログのファイル名をリストで取得 2019/06/26 ADD marky
+        /// </summary>
+        /// <param name="name_list">URL のリスト</param>
+        /// <param name="filename_list">ある規則に従ったファイル名のリスト</param>
+        public virtual void GetRankingLogList(ref List<string> name_list, ref List<string> filename_list)
+        {
+            DateTime logdate;
+
+            for (int j = 0; j < duration_name.Length; ++j)
+            {
+                if (!duration_[j])
+                {
+                    continue;
+                }
+                switch (duration_name[j])
+                {
+                    case "monthly":
+                        logdate = new DateTime(getdate_.Year, getdate_.Month, 1);
+                        break;
+                    case "weekly":
+                        string[] week = { "月", "火", "水", "木", "金", "土", "日" };
+                        logdate = getdate_.AddDays(Array.IndexOf(week,getdate_.ToString("ddd")) * (-1));
+                        break;
+                    case "hourly":  //毎時はスキップ
+                        continue;
+                    default:
+                        logdate = getdate_;
+                        break;
+                }
+
+                for (int k = 0; k < category_list.Count; ++k)
+                {
+                    if (category_list[k].short_name != "" && duration_name[j] != "daily") // 人気のタグはdailyのみ
+                    {
+                        continue;
+                    }
+                    if (name_list != null)
+                    {
+                        name_list.Add(duration_name[j] + "/" + logdate.ToString("yyyy-MM-dd") + "/" + category_list[k].id + ".json");
+                    }
+                    if (filename_list != null)
+                    {
+                        filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + logdate.ToString("yyyy-MM-dd") + "_");
+                    }
+                }
+            }
+        }
+
     }
 
     /// <summary>
@@ -2277,7 +2472,12 @@ namespace NicoTools
         [DllImport("ieframe.dll")]
         private extern static int IEGetProtectedModeCookie(string url, string name, StringBuilder data, ref uint size, int flags);
 
+        //2019/01/28 ADD marky
+        [DllImport("Wininet", CharSet = CharSet.Unicode, SetLastError = true)]
+        static extern bool InternetGetCookieEx(string url, string name, StringBuilder data, ref uint size, int flags, IntPtr reserved);
+
         private const int INTERNET_COOKIE_THIRD_PARTY = 0x10;
+        private const int INTERNET_COOKIE_HTTPONLY = 0x00002000;   //2019/01/28 ADD marky
 
         /// <summary>
         /// IE6 からクッキーを取得
@@ -2289,6 +2489,8 @@ namespace NicoTools
             uint size = 4096;
             StringBuilder buff = new StringBuilder(new String(' ', (int)size), (int)size);
             InternetGetCookie(url, null, buff, ref size);
+            //2019/01/28 UPDATE marky
+            //bool result = InternetGetCookieEx(url, null, buff, ref size, INTERNET_COOKIE_HTTPONLY, IntPtr.Zero);
             return buff.ToString().Replace(';', ',');
         }
 
@@ -2297,6 +2499,8 @@ namespace NicoTools
             uint size = 4096;
             StringBuilder buff = new StringBuilder(new String(' ', (int)size), (int)size);
             IEGetProtectedModeCookie(url, null, buff, ref size, INTERNET_COOKIE_THIRD_PARTY);
+            //2019/01/28 UPDATE marky
+            //int result = IEGetProtectedModeCookie(url, null, buff, ref size, INTERNET_COOKIE_HTTPONLY);
             return buff.ToString().Replace(';', ',');
         }
 
@@ -2376,6 +2580,12 @@ namespace NicoTools
                     {
                         continue;
                     }
+                    //2019/01/28 ADD Start marky user_session_secureは無視
+                    if (MatchString(data, "secure", ref pos))
+                    {
+                        continue;
+                    }
+                    //2019/01/28 ADD End
                     if (!MatchDigitUnderscore(data, ref pos))
                     {
                         i = pos - 1;
@@ -2482,7 +2692,9 @@ namespace NicoTools
         {
             try
             {
-                string cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera\Opera\cookies4.dat";
+                //string cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera\Opera\cookies4.dat";
+                //2019/01/28 UPDATE marky ChromeエンジンOperaに対応
+                string cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera Software\Opera Stable\Cookies";
 
                 if (cookie_filename == "" || !File.Exists(cookie_filename))
                 {
@@ -2493,24 +2705,53 @@ namespace NicoTools
                 fs.Read(data, 0, data.Length);
                 fs.Close();
 
+                //for (int i = 0; i < data.Length; ++i)
+                //{
+                //    int pos = i;
+                //    if (!MatchString(data, "user_session_", ref pos))
+                //    {
+                //        continue;
+                //    }
+                //    if (!MatchDigitUnderscore(data, ref pos))
+                //    {
+                //        i = pos - 1;
+                //        continue;
+                //    }
+                //    string user_session = "";
+                //    for (int k = i; k < pos; ++k)
+                //    {
+                //        user_session += (char)data[k];
+                //    }
+                //    return user_session;
+                //}
+
+                //2019/01/28 UPDATE marky ChromeエンジンOperaに対応
                 for (int i = 0; i < data.Length; ++i)
                 {
                     int pos = i;
-                    if (!MatchString(data, "user_session_", ref pos))
+                    if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
                     {
-                        continue;
+                        pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
+                        //encrypted_valueは[1 0 0]で始まるぽい
+                        if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
+                        {
+                            Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
+                            for (int k = 0; k < 310; ++k)
+                            {
+                                encryptedValue[k] = data[pos + k];
+                            }
+                            string user_session = "";
+                            var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                            var plainText = Encoding.ASCII.GetString(decodedData);
+                            user_session = plainText;
+                            return user_session;
+                        }
+                        else
+                        {
+                            i = pos;
+                            continue;
+                        }
                     }
-                    if (!MatchDigitUnderscore(data, ref pos))
-                    {
-                        i = pos - 1;
-                        continue;
-                    }
-                    string user_session = "";
-                    for (int k = i; k < pos; ++k)
-                    {
-                        user_session += (char)data[k];
-                    }
-                    return user_session;
                 }
             }
             catch (Exception) { }
@@ -2524,7 +2765,7 @@ namespace NicoTools
         public static string GetUserSessionFromChrome()
         {
             string cand_user_session = "";
-            long cand_expire_time = 0;
+            //long cand_expire_time = 0;
 
             try
             {
@@ -2534,50 +2775,81 @@ namespace NicoTools
                 {
                     return "";
                 }
+
                 FileStream fs = new FileStream(cookie_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 byte[] data = new byte[fs.Length];
                 fs.Read(data, 0, data.Length);
                 fs.Close();
 
+                //for (int i = 0; i < data.Length; ++i)
+                //{
+                //    int pos = i;
+                //    if (!MatchString(data, "user_session_", ref pos))
+                //    {
+                //        continue;
+                //    }
+                //    if (!MatchDigitUnderscore(data, ref pos))
+                //    {
+                //        i = pos - 1;
+                //        continue;
+                //    }
+                //    string user_session = "";
+                //    for (int k = i; k < pos; ++k)
+                //    {
+                //        user_session += (char)data[k];
+                //    }
+                //    if (!MatchString(data, "/", ref pos))
+                //    {
+                //        i = pos - 1;
+                //        continue;
+                //    }
+                //    if (pos + 8 > data.Length)
+                //    {
+                //        i = pos - 1;
+                //        continue;
+                //    }
+                //    // クッキーの有効時刻（64ビットunixtime？）を取得
+                //    long expire_time = ((long)data[pos] << 56) | ((long)data[pos + 1] << 48) |
+                //        ((long)data[pos + 2] << 40) | ((long)data[pos + 3] << 32) |
+                //        ((long)data[pos + 4] << 24) | ((long)data[pos + 5] << 16) |
+                //        ((long)data[pos + 6] << 8) | (long)data[pos + 7];
+
+                //    if (expire_time > cand_expire_time) // クッキーの有効時刻が最も遅いものを採用
+                //    {
+                //        cand_expire_time = expire_time;
+                //        cand_user_session = user_session;
+                //    }
+                //    i = pos - 1;
+                //}
+ 
+               //2019/01/28 UPDATE marky クッキー値の暗号化に対応
                 for (int i = 0; i < data.Length; ++i)
                 {
                     int pos = i;
-                    if (!MatchString(data, "user_session_", ref pos))
+                    if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
                     {
-                        continue;
-                    }
-                    if (!MatchDigitUnderscore(data, ref pos))
-                    {
-                        i = pos - 1;
-                        continue;
-                    }
-                    string user_session = "";
-                    for (int k = i; k < pos; ++k)
-                    {
-                        user_session += (char)data[k];
-                    }
-                    if (!MatchString(data, "/", ref pos))
-                    {
-                        i = pos - 1;
-                        continue;
-                    }
-                    if (pos + 8 > data.Length)
-                    {
-                        i = pos - 1;
-                        continue;
-                    }
-                    // クッキーの有効時刻（64ビットunixtime？）を取得
-                    long expire_time = ((long)data[pos] << 56) | ((long)data[pos + 1] << 48) |
-                        ((long)data[pos + 2] << 40) | ((long)data[pos + 3] << 32) |
-                        ((long)data[pos + 4] << 24) | ((long)data[pos + 5] << 16) |
-                        ((long)data[pos + 6] << 8) | (long)data[pos + 7];
+                        pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
+                        //encrypted_valueは[1 0 0]で始まるぽい
+                        if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
+                        {
+                            Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
+                            for (int k = 0; k < 310; ++k)
+                            {
+                                encryptedValue[k] = data[pos + k];
+                            }
 
-                    if (expire_time > cand_expire_time) // クッキーの有効時刻が最も遅いものを採用
-                    {
-                        cand_expire_time = expire_time;
-                        cand_user_session = user_session;
+                            var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                            var plainText = Encoding.ASCII.GetString(decodedData);
+                            cand_user_session = plainText;
+
+                            break;
+                        }
+                        else
+                        {
+                            i = pos;
+                            continue;
+                        }
                     }
-                    i = pos - 1;
                 }
             }
             catch (Exception) { }
@@ -2761,6 +3033,12 @@ namespace NicoTools
         {
 
         }
+        //2019/06/26 ADD marky
+        public NiconicoFormatException(string message)
+            : base(message)
+        {
+
+        }
     }
 
     //2018-09-14 ADD marky 検索API v2
@@ -2832,4 +3110,51 @@ namespace NicoTools
             public Boolean is_ssl = false;
         }
     }
+
+    // 2019/06/26 ADD marky ジャンルor人気のタグ ランキング過去ログ
+    [DataContract]
+    class GenreTagLogList
+    {
+        [DataMember]
+        public string id = "";
+
+        [DataMember]
+        public string title = "";
+
+        [DataMember]
+        public string registeredAt = "";
+
+        [DataMember]
+        public CountC count = null;
+
+        [DataContract]
+        public class CountC
+        {
+            [DataMember]
+            public int view = 0;
+
+            [DataMember]
+            public int comment = 0;
+
+            [DataMember]
+            public int mylist = 0;
+        }
+
+        [DataMember]
+        public ThumbnailC thumbnail = null;
+
+        [DataContract]
+        public class ThumbnailC
+        {
+            [DataMember]
+            public string url = "";
+
+            [DataMember]
+            public string middleUrl = "";
+
+            [DataMember]
+            public string largeUrl = "";
+        }
+    }
+
 }

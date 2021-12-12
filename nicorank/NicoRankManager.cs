@@ -448,6 +448,13 @@ namespace nicorank
         {
             nico_download_.GetDataFromNicoApi();
         }
+
+        // ランキングジャンル、人気のタグ一覧を取得
+        // 2019-06-26 ADD marky
+        public string GetGenreTag(DateTime getdate)
+        {
+            return niconico_network_.GetGenreTag(getdate);
+        }
     }
 
     public interface NicoRankManagerMsgReceiver : MessageOut

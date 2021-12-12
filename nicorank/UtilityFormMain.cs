@@ -231,6 +231,11 @@ namespace nicorank
                 else if (control_list[i] is ComboBox)
                 {
                     ComboBox c = (ComboBox)control_list[i];
+                    // 2019/06/26 ADD marky
+                    if (c.Name == "comboBoxGenre")
+                    {
+                        continue;
+                    }
                     buff.Append("comboBox");
                     buff.Append('\t');
                     buff.Append(c.Name);
@@ -256,6 +261,9 @@ namespace nicorank
             buff.Append(trans_detail_option_.SaveData());
 
             buff.Append("dlrank_category\t").Append(category_manager_.GetSaveString()).Append("\r\n");
+            // 2019/06/26 ADD marky
+            buff.Append("dlrank_genre\t").Append(category_manager_.GetGenre()).Append("\r\n");
+
 
             IJFile.Write(filename, buff.ToString());
         }
@@ -293,6 +301,11 @@ namespace nicorank
                     if (sa[0] == "dlrank_category")
                     {
                         category_manager_.SetString(sa[1]);
+                    }
+                    // 2019/06/26 ADD marky
+                    if (sa[0] == "dlrank_genre")
+                    {
+                        category_manager_.SetGenre(sa[1]);
                     }
                     if (sa.Length < 3 || sa[1] == "")
                     {
@@ -364,7 +377,8 @@ namespace nicorank
                                 ((ListBox)c[0]).SelectedIndex = int.Parse(sa[2]);
                                 break;
                             case "dateTimePicker":
-                                ((DateTimePicker)c[0]).Value = NicoUtil.StringToDate(sa[2]);
+                                if (sa[1] != "dateTimePickerDlRankDate1")    // 2019/06/26 ADD marky 初期値は当日
+                                { ((DateTimePicker)c[0]).Value = NicoUtil.StringToDate(sa[2]); }
                                 break;
                             case "comboBox":
                                 ((ComboBox)c[0]).SelectedIndex = int.Parse(sa[2]);
@@ -858,6 +872,41 @@ namespace nicorank
             {
                 this.buttonTagSearchNew.Text = "検索";
             }
+        }
+
+        // 2019/06/26 ADD marky
+        private bool CheckRankDlDate()
+        {
+            DateTime dt = dateTimePickerDlRankDate1.Value;
+            if (dt > DateTime.Now.Date)
+            {
+                textBoxInfo.AppendText("未来の日付は指定出来ません。\r\n");
+                return false;
+            }
+            if (dt < new DateTime(2019, 6, 11))
+            {
+                textBoxInfo.AppendText("2019年6月11日より前の日付は指定出来ません。\r\n");
+                return false;
+            }
+            if (dt < new DateTime(2019, 7, 1))
+            {
+                if (checkBoxDlRankDurationMonthly.Checked)
+                {
+                    textBoxInfo.AppendText("月間は2019年7月1日より前の日付は指定出来ません。\r\n");
+                    return false;
+
+                }
+            }
+            if (dt < new DateTime(2019, 6, 17))
+            {
+                if (checkBoxDlRankDurationWeekly.Checked)
+                {
+                    textBoxInfo.AppendText("週間は2019年6月17日より前の日付は指定出来ません。\r\n");
+                    return false;
+
+                }
+            }
+            return true;
         }
     }
 }

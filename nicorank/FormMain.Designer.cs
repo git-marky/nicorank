@@ -441,6 +441,8 @@
             this.buttonCheckLogin = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageDlRank = new System.Windows.Forms.TabPage();
+            this.groupBox39 = new System.Windows.Forms.GroupBox();
+            this.comboBoxGenre = new System.Windows.Forms.ComboBox();
             this.buttonDlRankUncheckAll = new System.Windows.Forms.Button();
             this.buttonDlRankCheckAll = new System.Windows.Forms.Button();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
@@ -555,6 +557,7 @@
             this.groupBox26.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageDlRank.SuspendLayout();
+            this.groupBox39.SuspendLayout();
             this.groupBox13.SuspendLayout();
             this.groupBox12.SuspendLayout();
             this.groupBox9.SuspendLayout();
@@ -602,9 +605,9 @@
             // 
             // textBoxInputRank
             // 
-            this.textBoxInputRank.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxInputRank.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxInputRank.Enabled = false;
             this.textBoxInputRank.Location = new System.Drawing.Point(19, 59);
             this.textBoxInputRank.MaxLength = 10000000;
@@ -616,9 +619,9 @@
             // 
             // textBoxInfo
             // 
-            this.textBoxInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxInfo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxInfo.Location = new System.Drawing.Point(0, 3);
             this.textBoxInfo.MaxLength = 10000000;
             this.textBoxInfo.Multiline = true;
@@ -641,8 +644,8 @@
             // textBoxInputRankFilePath
             // 
             this.textBoxInputRankFilePath.AllowDrop = true;
-            this.textBoxInputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxInputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxInputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxInputRankFilePath.Name = "textBoxInputRankFilePath";
             this.textBoxInputRankFilePath.Size = new System.Drawing.Size(225, 19);
@@ -816,9 +819,9 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Location = new System.Drawing.Point(0, 3);
             this.splitContainer1.Name = "splitContainer1";
@@ -883,8 +886,8 @@
             // textBoxOutputRankFilePath
             // 
             this.textBoxOutputRankFilePath.AllowDrop = true;
-            this.textBoxOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
             this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(225, 19);
@@ -906,9 +909,9 @@
             // 
             // textBoxOutputRank
             // 
-            this.textBoxOutputRank.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxOutputRank.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRank.Enabled = false;
             this.textBoxOutputRank.Location = new System.Drawing.Point(19, 59);
             this.textBoxOutputRank.MaxLength = 10000000;
@@ -920,9 +923,9 @@
             // 
             // splitContainer2
             // 
-            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.splitContainer2.Location = new System.Drawing.Point(12, 462);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -1135,7 +1138,7 @@
             this.label26.Size = new System.Drawing.Size(263, 36);
             this.label26.TabIndex = 7;
             this.label26.Text = "ICSharpCode.SharpZipLib.dll　作者：John Reilly氏ら\r\nFFmpeg　作者：FFmpegチーム\r\nwaveflt2　作者：To" +
-    "moya Tokairin氏";
+                "moya Tokairin氏";
             // 
             // label15
             // 
@@ -2305,8 +2308,8 @@
             this.textBoxCommentTime.Name = "textBoxCommentTime";
             this.textBoxCommentTime.Size = new System.Drawing.Size(36, 19);
             this.textBoxCommentTime.TabIndex = 1;
-            this.textBoxCommentTime.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             this.textBoxCommentTime.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxCommentTime.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             // 
             // buttonComment
             // 
@@ -2963,8 +2966,8 @@
             this.textBoxTransCutStart.Name = "textBoxTransCutStart";
             this.textBoxTransCutStart.Size = new System.Drawing.Size(41, 19);
             this.textBoxTransCutStart.TabIndex = 1;
-            this.textBoxTransCutStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             this.textBoxTransCutStart.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTransCutStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             // 
             // textBoxCutListPath
             // 
@@ -2984,8 +2987,8 @@
             this.textBoxTransCutEnd.Name = "textBoxTransCutEnd";
             this.textBoxTransCutEnd.Size = new System.Drawing.Size(40, 19);
             this.textBoxTransCutEnd.TabIndex = 2;
-            this.textBoxTransCutEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             this.textBoxTransCutEnd.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTransCutEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             // 
             // labelTransCut1
             // 
@@ -3041,8 +3044,8 @@
             this.textBoxTransFadeIn.Name = "textBoxTransFadeIn";
             this.textBoxTransFadeIn.Size = new System.Drawing.Size(35, 19);
             this.textBoxTransFadeIn.TabIndex = 1;
-            this.textBoxTransFadeIn.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             this.textBoxTransFadeIn.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTransFadeIn.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             // 
             // checkBoxTransIsFadeOut
             // 
@@ -3062,8 +3065,8 @@
             this.textBoxTransFadeOut.Name = "textBoxTransFadeOut";
             this.textBoxTransFadeOut.Size = new System.Drawing.Size(35, 19);
             this.textBoxTransFadeOut.TabIndex = 3;
-            this.textBoxTransFadeOut.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             this.textBoxTransFadeOut.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTransFadeOut.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForDouble_Validating);
             // 
             // labelTransFadeIn
             // 
@@ -3456,8 +3459,8 @@
             this.textBoxTagSearchPageEnd.Name = "textBoxTagSearchPageEnd";
             this.textBoxTagSearchPageEnd.Size = new System.Drawing.Size(42, 19);
             this.textBoxTagSearchPageEnd.TabIndex = 8;
-            this.textBoxTagSearchPageEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             this.textBoxTagSearchPageEnd.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTagSearchPageEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             // 
             // textBoxTagSearchPageStart
             // 
@@ -3465,8 +3468,8 @@
             this.textBoxTagSearchPageStart.Name = "textBoxTagSearchPageStart";
             this.textBoxTagSearchPageStart.Size = new System.Drawing.Size(37, 19);
             this.textBoxTagSearchPageStart.TabIndex = 7;
-            this.textBoxTagSearchPageStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             this.textBoxTagSearchPageStart.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTagSearchPageStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             // 
             // numericUpDownConditionMylistNew
             // 
@@ -3503,8 +3506,8 @@
             this.textBoxTagSearchUpper.Size = new System.Drawing.Size(55, 19);
             this.textBoxTagSearchUpper.TabIndex = 13;
             this.textBoxTagSearchUpper.Visible = false;
-            this.textBoxTagSearchUpper.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber0_Validating);
             this.textBoxTagSearchUpper.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTagSearchUpper.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber0_Validating);
             // 
             // textBoxTagSearchLower
             // 
@@ -3513,8 +3516,8 @@
             this.textBoxTagSearchLower.Size = new System.Drawing.Size(55, 19);
             this.textBoxTagSearchLower.TabIndex = 11;
             this.textBoxTagSearchLower.Visible = false;
-            this.textBoxTagSearchLower.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber0_Validating);
             this.textBoxTagSearchLower.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxTagSearchLower.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber0_Validating);
             // 
             // labelTagSearchTo
             // 
@@ -3744,6 +3747,7 @@
             this.groupBox7.TabIndex = 2;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "解析方式";
+            this.groupBox7.Visible = false;
             // 
             // label40
             // 
@@ -3857,8 +3861,8 @@
             this.textBoxNewArrivalStart.Size = new System.Drawing.Size(46, 19);
             this.textBoxNewArrivalStart.TabIndex = 0;
             this.textBoxNewArrivalStart.Text = "1";
-            this.textBoxNewArrivalStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             this.textBoxNewArrivalStart.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxNewArrivalStart.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             // 
             // textBoxNewArrivalEnd
             // 
@@ -3867,8 +3871,8 @@
             this.textBoxNewArrivalEnd.Size = new System.Drawing.Size(46, 19);
             this.textBoxNewArrivalEnd.TabIndex = 1;
             this.textBoxNewArrivalEnd.Text = "10";
-            this.textBoxNewArrivalEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             this.textBoxNewArrivalEnd.Validated += new System.EventHandler(this.textBox_Validated);
+            this.textBoxNewArrivalEnd.Validating += new System.ComponentModel.CancelEventHandler(this.textBoxForNumber1_Validating);
             // 
             // label17
             // 
@@ -4988,9 +4992,9 @@
             this.radioButtonBrowserOpera.AutoSize = true;
             this.radioButtonBrowserOpera.Location = new System.Drawing.Point(9, 55);
             this.radioButtonBrowserOpera.Name = "radioButtonBrowserOpera";
-            this.radioButtonBrowserOpera.Size = new System.Drawing.Size(65, 16);
+            this.radioButtonBrowserOpera.Size = new System.Drawing.Size(53, 16);
             this.radioButtonBrowserOpera.TabIndex = 3;
-            this.radioButtonBrowserOpera.Text = "Opera10";
+            this.radioButtonBrowserOpera.Text = "Opera";
             this.radioButtonBrowserOpera.UseVisualStyleBackColor = true;
             this.radioButtonBrowserOpera.CheckedChanged += new System.EventHandler(this.radioButtonBrowser_CheckedChanged);
             // 
@@ -5064,6 +5068,7 @@
             // 
             // tabPageDlRank
             // 
+            this.tabPageDlRank.Controls.Add(this.groupBox39);
             this.tabPageDlRank.Controls.Add(this.buttonDlRankUncheckAll);
             this.tabPageDlRank.Controls.Add(this.buttonDlRankCheckAll);
             this.tabPageDlRank.Controls.Add(this.groupBox13);
@@ -5087,9 +5092,28 @@
             this.tabPageDlRank.Text = "ランキングDL";
             this.tabPageDlRank.UseVisualStyleBackColor = true;
             // 
+            // groupBox39
+            // 
+            this.groupBox39.Controls.Add(this.comboBoxGenre);
+            this.groupBox39.Location = new System.Drawing.Point(122, 61);
+            this.groupBox39.Name = "groupBox39";
+            this.groupBox39.Size = new System.Drawing.Size(191, 50);
+            this.groupBox39.TabIndex = 47;
+            this.groupBox39.TabStop = false;
+            this.groupBox39.Text = "ジャンル";
+            // 
+            // comboBoxGenre
+            // 
+            this.comboBoxGenre.FormattingEnabled = true;
+            this.comboBoxGenre.Location = new System.Drawing.Point(8, 16);
+            this.comboBoxGenre.Name = "comboBoxGenre";
+            this.comboBoxGenre.Size = new System.Drawing.Size(177, 20);
+            this.comboBoxGenre.TabIndex = 0;
+            this.comboBoxGenre.SelectedIndexChanged += new System.EventHandler(this.comboBoxGenre_SelectedIndexChanged);
+            // 
             // buttonDlRankUncheckAll
             // 
-            this.buttonDlRankUncheckAll.Location = new System.Drawing.Point(186, 184);
+            this.buttonDlRankUncheckAll.Location = new System.Drawing.Point(186, 279);
             this.buttonDlRankUncheckAll.Name = "buttonDlRankUncheckAll";
             this.buttonDlRankUncheckAll.Size = new System.Drawing.Size(56, 23);
             this.buttonDlRankUncheckAll.TabIndex = 5;
@@ -5099,7 +5123,7 @@
             // 
             // buttonDlRankCheckAll
             // 
-            this.buttonDlRankCheckAll.Location = new System.Drawing.Point(122, 184);
+            this.buttonDlRankCheckAll.Location = new System.Drawing.Point(122, 279);
             this.buttonDlRankCheckAll.Name = "buttonDlRankCheckAll";
             this.buttonDlRankCheckAll.Size = new System.Drawing.Size(56, 23);
             this.buttonDlRankCheckAll.TabIndex = 4;
@@ -5114,13 +5138,12 @@
             this.groupBox13.Controls.Add(this.dateTimePickerDlRankDate1);
             this.groupBox13.Controls.Add(this.radioButtonDlRankDesignating);
             this.groupBox13.Controls.Add(this.radioButtonDlRankDateLatest);
-            this.groupBox13.Location = new System.Drawing.Point(28, 230);
+            this.groupBox13.Location = new System.Drawing.Point(122, 308);
             this.groupBox13.Name = "groupBox13";
-            this.groupBox13.Size = new System.Drawing.Size(381, 71);
+            this.groupBox13.Size = new System.Drawing.Size(191, 43);
             this.groupBox13.TabIndex = 8;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "日付";
-            this.groupBox13.Visible = false;
             // 
             // dateTimePickerDlRankDate2
             // 
@@ -5142,15 +5165,17 @@
             // 
             // dateTimePickerDlRankDate1
             // 
-            this.dateTimePickerDlRankDate1.Location = new System.Drawing.Point(93, 42);
+            this.dateTimePickerDlRankDate1.Location = new System.Drawing.Point(13, 17);
             this.dateTimePickerDlRankDate1.Name = "dateTimePickerDlRankDate1";
-            this.dateTimePickerDlRankDate1.Size = new System.Drawing.Size(111, 19);
+            this.dateTimePickerDlRankDate1.Size = new System.Drawing.Size(160, 19);
             this.dateTimePickerDlRankDate1.TabIndex = 2;
+            this.dateTimePickerDlRankDate1.Value = new System.DateTime(2019, 6, 24, 0, 0, 0, 0);
+            this.dateTimePickerDlRankDate1.ValueChanged += new System.EventHandler(this.dateTimePickerDlRankDate1_ValueChanged);
             // 
             // radioButtonDlRankDesignating
             // 
             this.radioButtonDlRankDesignating.AutoSize = true;
-            this.radioButtonDlRankDesignating.Location = new System.Drawing.Point(14, 43);
+            this.radioButtonDlRankDesignating.Location = new System.Drawing.Point(119, 42);
             this.radioButtonDlRankDesignating.Name = "radioButtonDlRankDesignating";
             this.radioButtonDlRankDesignating.Size = new System.Drawing.Size(71, 16);
             this.radioButtonDlRankDesignating.TabIndex = 1;
@@ -5161,7 +5186,7 @@
             // 
             this.radioButtonDlRankDateLatest.AutoSize = true;
             this.radioButtonDlRankDateLatest.Checked = true;
-            this.radioButtonDlRankDateLatest.Location = new System.Drawing.Point(14, 21);
+            this.radioButtonDlRankDateLatest.Location = new System.Drawing.Point(55, 42);
             this.radioButtonDlRankDateLatest.Name = "radioButtonDlRankDateLatest";
             this.radioButtonDlRankDateLatest.Size = new System.Drawing.Size(47, 16);
             this.radioButtonDlRankDateLatest.TabIndex = 0;
@@ -5174,18 +5199,17 @@
             this.groupBox12.Controls.Add(this.checkBoxDlRankView);
             this.groupBox12.Controls.Add(this.checkBoxDlRankMylist);
             this.groupBox12.Controls.Add(this.checkBoxDlRankRes);
-            this.groupBox12.Location = new System.Drawing.Point(228, 61);
+            this.groupBox12.Location = new System.Drawing.Point(434, 61);
             this.groupBox12.Name = "groupBox12";
             this.groupBox12.Size = new System.Drawing.Size(85, 92);
             this.groupBox12.TabIndex = 6;
             this.groupBox12.TabStop = false;
             this.groupBox12.Text = "対象";
+            this.groupBox12.Visible = false;
             // 
             // checkBoxDlRankView
             // 
             this.checkBoxDlRankView.AutoSize = true;
-            this.checkBoxDlRankView.Checked = true;
-            this.checkBoxDlRankView.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkBoxDlRankView.Location = new System.Drawing.Point(13, 21);
             this.checkBoxDlRankView.Name = "checkBoxDlRankView";
             this.checkBoxDlRankView.Size = new System.Drawing.Size(48, 16);
@@ -5216,19 +5240,20 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(120, 61);
+            this.label27.Location = new System.Drawing.Point(120, 117);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(39, 12);
+            this.label27.Size = new System.Drawing.Size(99, 12);
             this.label27.TabIndex = 46;
-            this.label27.Text = "カテゴリ";
+            this.label27.Text = "ジャンル・人気のタグ";
             // 
             // checkedListBoxDlRankCategory
             // 
             this.checkedListBoxDlRankCategory.CheckOnClick = true;
             this.checkedListBoxDlRankCategory.FormattingEnabled = true;
-            this.checkedListBoxDlRankCategory.Location = new System.Drawing.Point(122, 76);
+            this.checkedListBoxDlRankCategory.HorizontalScrollbar = true;
+            this.checkedListBoxDlRankCategory.Location = new System.Drawing.Point(122, 132);
             this.checkedListBoxDlRankCategory.Name = "checkedListBoxDlRankCategory";
-            this.checkedListBoxDlRankCategory.Size = new System.Drawing.Size(91, 102);
+            this.checkedListBoxDlRankCategory.Size = new System.Drawing.Size(191, 144);
             this.checkedListBoxDlRankCategory.TabIndex = 3;
             // 
             // groupBox9
@@ -5302,9 +5327,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(26, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(131, 12);
+            this.label4.Size = new System.Drawing.Size(109, 12);
             this.label4.TabIndex = 31;
-            this.label4.Text = "ランキングRSS保存フォルダ";
+            this.label4.Text = "ランキング保存フォルダ";
             // 
             // textBoxRankDlDir
             // 
@@ -5330,7 +5355,7 @@
             // 
             this.checkBoxRankingDlSetHour.AutoSize = true;
             this.checkBoxRankingDlSetHour.Enabled = false;
-            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(284, 170);
+            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(334, 170);
             this.checkBoxRankingDlSetHour.Name = "checkBoxRankingDlSetHour";
             this.checkBoxRankingDlSetHour.Size = new System.Drawing.Size(184, 16);
             this.checkBoxRankingDlSetHour.TabIndex = 39;
@@ -5342,7 +5367,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Enabled = false;
-            this.label28.Location = new System.Drawing.Point(354, 192);
+            this.label28.Location = new System.Drawing.Point(404, 192);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(17, 12);
             this.label28.TabIndex = 42;
@@ -5352,7 +5377,7 @@
             // textBoxRankingDlHour
             // 
             this.textBoxRankingDlHour.Enabled = false;
-            this.textBoxRankingDlHour.Location = new System.Drawing.Point(312, 189);
+            this.textBoxRankingDlHour.Location = new System.Drawing.Point(362, 189);
             this.textBoxRankingDlHour.Name = "textBoxRankingDlHour";
             this.textBoxRankingDlHour.Size = new System.Drawing.Size(36, 19);
             this.textBoxRankingDlHour.TabIndex = 40;
@@ -5362,7 +5387,7 @@
             // 
             this.groupBox17.Controls.Add(this.radioButtonDlRankRss);
             this.groupBox17.Controls.Add(this.radioButtonDlRankHtml);
-            this.groupBox17.Location = new System.Drawing.Point(325, 61);
+            this.groupBox17.Location = new System.Drawing.Point(327, 61);
             this.groupBox17.Name = "groupBox17";
             this.groupBox17.Size = new System.Drawing.Size(94, 69);
             this.groupBox17.TabIndex = 7;
@@ -5372,28 +5397,30 @@
             // radioButtonDlRankRss
             // 
             this.radioButtonDlRankRss.AutoSize = true;
-            this.radioButtonDlRankRss.Checked = true;
             this.radioButtonDlRankRss.Location = new System.Drawing.Point(9, 21);
             this.radioButtonDlRankRss.Name = "radioButtonDlRankRss";
-            this.radioButtonDlRankRss.Size = new System.Drawing.Size(77, 16);
+            this.radioButtonDlRankRss.Size = new System.Drawing.Size(45, 16);
             this.radioButtonDlRankRss.TabIndex = 0;
-            this.radioButtonDlRankRss.TabStop = true;
-            this.radioButtonDlRankRss.Text = "RSS(推奨)";
+            this.radioButtonDlRankRss.Text = "RSS";
             this.radioButtonDlRankRss.UseVisualStyleBackColor = true;
+            this.radioButtonDlRankRss.CheckedChanged += new System.EventHandler(this.radioButtonDlRank_CheckedChanged);
             // 
             // radioButtonDlRankHtml
             // 
             this.radioButtonDlRankHtml.AutoSize = true;
+            this.radioButtonDlRankHtml.Checked = true;
             this.radioButtonDlRankHtml.Location = new System.Drawing.Point(9, 43);
             this.radioButtonDlRankHtml.Name = "radioButtonDlRankHtml";
-            this.radioButtonDlRankHtml.Size = new System.Drawing.Size(53, 16);
+            this.radioButtonDlRankHtml.Size = new System.Drawing.Size(65, 16);
             this.radioButtonDlRankHtml.TabIndex = 1;
-            this.radioButtonDlRankHtml.Text = "HTML";
+            this.radioButtonDlRankHtml.TabStop = true;
+            this.radioButtonDlRankHtml.Text = "過去ログ";
             this.radioButtonDlRankHtml.UseVisualStyleBackColor = true;
+            this.radioButtonDlRankHtml.CheckedChanged += new System.EventHandler(this.radioButtonDlRank_CheckedChanged);
             // 
             // buttonDlRank
             // 
-            this.buttonDlRank.Location = new System.Drawing.Point(433, 266);
+            this.buttonDlRank.Location = new System.Drawing.Point(433, 308);
             this.buttonDlRank.Name = "buttonDlRank";
             this.buttonDlRank.Size = new System.Drawing.Size(90, 24);
             this.buttonDlRank.TabIndex = 9;
@@ -5609,8 +5636,8 @@
             this.Controls.Add(this.tabControl1);
             this.Name = "FormMain";
             this.Text = "ニコニコランキングメーカー";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -5728,6 +5755,7 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPageDlRank.ResumeLayout(false);
             this.tabPageDlRank.PerformLayout();
+            this.groupBox39.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
             this.groupBox13.PerformLayout();
             this.groupBox12.ResumeLayout(false);
@@ -6209,6 +6237,8 @@
         private System.Windows.Forms.RadioButton radioButtonSearchGetKindHTML;
         private System.Windows.Forms.RadioButton radioButtonSearchGetKindAPI;
         private System.Windows.Forms.GroupBox groupBox38;
+        private System.Windows.Forms.GroupBox groupBox39;
+        private System.Windows.Forms.ComboBox comboBoxGenre;
     }
 }
 

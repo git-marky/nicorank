@@ -8,6 +8,8 @@ using System.IO;
 using IJLib;
 using System.Text.RegularExpressions;
 using System.Text;
+using System.Runtime.Serialization;         // 2019/06/26 ADD marky
+using System.Runtime.Serialization.Json;    // 2019/06/26 ADD marky
 
 namespace NicoTools
 {
@@ -427,14 +429,16 @@ namespace NicoTools
                 }
                 else
                 {
-                    switch (kind)
-                    {
-                        case ParseRankingKind.TermPoint:
-                            ParseRankingTermPointHtml(html, getting_dt, video_list, video_dic);
-                            break;
-                        case ParseRankingKind.TotalPoint:
-                            throw new InvalidOperationException("ランキングHTMLは全ポイント解析できません。");
-                    }
+                    //switch (kind)
+                    //{
+                    //    case ParseRankingKind.TermPoint:
+                    //        ParseRankingTermPointHtml(html, getting_dt, video_list, video_dic);
+                    //        break;
+                    //    case ParseRankingKind.TotalPoint:
+                    //        throw new InvalidOperationException("ランキングHTMLは全ポイント解析できません。");
+                    //}
+                    // 2019/06/26 Update marky
+                    ParseGenreTagLogFile(html, getting_dt, video_list);
                 }
                 System.Diagnostics.Debug.Write((System.Environment.TickCount - t).ToString() + ", ");
             }
@@ -462,10 +466,11 @@ namespace NicoTools
                 video.video_id = link.Substring(link.LastIndexOf('/') + 1);
                 IJStringUtil.GetStringBetweenTag(ref index, "p", html);
                 video.description = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
-                if (!is_mylist) // 読み飛ばし
-                {
-                    IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
-                }
+                // 2019/06/26 DEL marky
+                //if (!is_mylist) // 読み飛ばし
+                //{
+                //    IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
+                //}
                 video.length = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
                 string date_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
                 video.submit_date = NicoUtil.StringToDate(date_str);
@@ -473,14 +478,14 @@ namespace NicoTools
                 if (!is_mylist)
                 {
                     IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
-
-                    if (!is_total)
-                    {
-                        for (int i = 0; i < 4; ++i) // 4回読み飛ばす
-                        {
-                            IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
-                        }
-                    }
+                    // 2019/06/26 DEL marky
+                    //if (!is_total)
+                    //{
+                    //    for (int i = 0; i < 4; ++i) // 4回読み飛ばす
+                    //    {
+                    //        IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
+                    //    }
+                    //}
                 }
 
                 string view_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
@@ -542,6 +547,41 @@ namespace NicoTools
             }
         }
 
+        // 2019-06-26 ADD marky
+        private static void ParseGenreTagLogFile(string json, DateTime getting_dt, List<Video> video_list)
+        {
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(GenreTagLogList[]));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    GenreTagLogList[] result = (GenreTagLogList[])serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        StringBuilder buff = new StringBuilder();
+                        for (int j = 0; j < result.Length; ++j)
+                        {
+                            Video video = new Video();
+
+                            video.point.getting_date = getting_dt;
+                            video.video_id = result[j].id;
+                            video.point.view = result[j].count.view; ;
+                            video.point.res = result[j].count.comment;
+                            video.point.mylist = result[j].count.mylist;
+                            video.title = result[j].title;
+                            video.submit_date = DateTime.Parse(result[j].registeredAt, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            video_list.Add(video);
+
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("ランキングファイルが無効です。");           
+            }
+        }
+        
         private static IEnumerable<int> EnumerateRankingHtmlVideoInfoIndex(string html)
         {
             int index = -1;

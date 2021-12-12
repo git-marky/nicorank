@@ -66,7 +66,16 @@ namespace NicoTools
 
             rank_dl_dir = IJFile.GetNoExistDirName(rank_dl_dir);
             Directory.CreateDirectory(rank_dl_dir);
-            niconico_network_.DownloadRanking(rank_dl_dir, download_kind, /*hour, */OnDownloadRankingEvent);
+            //niconico_network_.DownloadRanking(rank_dl_dir, download_kind, /*hour, */OnDownloadRankingEvent);
+            // 2019/06/26 Update marky
+            if (download_kind.IsRss)
+            {
+                niconico_network_.DownloadRanking(rank_dl_dir, download_kind, OnDownloadRankingEvent);
+            }
+            else
+            {
+                niconico_network_.DownloadRankingLog(rank_dl_dir, download_kind, OnDownloadRankingEvent);
+            }
             msgout_.Write("すべてのランキングのDLが完了しました。\r\n");
             return rank_dl_dir;
         }
@@ -1434,4 +1443,5 @@ namespace NicoTools
             public string lengthSeconds = "";
         }
     }
+
 }
