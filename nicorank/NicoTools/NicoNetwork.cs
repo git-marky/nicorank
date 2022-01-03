@@ -1697,6 +1697,7 @@ namespace NicoTools
             string url = ranklog_url_ + "daily/" + getdate.ToString("yyyy-MM-dd") + "/file_name_list.json";
             ////テスト用
             //string json = File.ReadAllText("D:\\dev\\file_name_list.json", Encoding.UTF8); 
+            //string url = ranklog_url_ + "daily/" + getdate.ToString("yyyy-MM-dd") + "_05/file_name_list.json";
             string json = network_.GetAndReadFromWebUTF8(url);
 
             return json;

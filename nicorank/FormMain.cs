@@ -117,7 +117,19 @@ namespace nicorank
 
             //category_manager_.ParseCategoryFile2(this);
             // 2019/06/26 Update marky ジャンル、人気のタグ対応
-            category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+            //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+            // 2019/09/03 Update marky 403エラー対応
+            try
+            {
+                // タグリスト再作成
+                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+            }
+            catch (Exception)
+            {
+                MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            // 2019/06/26 ADD marky ジャンル、人気のタグ対応
             dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
             dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
             checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
