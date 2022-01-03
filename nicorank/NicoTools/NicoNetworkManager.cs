@@ -1088,7 +1088,9 @@ namespace NicoTools
                                 video.point.view = int.Parse(result.data[j].viewCounter);
                                 video.point.res = int.Parse(result.data[j].commentCounter);
                                 video.point.mylist = int.Parse(result.data[j].mylistCounter);
-                                video.title = result.data[j].title;
+                                //video.title = result.data[j].title;
+                                // 2019/08/18 Update marky title:null対策
+                                video.title = result.data[j].title ?? "";
                                 video.submit_date = DateTime.Parse(result.data[j].startTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
                                 video.thumbnail_url = result.data[j].thumbnailUrl;
                                 video.length = result.data[j].lengthSeconds;
