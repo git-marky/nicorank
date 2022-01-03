@@ -231,8 +231,10 @@ namespace nicorank
                 else if (control_list[i] is ComboBox)
                 {
                     ComboBox c = (ComboBox)control_list[i];
-                    // 2019/06/26 ADD marky
-                    if (c.Name == "comboBoxDlRankGenre")
+                    //// 2019/06/26 ADD marky
+                    //if (c.Name == "comboBoxDlRankGenre")
+                    // 2020/02/11 Update marky
+                    if (c.Name == "comboBoxDlRankGenre" || c.Name == "comboBoxSearchGenre")
                     {
                         continue;
                     }

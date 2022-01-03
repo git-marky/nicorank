@@ -2008,6 +2008,8 @@ namespace NicoTools
             string condition_upper = option.condition_upper.ToString();
             string offset = option.offset.ToString();
             string last_value = option.last_value;
+            // 2020/02/11 ADD marky ジャンル追加
+            string genre = option.genre;
 
             CheckCookie();
 
@@ -2128,6 +2130,12 @@ namespace NicoTools
                             json += (last_value.Equals("") ? "&filters[mylistCounter][gte]=" + condition_lower : "") + "&filters[mylistCounter][lte]=" + condition_upper;
                             break;
                     }
+                }
+
+                // 2020/02/11 ADD marky ジャンル追加
+                if (!genre.Equals("全ジャンル"))
+                {
+                    json += "&filters[genre][0]=" + genre;
                 }
 
                 json += "&_limit=100";

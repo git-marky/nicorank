@@ -279,6 +279,8 @@
             this.checkBoxFilter = new System.Windows.Forms.CheckBox();
             this.tabControl2 = new System.Windows.Forms.TabControl();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.groupBoxSearchGenre = new System.Windows.Forms.GroupBox();
+            this.comboBoxSearchGenre = new System.Windows.Forms.ComboBox();
             this.groupBox38 = new System.Windows.Forms.GroupBox();
             this.radioButtonSearchKindKeyword = new System.Windows.Forms.RadioButton();
             this.radioButtonSearchKindTag = new System.Windows.Forms.RadioButton();
@@ -527,6 +529,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMylistRate)).BeginInit();
             this.tabControl2.SuspendLayout();
             this.tabPage8.SuspendLayout();
+            this.groupBoxSearchGenre.SuspendLayout();
             this.groupBox38.SuspendLayout();
             this.groupBox37.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownConditionMylistNew)).BeginInit();
@@ -3295,6 +3298,7 @@
             // 
             // tabPage8
             // 
+            this.tabPage8.Controls.Add(this.groupBoxSearchGenre);
             this.tabPage8.Controls.Add(this.groupBox38);
             this.tabPage8.Controls.Add(this.groupBox37);
             this.tabPage8.Controls.Add(this.comboBoxRedundantSearchMethod);
@@ -3334,13 +3338,32 @@
             this.tabPage8.Text = "タグ検索";
             this.tabPage8.UseVisualStyleBackColor = true;
             // 
+            // groupBoxSearchGenre
+            // 
+            this.groupBoxSearchGenre.Controls.Add(this.comboBoxSearchGenre);
+            this.groupBoxSearchGenre.Location = new System.Drawing.Point(356, 6);
+            this.groupBoxSearchGenre.Name = "groupBoxSearchGenre";
+            this.groupBoxSearchGenre.Size = new System.Drawing.Size(133, 43);
+            this.groupBoxSearchGenre.TabIndex = 75;
+            this.groupBoxSearchGenre.TabStop = false;
+            this.groupBoxSearchGenre.Text = "ジャンル";
+            // 
+            // comboBoxSearchGenre
+            // 
+            this.comboBoxSearchGenre.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxSearchGenre.FormattingEnabled = true;
+            this.comboBoxSearchGenre.Location = new System.Drawing.Point(8, 15);
+            this.comboBoxSearchGenre.Name = "comboBoxSearchGenre";
+            this.comboBoxSearchGenre.Size = new System.Drawing.Size(115, 20);
+            this.comboBoxSearchGenre.TabIndex = 0;
+            // 
             // groupBox38
             // 
             this.groupBox38.Controls.Add(this.radioButtonSearchKindKeyword);
             this.groupBox38.Controls.Add(this.radioButtonSearchKindTag);
-            this.groupBox38.Location = new System.Drawing.Point(224, 6);
+            this.groupBox38.Location = new System.Drawing.Point(170, 6);
             this.groupBox38.Name = "groupBox38";
-            this.groupBox38.Size = new System.Drawing.Size(193, 39);
+            this.groupBox38.Size = new System.Drawing.Size(182, 39);
             this.groupBox38.TabIndex = 4;
             this.groupBox38.TabStop = false;
             this.groupBox38.Text = "検索種類";
@@ -3373,7 +3396,7 @@
             this.groupBox37.Controls.Add(this.radioButtonSearchGetKindAPI);
             this.groupBox37.Location = new System.Drawing.Point(12, 6);
             this.groupBox37.Name = "groupBox37";
-            this.groupBox37.Size = new System.Drawing.Size(202, 39);
+            this.groupBox37.Size = new System.Drawing.Size(153, 39);
             this.groupBox37.TabIndex = 3;
             this.groupBox37.TabStop = false;
             this.groupBox37.Text = "取得方法";
@@ -3381,7 +3404,7 @@
             // radioButtonSearchGetKindHTML
             // 
             this.radioButtonSearchGetKindHTML.AutoSize = true;
-            this.radioButtonSearchGetKindHTML.Location = new System.Drawing.Point(102, 16);
+            this.radioButtonSearchGetKindHTML.Location = new System.Drawing.Point(91, 16);
             this.radioButtonSearchGetKindHTML.Name = "radioButtonSearchGetKindHTML";
             this.radioButtonSearchGetKindHTML.Size = new System.Drawing.Size(53, 16);
             this.radioButtonSearchGetKindHTML.TabIndex = 1;
@@ -5142,6 +5165,7 @@
             // 
             // comboBoxDlRankGenre
             // 
+            this.comboBoxDlRankGenre.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxDlRankGenre.FormattingEnabled = true;
             this.comboBoxDlRankGenre.Location = new System.Drawing.Point(8, 16);
             this.comboBoxDlRankGenre.Name = "comboBoxDlRankGenre";
@@ -5735,6 +5759,7 @@
             this.tabControl2.ResumeLayout(false);
             this.tabPage8.ResumeLayout(false);
             this.tabPage8.PerformLayout();
+            this.groupBoxSearchGenre.ResumeLayout(false);
             this.groupBox38.ResumeLayout(false);
             this.groupBox38.PerformLayout();
             this.groupBox37.ResumeLayout(false);
@@ -6282,6 +6307,8 @@
         private System.Windows.Forms.GroupBox groupBox40;
         private System.Windows.Forms.RadioButton radioButtonDlRankTime0;
         private System.Windows.Forms.RadioButton radioButtonDlRankTime5;
+        private System.Windows.Forms.GroupBox groupBoxSearchGenre;
+        private System.Windows.Forms.ComboBox comboBoxSearchGenre;
     }
 }
 

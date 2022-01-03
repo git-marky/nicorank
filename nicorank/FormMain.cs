@@ -123,11 +123,19 @@ namespace nicorank
             {
                 // タグリスト再作成
                 category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                // 2020/02/11 ADD marky ジャンル追加
+                object[] items = new Object[comboBoxDlRankGenre.Items.Count];
+                comboBoxDlRankGenre.Items.CopyTo(items, 0);
+                comboBoxSearchGenre.Items.AddRange(items);
+                comboBoxSearchGenre.SelectedIndex = 0;
             }
             catch (Exception)
             {
                 MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                // 2020/02/11 ADD marky ジャンルが取得できなかった場合の規定値追加
+                comboBoxSearchGenre.Items.Add("全ジャンル");
+                comboBoxSearchGenre.SelectedIndex = 0;
             }
             // 2019/06/26 ADD marky ジャンル、人気のタグ対応
             dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
@@ -440,6 +448,8 @@ namespace nicorank
             if (searching_tag_option.is_searching_get_kind_api) // API検索のときは複数回検索はしない
             {
                 searching_tag_option.SetRedundantSearchMethod(0);
+                // 2020/02/11 ADD marky ジャンル追加
+                searching_tag_option.genre = comboBoxSearchGenre.SelectedItem.ToString();
             }
             else
             {
@@ -1557,6 +1567,8 @@ namespace nicorank
         {
             labelRedundantSearch.Enabled = radioButtonSearchGetKindHTML.Checked;
             comboBoxRedundantSearchMethod.Enabled = radioButtonSearchGetKindHTML.Checked;
+            // 2020/02/11 ADD marky
+            groupBoxSearchGenre.Enabled = radioButtonSearchGetKindAPI.Checked;
         }
 
         // 2019/06/26 ADD marky
