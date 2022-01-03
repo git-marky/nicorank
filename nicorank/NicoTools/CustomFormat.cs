@@ -243,7 +243,9 @@ namespace NicoTools
 
     class CustomFormatElementBlock
     {
-        public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Tag, ExtractTag, Expression, UserText, Special };
+        //public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Tag, ExtractTag, Expression, UserText, Special };
+        // 2019/09/26 Update marky
+        public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Url, Genre, Tag, ExtractTag, Expression, UserText, Special };
         public enum Rounding { Nearest, Floor, Ceil };
         private Kind kind_;
         private string text_;
@@ -310,6 +312,12 @@ namespace NicoTools
                     break;
                 case "line_number":
                     kind_ = Kind.LineNumber;
+                    break;
+                case "thumbnail_url": //2019/09/26 ADD marky
+                    kind_ = Kind.Url;
+                    break;
+                case "genre":         //2019/09/26 ADD marky
+                    kind_ = Kind.Genre;
                     break;
                 case "tag":
                     kind_ = Kind.Tag;
@@ -504,6 +512,12 @@ namespace NicoTools
                 case Kind.Description:
                     video.description = str;
                     break;
+                case Kind.Url:   //2019/09/26 ADD marky
+                    video.thumbnail_url = str;
+                    break;
+                case Kind.Genre: //2019/09/26 ADD marky
+                    video.genre = str;
+                    break;
                 case Kind.Tag: // text_ は separator
                     if (arrange_ == "daily")
                     {
@@ -564,6 +578,12 @@ namespace NicoTools
                     break;
                 case Kind.LineNumber: // num_ は offset
                     buff.Append((line_number + num_).ToString());
+                    break;
+                case Kind.Url:   //2019/09/26 ADD marky
+                    buff.Append(video.thumbnail_url);
+                    break;
+                case Kind.Genre: //2019/09/26 ADD marky
+                    buff.Append(video.genre);
                     break;
                 case Kind.Tag: // text_ は separator
                     if (arrange_ == "daily")

@@ -116,6 +116,19 @@ namespace NicoTools
                 if (index >= 0)
                 {
                     video.point -= video_list_diff2[index].point;
+                    // 2019/09/26 ADD marky 
+                    if (video.thumbnail_url.Equals("") && video_list_diff2[index].thumbnail_url != "")
+                    {
+                        video.thumbnail_url = video_list_diff2[index].thumbnail_url;
+                    }
+                    if (video.genre.Equals("") && video_list_diff2[index].genre != "")
+                    {
+                        video.genre = video_list_diff2[index].genre;
+                    }
+                    if (video.tag_set.ToString().Equals("") && video_list_diff2[index].tag_set.ToString() != "")
+                    {
+                        video.tag_set = video_list_diff2[index].tag_set;
+                    }
                     video_list.Add(video);
                 }
                 else

@@ -542,7 +542,7 @@ namespace NicoTools
 
             for (int i = 0; i < rank_file.Count; ++i)
             {
-                int dummy;
+                //int dummy;
                 Video rank_file_video = rank_file.GetVideo(i);
                 Video video = NicoUtil.GetVideo(niconico_network_, rank_file[i], cancel_object_, msgout_);
                 if (video.IsStatusOK())

@@ -1432,11 +1432,18 @@ namespace nicorank
                 {
                     custom_format_text += "res";
                 }
+                //custom_format_text += "+mylist*" + numericUpDownMylistRate.Value.ToString() + "\"/>\r\n" +
+                //    "<title/>\r\n" +
+                //    "<date format=\"yyyy年MM月dd日 HH：mm：ss\"/>\r\n" +
+                //    "<video_id/>.png\r\n" +
+                //    "<extract_tag match=\"(.*P$)|(.*Ｐ$)\">\r\n" +
+                //    "<tag separator=\"\\n\"/>\r\n";
+                // 2019/09/26 Update marky
                 custom_format_text += "+mylist*" + numericUpDownMylistRate.Value.ToString() + "\"/>\r\n" +
                     "<title/>\r\n" +
                     "<date format=\"yyyy年MM月dd日 HH：mm：ss\"/>\r\n" +
-                    "<video_id/>.png\r\n" +
-                    "<extract_tag match=\"(.*P$)|(.*Ｐ$)\">\r\n" +
+                    "<thumbnail_url/>\r\n" +
+                    "<genre/>\r\n" +
                     "<tag separator=\"\\n\"/>\r\n";
                 if ((string)((Control)sender).Tag == "Input")
                 {

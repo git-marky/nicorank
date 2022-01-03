@@ -239,7 +239,17 @@ namespace NicoTools
                         {
                             video.submit_date = NicoUtil.StringToDate(info[9]);
                         }
-                        video.pname = info[11];
+                        //video.pname = info[11];
+                        // 2019/09/26 Update marky
+                        if (info[10] != "")
+                        {
+                            video.thumbnail_url = info[10];
+                        }
+                        if (info[11] != "")
+                        {
+                            video.genre = info[11];
+                        }
+
                         video.tag_set.Parse(info[12]);
 
                         video_list_.Add(video);
