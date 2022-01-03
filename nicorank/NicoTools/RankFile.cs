@@ -354,14 +354,32 @@ namespace NicoTools
 
         public static int SearchVideo(List<Video> list, string video_id)
         {
-            for (int i = 0; i < list.Count; ++i)
-            {
-                if (list[i].video_id.Equals(video_id))
+            //for (int i = 0; i < list.Count; ++i)
+            //{
+            //    if (list[i].video_id.Equals(video_id))
+            //    {
+            //        return i;
+            //    }
+            //}
+            //return -1;
+
+            // 2020/10/26 Update marky 並列処理化 
+            int ret = -1;
+
+            System.Threading.Tasks.Parallel.For(0, list.Count, (i, state) =>
                 {
-                    return i;
-                }
-            }
-            return -1;
+                    if (list[i].video_id.Equals(video_id))
+                    {
+                        state.Stop();
+                        ret = i;
+                        return;
+                    }
+                    if (state.IsStopped)
+                    {
+                        return;
+                    }
+                });
+            return ret;
         }
     }
 
