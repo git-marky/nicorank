@@ -337,6 +337,11 @@ namespace NicoTools
                                     continue;
                                 }
                             }
+                            //2020/02/08 ADD marky HTMLのタグ検索で最終ページを超えると404エラーを返す現象に対応
+                            if (((System.Net.HttpWebResponse)e.Response).StatusCode == System.Net.HttpStatusCode.NotFound)
+                            {
+                                break;
+                            }
                         }
                         throw;
                     }
