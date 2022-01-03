@@ -125,6 +125,12 @@ namespace nrmc
                     iooption.SetOutputPath(output_rank_file_);
                 }
 
+                // 2020/02/19 ADD marky switch文から外出し
+                GenreTagManager category_manager = new GenreTagManager();
+                category_manager.SetGenre(option_["dlrank_genre"]);
+                category_manager.SetString(option_["dlrank_category"]);
+                category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
+
                 switch (args[0])
                 {
                     case "download":
@@ -134,12 +140,12 @@ namespace nrmc
                                 //CategoryManager category_manager = new CategoryManager();
                                 //category_manager.SetString(option_["dlrank_category"]);
                                 //category_manager.ParseCategoryFile();
-                                // 2019/07/22 Update marky
-                                GenreTagManager category_manager = new GenreTagManager();
-                                //category_manager.GetDate = NicoUtil.StringToDate(option_["dateTimePickerDlRankDate1"]);   //2019/07/29 DEL 常に当日とする
-                                category_manager.SetGenre(option_["dlrank_genre"]);
-                                category_manager.SetString(option_["dlrank_category"]);
-                                category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
+                                // 2019/07/22 Update marky 2020/02/19 DEL switch文の前に移動
+                                //GenreTagManager category_manager = new GenreTagManager();
+                                ////category_manager.GetDate = NicoUtil.StringToDate(option_["dateTimePickerDlRankDate1"]);   //2019/07/29 DEL 常に当日とする
+                                //category_manager.SetGenre(option_["dlrank_genre"]);
+                                //category_manager.SetString(option_["dlrank_category"]);
+                                //category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
                                 network_mgr.DownloadRanking(GetDownloadKind(category_manager), option_["textBoxRankDlDir"]);
                                 break;
                             case "video":
@@ -157,7 +163,9 @@ namespace nrmc
                         switch (args[1])
                         {
                             case "searchtag":
-                                network_mgr.MakeListAndWriteBySearchTag(iooption, MakeSearchingTagOption(), MakeRankingMethod());
+                                //network_mgr.MakeListAndWriteBySearchTag(iooption, MakeSearchingTagOption(), MakeRankingMethod());
+                                // 2020/02/19 Update marky
+                                network_mgr.MakeListAndWriteBySearchTag(iooption, MakeSearchingTagOption(category_manager), MakeRankingMethod());
                                 break;
                             default:
                                 ShowInvalidAndUsage(args[1]);
@@ -295,7 +303,9 @@ namespace nrmc
             }
         }
 
-        static SearchingTagOption MakeSearchingTagOption()
+        //static SearchingTagOption MakeSearchingTagOption()
+        // 2020/02/19 Update marky
+        static SearchingTagOption MakeSearchingTagOption(GenreTagManager category_manager)
         {
             SearchingTagOption searching_tag_option = new SearchingTagOption();
             searching_tag_option.SetTagList(option_["textBoxTagNew"]);
@@ -317,6 +327,9 @@ namespace nrmc
             searching_tag_option.is_create_ticket = bool.Parse(option_["checkBoxSaveSearch"]);
             searching_tag_option.SetRedundantSearchMethod(int.Parse(option_["comboBoxRedundantSearchMethod"]));
             searching_tag_option.is_sending_user_session = bool.Parse(option_["checkBoxIsSendingUserSession"]);
+            // 2020/02/19 ADD marky ジャンル、ジャンルID追加
+            searching_tag_option.genre = option_["search_genre"];
+            searching_tag_option.genre_id = category_manager.GetGenreId(searching_tag_option.genre);
 
             return searching_tag_option;
         }

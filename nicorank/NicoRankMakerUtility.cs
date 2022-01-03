@@ -270,7 +270,7 @@ namespace nicorank
         // 2020/02/16 ADD marky ジャンル名からジャンル英字を返す
         public string GetGenreId(string name)
         {
-            string id = "";
+            string id = "all";  //初期値
 
             foreach (GenreTagItem genre in genre_item_dic_.Values)
             {

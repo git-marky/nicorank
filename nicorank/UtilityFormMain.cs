@@ -263,6 +263,8 @@ namespace nicorank
             buff.Append("dlrank_category\t").Append(category_manager_.GetSaveString()).Append("\r\n");
             // 2019/06/26 ADD marky
             buff.Append("dlrank_genre\t").Append(category_manager_.GetGenre()).Append("\r\n");
+            // 2020/02/19 ADD marky
+            buff.Append("search_genre\t").Append(comboBoxSearchGenre.SelectedItem.ToString()).Append("\r\n");
 
 
             IJFile.Write(filename, buff.ToString());
