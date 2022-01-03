@@ -266,6 +266,23 @@ namespace nicorank
 
             return c_list;
         }
+
+        // 2020/02/16 ADD marky ジャンル名からジャンル英字を返す
+        public string GetGenreId(string name)
+        {
+            string id = "";
+
+            foreach (GenreTagItem genre in genre_item_dic_.Values)
+            {
+                if (genre.genre.Equals(name))
+                {
+                    id = genre.id;
+                    break;
+                }
+            }
+            return id;
+        }
+
     }
 
     // 2019/06/26 ADD marky

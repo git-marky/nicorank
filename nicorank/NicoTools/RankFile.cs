@@ -607,6 +607,7 @@ namespace NicoTools
         public string last_value;   //スナップショットAPIの改善対応 2019/07/06 ADD marky
 
         public string genre;        //ジャンル追加 2020/02/11 ADD marky
+        public string genre_id;      //ジャンル追加 2020/02/16 ADD marky
 
         public string searching_interval;
         public string getting_detail_interval;

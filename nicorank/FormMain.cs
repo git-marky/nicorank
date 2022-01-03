@@ -45,6 +45,8 @@ namespace nicorank
         //private CategoryManagerWithCListBox category_manager_;
         // 2019/06/26 Update marky
         private GenreTagManagerWithCListBox category_manager_;
+        // 2020/02/16 ADD marky 前回の検索ジャンル
+        private int search_genre_ = 0;
 
         public FormMain()
         {
@@ -127,7 +129,7 @@ namespace nicorank
                 object[] items = new Object[comboBoxDlRankGenre.Items.Count];
                 comboBoxDlRankGenre.Items.CopyTo(items, 0);
                 comboBoxSearchGenre.Items.AddRange(items);
-                comboBoxSearchGenre.SelectedIndex = 0;
+                comboBoxSearchGenre.SelectedIndex = search_genre_;
             }
             catch (Exception)
             {
@@ -448,14 +450,16 @@ namespace nicorank
             if (searching_tag_option.is_searching_get_kind_api) // API検索のときは複数回検索はしない
             {
                 searching_tag_option.SetRedundantSearchMethod(0);
-                // 2020/02/11 ADD marky ジャンル追加
-                searching_tag_option.genre = comboBoxSearchGenre.SelectedItem.ToString();
             }
             else
             {
                 searching_tag_option.SetRedundantSearchMethod(comboBoxRedundantSearchMethod.SelectedIndex);
             }
             searching_tag_option.is_sending_user_session = checkBoxIsSendingUserSession.Checked;
+            // 2020/02/11 ADD marky ジャンル追加
+            searching_tag_option.genre = comboBoxSearchGenre.SelectedItem.ToString();
+            // 2020/02/16 ADD marky ジャンルID追加
+            searching_tag_option.genre_id = ((comboBoxSearchGenre.Items.Count == 1) ? "all" : category_manager_.GetGenreId(searching_tag_option.genre));
 
             // 処理の最初にボタンのテキストを「中止」にする
             NicoRankManager.ThreadStarterDelegate ts_delegate = delegate {
@@ -1567,8 +1571,6 @@ namespace nicorank
         {
             labelRedundantSearch.Enabled = radioButtonSearchGetKindHTML.Checked;
             comboBoxRedundantSearchMethod.Enabled = radioButtonSearchGetKindHTML.Checked;
-            // 2020/02/11 ADD marky
-            groupBoxSearchGenre.Enabled = radioButtonSearchGetKindAPI.Checked;
         }
 
         // 2019/06/26 ADD marky

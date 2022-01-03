@@ -863,57 +863,70 @@ namespace NicoTools
             return network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/my/video");
         }
 
-        /// <summary>
-        /// 指定したワードでキーワード検索を行う
-        /// </summary>
-        /// <param name="search_word">検索ワード</param>
-        /// <param name="page">ページ数（1から始まる）</param>
-        /// <param name="sort_method">検索時の並べ方指定</param>
-        /// <param name="order">昇順 or 降順</param>
-        /// <param name="is_use_api">API利用有無</param>
-        /// <returns>検索結果のHTML</returns>
-        public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
-        {
-            if (is_use_api)
-            {
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
-            }
-            else
-            {
-                return GetSearchKeywordOrTag(search_word, page, sort_method, order, false);
-            }
-        }
+        ///// <summary>
+        ///// 指定したワードでキーワード検索を行う 2020/02/16 Del marky
+        ///// </summary>
+        ///// <param name="search_word">検索ワード</param>
+        ///// <param name="page">ページ数（1から始まる）</param>
+        ///// <param name="sort_method">検索時の並べ方指定</param>
+        ///// <param name="order">昇順 or 降順</param>
+        ///// <param name="is_use_api">API利用有無</param>
+        ///// <returns>検索結果のHTML</returns>
+        //public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        //{
+        //    if (is_use_api)
+        //    {
+        //        return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
+        //    }
+        //    else
+        //    {
+        //        return GetSearchKeywordOrTag(search_word, page, sort_method, order, false);
+        //    }
+        //}
 
-        /// <summary>
-        /// 指定したワードでタグ検索を行う
-        /// </summary>
-        /// <param name="search_word">検索ワード</param>
-        /// <param name="page">ページ数（1から始まる）</param>
-        /// <param name="sort_method">検索時の並べ方指定</param>
-        /// <param name="order">昇順 or 降順</param>
-        /// <param name="is_use_api">API利用有無</param>
-        /// <returns>検索結果のHTML</returns>
-        public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
-        {
-            if (is_use_api)
-            {
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
-            }
-            else
-            {
-                return GetSearchKeywordOrTag(search_word, page, sort_method, order, true);
-            }
-        }
+        ///// <summary>
+        ///// 指定したワードでタグ検索を行う 2020/02/16 Del marky
+        ///// </summary>
+        ///// <param name="search_word">検索ワード</param>
+        ///// <param name="page">ページ数（1から始まる）</param>
+        ///// <param name="sort_method">検索時の並べ方指定</param>
+        ///// <param name="order">昇順 or 降順</param>
+        ///// <param name="is_use_api">API利用有無</param>
+        ///// <returns>検索結果のHTML</returns>
+        //public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        //{
+        //    if (is_use_api)
+        //    {
+        //        return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
+        //    }
+        //    else
+        //    {
+        //        return GetSearchKeywordOrTag(search_word, page, sort_method, order, true);
+        //    }
+        //}
 
         /// <summary>
         /// 指定したワードでAPI検索を行う 2019/07/06 ADD marky
         /// </summary>
         /// <param name="search_word">検索ワード</param>
         /// <param name="option">検索時のオプションクラス</param>
-        /// <returns>検索結果のHTML</returns>
+        /// <returns>検索結果のjson</returns>
         public string GetSearchByAPI(string search_word, SearchingTagOption option)
         {
             return GetSearchKeywordOrTagByAPI(search_word, option);
+        }
+
+        /// <summary>
+        /// 指定したワードでHTML検索を行う 2020/02/16 ADD marky
+        /// </summary>
+        /// <param name="search_word">検索ワード</param>
+        /// <param name="page">ページ数（1から始まる）</param>
+        /// <param name="option">検索時のオプションクラス</param>
+        /// <param name="is_tag">タグ検索有無</param>
+        /// <returns>検索結果のHTML</returns>
+        public string GetSearchByHTML(string search_word, int page, SearchingTagOption option, bool is_tag)
+        {
+            return GetSearchKeywordOrTag(search_word, page, option, is_tag);
         }
 
         /// <summary>
@@ -1825,7 +1838,9 @@ namespace NicoTools
             }
         }
 
-        private string GetSearchKeywordOrTag(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //private string GetSearchKeywordOrTag(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //2020/02/16 Update marky
+        private string GetSearchKeywordOrTag(string word, int page, SearchingTagOption option, bool is_tag)
         {
             CheckCookie();
 
@@ -1836,8 +1851,11 @@ namespace NicoTools
             try
             {
                 string escapedWord = Uri.EscapeDataString(word).Replace("%20", "+");
+                //string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/" + (is_tag ? "tag" : "search") +
+                //    "/" + escapedWord + GetOption(page, sort_method, order, is_tag));
+                //2020/02/16 Update marky
                 string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/" + (is_tag ? "tag" : "search") +
-                    "/" + escapedWord + GetOption(page, sort_method, order, is_tag));
+                    "/" + escapedWord + GetOption(page, option));
                 CheckDenied(str);
                 return str;
             }
@@ -1920,81 +1938,81 @@ namespace NicoTools
         }
         */
 
-        //2017-03-03 UPDATE marky 検索API v2
-        private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
-        {
-            CheckCookie();
+        ////2017-03-03 UPDATE marky 検索API v2  2020/02/16 DEL marky
+        //private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //{
+        //    CheckCookie();
 
-            if (is_no_cache_)
-            {
-                network_.SetMaxAgeZero();
-            }
-            try
-            {
-                string json = "q=";
-                json += word;
-                json += "&targets=";
-                if (is_tag)
-                { // tag search
-                    json += "tagsExact";
-                }
-                else
-                { // keyword search
-                    json += "title,description,tags";
-                }
-                //json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
-                //2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
-                json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+        //    if (is_no_cache_)
+        //    {
+        //        network_.SetMaxAgeZero();
+        //    }
+        //    try
+        //    {
+        //        string json = "q=";
+        //        json += word;
+        //        json += "&targets=";
+        //        if (is_tag)
+        //        { // tag search
+        //            json += "tagsExact";
+        //        }
+        //        else
+        //        { // keyword search
+        //            json += "title,description,tags";
+        //        }
+        //        //json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+        //        //2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
+        //        json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
 
-                json += "&_sort=";
-                if (order == SearchOrder.Asc)
-                {
-                    //json += "+";
-                    //2017-03-06 UPDATE まどやさんの指摘を反映
-                    json += "%2B";
-                }
-                else
-                {
-                    json += "-";
-                }
-                switch (sort_method)
-                {
-                    case SearchSortMethod.ResNew:
-                        json += "lastCommentTime";
-                        break;
-                    case SearchSortMethod.View:
-                        json += "viewCounter";
-                        break;
-                    case SearchSortMethod.SubmitDate:
-                        json += "startTime";
-                        break;
-                    case SearchSortMethod.Mylist:
-                        json += "mylistCounter";
-                        break;
-                    case SearchSortMethod.Res:
-                        json += "commentCounter";
-                        break;
-                    case SearchSortMethod.Time:
-                        json += "lengthSeconds";
-                        break;
-                }
+        //        json += "&_sort=";
+        //        if (order == SearchOrder.Asc)
+        //        {
+        //            //json += "+";
+        //            //2017-03-06 UPDATE まどやさんの指摘を反映
+        //            json += "%2B";
+        //        }
+        //        else
+        //        {
+        //            json += "-";
+        //        }
+        //        switch (sort_method)
+        //        {
+        //            case SearchSortMethod.ResNew:
+        //                json += "lastCommentTime";
+        //                break;
+        //            case SearchSortMethod.View:
+        //                json += "viewCounter";
+        //                break;
+        //            case SearchSortMethod.SubmitDate:
+        //                json += "startTime";
+        //                break;
+        //            case SearchSortMethod.Mylist:
+        //                json += "mylistCounter";
+        //                break;
+        //            case SearchSortMethod.Res:
+        //                json += "commentCounter";
+        //                break;
+        //            case SearchSortMethod.Time:
+        //                json += "lengthSeconds";
+        //                break;
+        //        }
 
-                json += "&_offset=";
-                json += ((page - 1) * 100).ToString();
-                json += "&_limit=100";
-                json += "&_context=" + issuer_ ;
+        //        json += "&_offset=";
+        //        json += ((page - 1) * 100).ToString();
+        //        json += "&_limit=100";
+        //        json += "&_context=" + issuer_ ;
 
-                network_.SetDefaultContentType();
-                string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+        //        network_.SetDefaultContentType();
+        //        string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
 
-                //CheckDenied(str);
-                return str;
-            }
-            finally
-            {
-                network_.Reset();
-            }
-        }
+        //        //CheckDenied(str);
+        //        return str;
+        //    }
+        //    finally
+        //    {
+        //        network_.Reset();
+        //    }
+        //}
 
         //2019/07/06 ADD marky 検索API v3 10万件以上に対応
         private string GetSearchKeywordOrTagByAPI(string word, SearchingTagOption option)
@@ -2153,59 +2171,128 @@ namespace NicoTools
             }
         }
 
+        ///// <summary>
+        ///// タグ検索、キーワード検索のURLオプションを取得 2020/02/16 DEL marky
+        ///// </summary>
+        ///// <param name="page">ページ数</param>
+        ///// <param name="sort_method">検索時の並べ方指定</param>
+        ///// <param name="order">昇順 or 降順</param>
+        ///// <param name="is_tag">タグ検索の場合 true、キーワード検索の場合 false</param>
+        ///// <returns></returns>
+        //private static string GetOption(int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //{
+        //    string option = "";
+        //    if (page >= 2)
+        //    {
+        //        option += "?page=" + page.ToString();
+        //    }
+        //    switch (sort_method)
+        //    {
+        //        case SearchSortMethod.SubmitDate:
+        //            option += ((option != "" ? "&" : "?") + "sort=f");
+        //            break;
+        //        case SearchSortMethod.View:
+        //            option += ((option != "" ? "&" : "?") + "sort=v");
+        //            break;
+        //        case SearchSortMethod.Res:
+        //            option += ((option != "" ? "&" : "?") + "sort=r");
+        //            break;
+        //        case SearchSortMethod.ResNew:
+        //            //if (!is_tag) // タグ検索のときはオプションをつけない
+        //            //{
+        //            //2018/09/02 Update marky タグ検索でもオプションが必須になった
+        //                option += ((option != "" ? "&" : "?") + "sort=n");
+        //            //}
+        //            break;
+        //        case SearchSortMethod.Mylist:
+        //            option += ((option != "" ? "&" : "?") + "sort=m");
+        //            break;
+        //        case SearchSortMethod.Time:
+        //            option += ((option != "" ? "&" : "?") + "sort=l");
+        //            break;
+        //    }
+        //    if (order == SearchOrder.Asc)
+        //    {
+        //        option += ((option != "" ? "&" : "?") + "order=a");
+        //    }
+        //    else
+        //    {
+        //        //if (!is_tag) // キーワード検索のときだけつける
+        //        //{
+        //        //2018/09/02 Update marky タグ検索の降順でもorderが必須になった
+        //            option += ((option != "" ? "&" : "?") + "order=d");
+        //        //}
+        //    }
+        //    return option;
+        //}
+
         /// <summary>
-        /// タグ検索、キーワード検索のURLオプションを取得
+        /// タグ検索、キーワード検索のURLオプションを取得v2 2020/02/16 ADD
         /// </summary>
         /// <param name="page">ページ数</param>
-        /// <param name="sort_method">検索時の並べ方指定</param>
-        /// <param name="order">昇順 or 降順</param>
-        /// <param name="is_tag">タグ検索の場合 true、キーワード検索の場合 false</param>
-        /// <returns></returns>
-        private static string GetOption(int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        /// <param name="option">オプションクラス</param>
+        /// <returns>URLオプション文字列</returns>
+        private static string GetOption(int page, SearchingTagOption option)
         {
-            string option = "";
+            SearchSortMethod sort_method = option.GetSortMethod();
+            SearchOrder order = option.GetSearchOrder();
+            bool is_using_condition = option.is_using_condition;
+            string date_from = option.date_from.ToString("yyyy-MM-dd");
+            string date_to = option.date_to.ToString("yyyy-MM-dd");
+            string genre_id = option.genre_id;
+            string str = "";
+
             if (page >= 2)
             {
-                option += "?page=" + page.ToString();
+                str += "?page=" + page.ToString();
+            }
+
+            if (is_using_condition)
+            {
+                switch (option.sort_kind_num)
+                {
+                    case 0:
+                    case 1:
+                        str += (str != "" ? "&" : "?") ;
+                        str += "start=" + date_from + "&end=" + date_to;
+                        break;
+                }
+            }
+            
+            if (!genre_id.Equals("all"))
+            {
+                str += ((str != "" ? "&" : "?") + "genre=" + genre_id);
             }
             switch (sort_method)
             {
                 case SearchSortMethod.SubmitDate:
-                    option += ((option != "" ? "&" : "?") + "sort=f");
+                    str += ((str != "" ? "&" : "?") + "sort=f");
                     break;
                 case SearchSortMethod.View:
-                    option += ((option != "" ? "&" : "?") + "sort=v");
+                    str += ((str != "" ? "&" : "?") + "sort=v");
                     break;
                 case SearchSortMethod.Res:
-                    option += ((option != "" ? "&" : "?") + "sort=r");
+                    str += ((str != "" ? "&" : "?") + "sort=r");
                     break;
                 case SearchSortMethod.ResNew:
-                    //if (!is_tag) // タグ検索のときはオプションをつけない
-                    //{
-                    //2018/09/02 Update marky タグ検索でもオプションが必須になった
-                        option += ((option != "" ? "&" : "?") + "sort=n");
-                    //}
+                    str += ((str != "" ? "&" : "?") + "sort=n");
                     break;
                 case SearchSortMethod.Mylist:
-                    option += ((option != "" ? "&" : "?") + "sort=m");
+                    str += ((str != "" ? "&" : "?") + "sort=m");
                     break;
                 case SearchSortMethod.Time:
-                    option += ((option != "" ? "&" : "?") + "sort=l");
+                    str += ((str != "" ? "&" : "?") + "sort=l");
                     break;
             }
             if (order == SearchOrder.Asc)
             {
-                option += ((option != "" ? "&" : "?") + "order=a");
+                str += ((str != "" ? "&" : "?") + "order=a");
             }
             else
             {
-                //if (!is_tag) // キーワード検索のときだけつける
-                //{
-                //2018/09/02 Update marky タグ検索の降順でもorderが必須になった
-                    option += ((option != "" ? "&" : "?") + "order=d");
-                //}
+                str += ((str != "" ? "&" : "?") + "order=d");
             }
-            return option;
+            return str;
         }
 
         private static Dictionary<string, string> ParseMylistEditAndGetKey(string html)

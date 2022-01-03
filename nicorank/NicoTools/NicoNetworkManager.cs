@@ -289,14 +289,16 @@ namespace NicoTools
                         }
                         else
                         {
-                            if (is_searching_kind_tag)
-                            {
-                                str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
-                            }
-                            else
-                            {
-                                str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
-                            }
+                            //if (is_searching_kind_tag)
+                            //{
+                            //    str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
+                            //}
+                            //else
+                            //{
+                            //    str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
+                            //}
+                            // 2020/02/16 Update marky HTML検索も個別メソッド化
+                            str = network.GetSearchByHTML(tag_word, page, option, is_searching_kind_tag);
                             if (str.IndexOf("ここから先をご利用いただくにはログインしてください") >= 0)
                             {
                                 throw new NiconicoLoginException();

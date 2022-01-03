@@ -237,6 +237,9 @@ namespace NicoTools
 
                 writer.WriteLine("save_html_dir={0}", option.save_html_dir);
                 writer.WriteLine("is_sending_user_session={0}", option.is_sending_user_session);
+
+                writer.WriteLine("genre={0}", option.genre ?? "‘SƒWƒƒƒ“ƒ‹");        //2020/02/16 ADD marky
+                writer.WriteLine("genre_id={0}", option.genre_id ?? "all");         //2020/02/16 ADD marky
             }
 
             return option_text.ToString();
@@ -346,6 +349,15 @@ namespace NicoTools
                             case "is_sending_user_session":
                                 option.is_sending_user_session = bool.Parse(value);
                                 break;
+
+                            //2020/02/16 ADD marky
+                            case "genre":
+                                option.genre = value;
+                                break;
+                            case "genre_id":
+                                option.genre_id = value;
+                                break;
+                            
                             default:
                                 break;
                         }
