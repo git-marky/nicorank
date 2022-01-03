@@ -1775,6 +1775,12 @@ namespace NicoTools
             try
             {
                 string html = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/ranking/" + url);
+                //2019/12/02 ADD marky ファイル名に使用できない文字を削除する
+                char[] removeChars = new char[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+                foreach (char c in removeChars)
+                {
+                    filename = filename.Replace(c.ToString(), "");
+                } 
                 string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm");
                 save_filename += (is_xml ? ".xml" : ".html");
 
@@ -1801,6 +1807,12 @@ namespace NicoTools
                 ////テスト用
                 //string json = File.ReadAllText("D:\\dev\\entertainment.json", Encoding.UTF8);
                 string json = network_.GetAndReadFromWebUTF8(ranklog_url_ + url);
+                //2019/12/02 ADD marky ファイル名に使用できない文字を削除する
+                char[] removeChars = new char[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+                foreach (char c in removeChars)
+                {
+                    filename = filename.Replace(c.ToString(), "");
+                } 
                 string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm") + ".json";
 
                 File.WriteAllText(save_filename, json, Encoding.UTF8);
