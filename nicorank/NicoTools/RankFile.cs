@@ -83,6 +83,7 @@ namespace NicoTools
             StringBuilder buff_filtered = new StringBuilder();
             int rank_notfiltered = 1;
             int rank_filtered = 1;
+            IJFile.Write(rank_filename, buff_notfiltered.ToString());   //2019/07/30 ADD marky
             for (int i = 0; i < video_list_.Count; ++i)
             {
                 filter.DoEffect(video_list_[i]);
@@ -98,6 +99,8 @@ namespace NicoTools
                     }
                     ++rank_notfiltered;
                     buff_notfiltered.Append("\r\n");
+                    IJFile.WriteAppend(rank_filename, buff_notfiltered.ToString()); //2019/07/30 ADD marky
+                    buff_notfiltered = new StringBuilder();                         //2019/07/30 ADD marky
                 }
                 else
                 {
@@ -113,7 +116,7 @@ namespace NicoTools
                     buff_filtered.Append("\r\n");
                 }
             }
-            IJFile.Write(rank_filename, buff_notfiltered.ToString());
+            //IJFile.Write(rank_filename, buff_notfiltered.ToString());   //2019/07/30 DEL marky
 
             if (filter.IsOutputFilteredVideo())
             {

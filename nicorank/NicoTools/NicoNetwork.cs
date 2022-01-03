@@ -870,16 +870,12 @@ namespace NicoTools
         /// <param name="sort_method">検索時の並べ方指定</param>
         /// <param name="order">昇順 or 降順</param>
         /// <param name="is_use_api">API利用有無</param>
-        /// <param name="offset">オフセット件数 2019/07/06 ADD marky</param>
         /// <returns>検索結果のHTML</returns>
-        //public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
-        public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api, int offset, string last_value)
+        public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
         {
             if (is_use_api)
             {
-                //return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
-                // 2019/07/06 Update marky
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false, offset, last_value);
+                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
             }
             else
             {
@@ -895,16 +891,12 @@ namespace NicoTools
         /// <param name="sort_method">検索時の並べ方指定</param>
         /// <param name="order">昇順 or 降順</param>
         /// <param name="is_use_api">API利用有無</param>
-        /// <param name="offset">オフセット件数 2019/07/06 ADD marky</param>
         /// <returns>検索結果のHTML</returns>
-        //public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
-        public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api, int offset, string last_value)
+        public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
         {
             if (is_use_api)
             {
-                //return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
-                // 2019/07/06 Update marky
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true, offset, last_value);
+                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
             }
             else
             {
@@ -913,7 +905,7 @@ namespace NicoTools
         }
 
         /// <summary>
-        /// 指定したワードでAPI検索を行う
+        /// 指定したワードでAPI検索を行う 2019/07/06 ADD marky
         /// </summary>
         /// <param name="search_word">検索ワード</param>
         /// <param name="option">検索時のオプションクラス</param>
@@ -1913,9 +1905,7 @@ namespace NicoTools
         */
 
         //2017-03-03 UPDATE marky 検索API v2
-        //private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
-        //2019-07-06 UPDATE marky 10万件以上に対応
-        private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag, int offset, string last_value)
+        private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
         {
             CheckCookie();
 
@@ -1937,10 +1927,8 @@ namespace NicoTools
                     json += "title,description,tags";
                 }
                 //json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
-                ////2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
-                //json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
-                // 2019/07/06 UPDATE marky ジャンルに対応
-                json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre";
+                //2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
+                json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
 
                 json += "&_sort=";
                 if (order == SearchOrder.Asc)
@@ -1976,46 +1964,7 @@ namespace NicoTools
                 }
 
                 json += "&_offset=";
-                //json += ((page - 1) * 100).ToString();
-                // 2019/07/06 Update marky
-                json += offset.ToString();
-
-                // 2019/07/06 ADD marky
-                if (last_value != "")
-                {
-                    json += "&filters";
-                    switch (sort_method)
-                    {
-                        case SearchSortMethod.SubmitDate:
-                            json += "[startTime]";
-                            break;
-                        case SearchSortMethod.View:
-                            json += "[viewCounter]";
-                            break;
-                        case SearchSortMethod.ResNew:
-                            json += "[lastCommentTime]";
-                            break;
-                        case SearchSortMethod.Res:
-                            json += "[commentCounter]";
-                            break;
-                        case SearchSortMethod.Mylist:
-                            json += "[mylistCounter]";
-                            break;
-                        case SearchSortMethod.Time:
-                            json += "[lengthSeconds]";
-                            break;
-                    }
-                    if (order == SearchOrder.Asc)
-                    {
-                        json += "[gte]=";
-                    }
-                    else
-                    {
-                        json += "[lte]=";
-                    }
-                    json += last_value;
-                }
-
+                json += ((page - 1) * 100).ToString();
                 json += "&_limit=100";
                 json += "&_context=" + issuer_ ;
 
@@ -2031,7 +1980,7 @@ namespace NicoTools
             }
         }
 
-        //2017-03-03 ADD marky 検索API v3 10万件以上に対応
+        //2019/07/06 ADD marky 検索API v3 10万件以上に対応
         private string GetSearchKeywordOrTagByAPI(string word, SearchingTagOption option)
         {
             SearchSortMethod sort_method = option.GetSortMethod();

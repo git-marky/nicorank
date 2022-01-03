@@ -282,7 +282,7 @@ namespace NicoTools
                 {
                     try
                     {
-                         // 2019/07/06 ADD marky
+                        // 2019/07/06 ADD marky API検索を個別メソッド化
                         if (option.is_searching_get_kind_api)
                         {
                             str = network.GetSearchByAPI(tag_word, option);
@@ -291,15 +291,11 @@ namespace NicoTools
                         {
                             if (is_searching_kind_tag)
                             {
-                                //str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
-                                // 2019/07/06 Update marky
-                                str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api, option.offset, option.last_value);
+                                str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
                             }
                             else
                             {
-                                //str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
-                                // 2019/07/06 Update marky
-                                str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api, option.offset, option.last_value);
+                                str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
                             }
                             if (str.IndexOf("ここから先をご利用いただくにはログインしてください") >= 0)
                             {
