@@ -803,32 +803,33 @@ namespace NicoTools
         {
             CheckCookie();
             string url = "";
-            if (video_id.StartsWith("so"))
-            {
-                video_id = GetThreadId(video_id);
-                if (video_id == "")
-                {
-                    throw new FormatException("サムネイルのURLの取得に失敗しました。");
-                }
-            }
-            if ('0' <= video_id[0] && video_id[0] <= '9')
-            {
-                string html = GetExtThumb(video_id);
-                Match m = Regex.Match(html, "<img alt=\"\" src=\"([^\"]*)\" class=\"video_img\"\\>");
-                if (m.Success)
-                {
-                    url = m.Groups[1].Value;
-                }
-            }
-            else
-            {
+            // 2019/11/30 Update marky 公式動画からスレッドIDへのリダイレクトが不要に
+            //if (video_id.StartsWith("so"))
+            //{
+            //    video_id = GetThreadId(video_id);
+            //    if (video_id == "")
+            //    {
+            //        throw new FormatException("サムネイルのURLの取得に失敗しました。");
+            //    }
+            //}
+            //if ('0' <= video_id[0] && video_id[0] <= '9')
+            //{
+            //    string html = GetExtThumb(video_id);
+            //    Match m = Regex.Match(html, "<img alt=\"\" src=\"([^\"]*)\" class=\"video_img\"\\>");
+            //    if (m.Success)
+            //    {
+            //        url = m.Groups[1].Value;
+            //    }
+            //}
+            //else
+            //{
                 string xml = GetThumbInfo(video_id);
                 Match m = Regex.Match(xml, "<thumbnail_url>([^<]*)</thumbnail_url>");
                 if (m.Success)
                 {
                     url = m.Groups[1].Value;
                 }
-            }
+            //}
             
             if (url != "")
             {
