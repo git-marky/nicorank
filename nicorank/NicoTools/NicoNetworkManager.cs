@@ -995,7 +995,9 @@ namespace NicoTools
                 string resStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
                 video.point.res = IJStringUtil.ToIntFromCommaValue(resStr);
                 //マイリスト
-                string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
+                //string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
+                //2020/07/28 Update marky 07/27仕様変更に伴うマイリストコメントページへのリンク削除に対応
+                string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
                 video.point.mylist = IJStringUtil.ToIntFromCommaValue(mylistStr);
 
                 // 宣伝ポイント。将来実装するときのため
