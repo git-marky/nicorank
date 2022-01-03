@@ -1775,12 +1775,14 @@ namespace NicoTools
             try
             {
                 string html = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/ranking/" + url);
+
                 //2019/12/02 ADD marky ファイル名に使用できない文字を削除する
                 char[] removeChars = new char[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
                 foreach (char c in removeChars)
                 {
                     filename = filename.Replace(c.ToString(), "");
-                } 
+                }
+
                 string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm");
                 save_filename += (is_xml ? ".xml" : ".html");
 
@@ -2578,7 +2580,11 @@ namespace NicoTools
                         genre = genre.Substring(0, genre.Length - 3);
                         string name = category_list[k].name;
                         option += "tag=";
-                        option += name.Substring(name.IndexOf("：") + 1);
+                        //option += name.Substring(name.IndexOf("：") + 1);
+                        //2020/01/19 Update marky タグ名をURLエンコードする
+                        string tag = name.Substring(name.IndexOf("：") + 1);
+                        tag = Uri.EscapeDataString(tag).Replace("%20", "+");
+                        option += tag;
                     }
                     option += "&term=" + term_name[j];
                     option += "&rss=2.0&lang=ja-jp";
