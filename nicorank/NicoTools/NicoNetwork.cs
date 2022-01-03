@@ -2325,7 +2325,9 @@ namespace NicoTools
         // HTMLを解析して token を取得
         private static string GetToken(string html)
         {
-            Match match = Regex.Match(html, "NicoAPI.token = \"([-0-9a-f]+)\";");
+            //Match match = Regex.Match(html, "NicoAPI.token = \"([-0-9a-f]+)\";");
+            // 2020/08/03 Update marky 7月27日リニューアル後の新規マイリスト作成時用
+            Match match = Regex.Match(html, "csrfToken&quot;:&quot;([-0-9a-f]+)&quot;,&quot;tagrepoCsrfToken");
 
             if (!match.Success)
             {
