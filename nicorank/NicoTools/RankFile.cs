@@ -83,7 +83,9 @@ namespace NicoTools
             StringBuilder buff_filtered = new StringBuilder();
             int rank_notfiltered = 1;
             int rank_filtered = 1;
-            IJFile.Write(rank_filename, buff_notfiltered.ToString());   //2019/07/30 ADD marky
+            //IJFile.Write(rank_filename, buff_notfiltered.ToString());   //2019/07/30 ADD marky
+            // 2020/03/22 Update marky UNICODEを含む文字に対応
+            IJFile.WriteUTF8(rank_filename, buff_notfiltered.ToString());
             for (int i = 0; i < video_list_.Count; ++i)
             {
                 filter.DoEffect(video_list_[i]);
@@ -99,7 +101,9 @@ namespace NicoTools
                     }
                     ++rank_notfiltered;
                     buff_notfiltered.Append("\r\n");
-                    IJFile.WriteAppend(rank_filename, buff_notfiltered.ToString()); //2019/07/30 ADD marky
+                    //IJFile.WriteAppend(rank_filename, buff_notfiltered.ToString()); //2019/07/30 ADD marky
+                    // 2020/03/22 Update marky UNICODEを含む文字に対応
+                    IJFile.WriteAppendUTF8(rank_filename, buff_notfiltered.ToString());
                     buff_notfiltered = new StringBuilder();                         //2019/07/30 ADD marky
                 }
                 else
@@ -123,7 +127,10 @@ namespace NicoTools
                 string rank_str = buff_filtered.ToString();
                 if (rank_str != "")
                 {
-                    IJFile.Write(Path.GetDirectoryName(rank_filename) + "\\" + Path.GetFileNameWithoutExtension(rank_filename) +
+                    //IJFile.Write(Path.GetDirectoryName(rank_filename) + "\\" + Path.GetFileNameWithoutExtension(rank_filename) +
+                    //    "_filter" + Path.GetExtension(rank_filename), rank_str);
+                    // 2020/03/22 Update marky UNICODEを含む文字に対応
+                    IJFile.WriteUTF8(Path.GetDirectoryName(rank_filename) + "\\" + Path.GetFileNameWithoutExtension(rank_filename) +
                         "_filter" + Path.GetExtension(rank_filename), rank_str);
                 }
             }
@@ -270,44 +277,45 @@ namespace NicoTools
             }
         }
 
-        public void LoadForSpecial(string rank_file_path)
-        {
-            string str = "";
-            try
-            {
-                str = IJFile.Read(rank_file_path);
-            }
-            catch (System.IO.FileNotFoundException)
-            {
-                return;
-            }
-            string[] line = IJStringUtil.SplitWithCRLF(str);
-            if (video_list_ == null)
-            {
-                video_list_ = new List<Video>();
-            }
+        // 2020/03/22 DEL marky 未使用のため
+        //public void LoadForSpecial(string rank_file_path)
+        //{
+        //    string str = "";
+        //    try
+        //    {
+        //        str = IJFile.Read(rank_file_path);
+        //    }
+        //    catch (System.IO.FileNotFoundException)
+        //    {
+        //        return;
+        //    }
+        //    string[] line = IJStringUtil.SplitWithCRLF(str);
+        //    if (video_list_ == null)
+        //    {
+        //        video_list_ = new List<Video>();
+        //    }
 
-            for (int i = 0; i < line.Length; ++i)
-            {
-                string[] s_array = line[i].Split('\t');
-                if (RankFile.SearchVideo(video_list_, s_array[0]) < 0) // 存在しないなら
-                {
-                    Video video = new Video();
-                    video.video_id = s_array[0];
-                    try
-                    {
-                        video.point.view = IJStringUtil.ToIntFromCommaValue(s_array[3]);
-                        video.point.res = IJStringUtil.ToIntFromCommaValue(s_array[4]);
-                        video.point.mylist = IJStringUtil.ToIntFromCommaValue(s_array[5]);
-                        video.title = s_array[6];
-                        video.submit_date = NicoUtil.StringToDate(s_array[7]);
-                        video.tag_set.ParseBlank(s_array[14]);
-                    }
-                    catch (System.IndexOutOfRangeException) { }
-                    video_list_.Add(video);
-                }
-            }
-        }
+        //    for (int i = 0; i < line.Length; ++i)
+        //    {
+        //        string[] s_array = line[i].Split('\t');
+        //        if (RankFile.SearchVideo(video_list_, s_array[0]) < 0) // 存在しないなら
+        //        {
+        //            Video video = new Video();
+        //            video.video_id = s_array[0];
+        //            try
+        //            {
+        //                video.point.view = IJStringUtil.ToIntFromCommaValue(s_array[3]);
+        //                video.point.res = IJStringUtil.ToIntFromCommaValue(s_array[4]);
+        //                video.point.mylist = IJStringUtil.ToIntFromCommaValue(s_array[5]);
+        //                video.title = s_array[6];
+        //                video.submit_date = NicoUtil.StringToDate(s_array[7]);
+        //                video.tag_set.ParseBlank(s_array[14]);
+        //            }
+        //            catch (System.IndexOutOfRangeException) { }
+        //            video_list_.Add(video);
+        //        }
+        //    }
+        //}
 
         public string CategorizePname(string plist, out string kekka)
         {

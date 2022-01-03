@@ -601,6 +601,15 @@ namespace IJLib
             sw.Close();
         }
 
+        // 2020/03/22 ADD marky
+        public static void WriteAppendUTF8(string filename, string str)
+        {
+            CreateDirectoryFromFilename(filename);
+            StreamWriter sw = new StreamWriter(filename, true, Encoding.GetEncoding("UTF-8"));
+            sw.Write(str);
+            sw.Close();
+        }
+
         public static string GetTemporaryFileName(string dir_name, string extension)
         {
             string prefix = "temp_";

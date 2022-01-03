@@ -267,7 +267,9 @@ namespace nicorank
             buff.Append("search_genre\t").Append(comboBoxSearchGenre.SelectedItem.ToString()).Append("\r\n");
 
 
-            IJFile.Write(filename, buff.ToString());
+            //IJFile.Write(filename, buff.ToString());
+            // 2020/03/22 Update marky UNICODEを含む文字に対応
+            IJFile.WriteUTF8(filename, buff.ToString());
         }
 
         private void LoadConfig(string filename)
@@ -276,7 +278,9 @@ namespace nicorank
             {
                 bool is_old_rankfile = false;
                 string is_old_rankfile_path = "";
-                string str = IJFile.Read(filename);
+                //string str = IJFile.Read(filename);
+                // 2020/03/22 Update marky UNICODEを含む文字に対応
+                string str = IJFile.ReadVer2(filename, IJFile.EncodingPriority.Auto);
                 int version = 0;
                 string[] sArray = str.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
                 if (!sArray[0].StartsWith("version"))
