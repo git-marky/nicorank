@@ -76,7 +76,9 @@ namespace nicorank
             label4.Text = "0";
             labelInfo.Text = "";
 
-            webBrowser1.Navigate("http://www.nicovideo.jp/watch/" + current_video_id_);
+            //webBrowser1.Navigate("http://www.nicovideo.jp/watch/" + current_video_id_);
+            // 2020/08/27 Update marky https化
+            webBrowser1.Navigate("https://www.nicovideo.jp/watch/" + current_video_id_);
         }
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)

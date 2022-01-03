@@ -47,7 +47,8 @@ namespace NicoTools
 
         //private const string nicovideo_uri_ = "http://www.nicovideo.jp"; // ニコニコ動画URL
         private const string nicovideo_uri_ = "https://www.nicovideo.jp"; // ニコニコ動画URL     // 2019/06/26 Update marky
-        private const string nicovideo_ext_uri_ = "http://ext.nicovideo.jp";
+        //private const string nicovideo_ext_uri_ = "http://ext.nicovideo.jp";
+        private const string nicovideo_ext_uri_ = "https://ext.nicovideo.jp";  // 2020/08/27 Update marky API呼び出しをhttps化
         private const string ranklog_url_ = "https://dcdn.cdn.nimg.jp/nicovideo/old-ranking/";   //過去ログURL 2019/06/26 ADD marky
 
         private const string nicovideo_cookie_domain_ = ".nicovideo.jp"; // ニコニコ動画クッキードメイン
@@ -2214,7 +2215,9 @@ namespace NicoTools
                 json += "&_context=" + issuer_;
 
                 network_.SetDefaultContentType();
-                string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+                //string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+                // 2020/08/27 Update marky https化
+                string str = network_.GetAndReadFromWebUTF8("https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
 
                 //CheckDenied(str);
                 return str;
