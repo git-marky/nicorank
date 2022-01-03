@@ -436,7 +436,9 @@ namespace NicoTools
             {
                 int t = System.Environment.TickCount;
                 string html = IJFile.ReadUTF8(files[i]);
-                if (html.StartsWith("<?xml"))
+                //if (html.StartsWith("<?xml"))
+                // 2020/04/04 Update marky 拡張子でRSSを判定に変更
+                if (Path.GetExtension(files[i]).Equals(".xml"))
                 {
                     ParsePointRss(html, getting_dt, video_list, kind == ParseRankingKind.TotalPoint, false);
                 }
