@@ -31,12 +31,12 @@ namespace NicoTools
         {
             msgout_.Write("ランキング解析中…\r\n");
 
-            // ランキングHTMLを全ポイント解析しようとしている場合は警告メッセージを出力
-            if (kind == ParseRankingKind.TotalPoint && IsRankingHtml(ranking_dir_name))
-            {
-                msgout_.Write("ランキングHTML解析では全ポイント解析は使用できません。期間ポイントを選択して解析しなおしてください。\r\n");
-                return;
-            }
+            //// ランキングHTMLを全ポイント解析しようとしている場合は警告メッセージを出力 2020/08/19 Del marky 新ランキング時に不要となった
+            //if (kind == ParseRankingKind.TotalPoint && IsRankingHtml(ranking_dir_name))
+            //{
+            //    msgout_.Write("ランキングHTML解析では全ポイント解析は使用できません。期間ポイントを選択して解析しなおしてください。\r\n");
+            //    return;
+            //}
 
             List<Video> video_list = ParseRanking(ranking_dir_name, DateTime.Now, kind);
             if (ranking_method.sort_kind != SortKind.Nothing)

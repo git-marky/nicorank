@@ -2724,28 +2724,44 @@ namespace NicoTools
                 }
                 for (int k = 0; k < category_list.Count; ++k)
                 {
-                    string genre = category_list[k].id;
-                    string option = "?";
-                    if (category_list[k].short_name != "")  //人気のタグの場合
+
+                    // 2020/08/19 ADD marky RSSを全ページ取得する
+                    int end = category_list[k].page[j];
+                    for (int m = 1; m <= end; ++m)
                     {
-                        genre = genre.Substring(0, genre.Length - 3);
-                        string name = category_list[k].name;
-                        option += "tag=";
-                        //option += name.Substring(name.IndexOf("：") + 1);
-                        //2020/01/19 Update marky タグ名をURLエンコードする
-                        string tag = name.Substring(name.IndexOf("：") + 1);
-                        tag = Uri.EscapeDataString(tag).Replace("%20", "+");
-                        option += tag;
-                    }
-                    option += "&term=" + term_name[j];
-                    option += "&rss=2.0&lang=ja-jp";
-                    if (name_list != null)
-                    {
-                        name_list.Add("genre/" + genre + option);
-                    }
-                    if (filename_list != null)
-                    {
-                        filename_list.Add(duration_short_name[j] + "_" + category_list[k].name +  "_");
+
+                        string genre = category_list[k].id;
+                        string option = "?";
+                        if (category_list[k].short_name != "")  //人気のタグの場合
+                        {
+                            genre = genre.Substring(0, genre.Length - 3);
+                            string name = category_list[k].name;
+                            option += "tag=";
+                            //option += name.Substring(name.IndexOf("：") + 1);
+                            //2020/01/19 Update marky タグ名をURLエンコードする
+                            string tag = name.Substring(name.IndexOf("：") + 1);
+                            tag = Uri.EscapeDataString(tag).Replace("%20", "+");
+                            option += tag;
+                        }
+                        option += "&term=" + term_name[j];
+
+                        // 2020/08/19 ADD marky RSSを全ページ取得する
+                        if (m >= 2)
+                        {
+                            option += "&page=" + m.ToString();
+                        }
+
+                        option += "&rss=2.0&lang=ja-jp";
+                        if (name_list != null)
+                        {
+                            name_list.Add("genre/" + genre + option);
+                        }
+                        if (filename_list != null)
+                        {
+                            //filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_");
+                            // 2020/08/19 Update marky RSSを全ページ取得する
+                            filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + m.ToString() + "_");
+                        }
                     }
                 }
             }

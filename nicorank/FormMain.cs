@@ -525,11 +525,14 @@ namespace nicorank
 
         private void buttonAnalyzeRanking_Click(object sender, EventArgs e)
         {
-            NicoListManager.ParseRankingKind kind = NicoListManager.ParseRankingKind.TermPoint;
-            if (radioButtonTotalPoint.Checked)
-            {
-                kind = NicoListManager.ParseRankingKind.TotalPoint;
-            }
+            //NicoListManager.ParseRankingKind kind = NicoListManager.ParseRankingKind.TermPoint;
+            //if (radioButtonTotalPoint.Checked)
+            //{
+            //    kind = NicoListManager.ParseRankingKind.TotalPoint;
+            //}
+            // 2020/08/19 Update marky 新ランキングからkindは不使用だが一応全期間を設定（デザインでは非表示で期間が選択状態）
+            NicoListManager.ParseRankingKind kind = NicoListManager.ParseRankingKind.TotalPoint;
+
             StartThread(nicorank_mgr_.AnalyzeRanking, null, true, GetInputOutputOption(), GetRankingMethod(), kind);
         }
 

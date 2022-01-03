@@ -243,7 +243,14 @@ namespace nicorank
                     int[] page = new int[5];
                     for (int j = 0; j < page.Length; ++j)
                     {
-                        page[j] = 1;
+                        //page[j] = 1;
+                        // 2020/08/19 Update marky RSSを全ページ取得する
+                        if (genretag.tag == string.Empty)
+                        {
+                            page[j] = 10;   // ジャンルは10ページ
+                        } else {
+                            page[j] = (j >= 3 ? 3 : 0);    // 人気のタグは3ページ（24h、毎時のみ）
+                        };
                     }
                     item.page = page;
                     item.genre = genretag.genre;
@@ -391,7 +398,16 @@ namespace nicorank
                     int[] page = new int[5];
                     for (int j = 0; j < page.Length; ++j)
                     {
-                        page[j] = 1;
+                        //page[j] = 1;
+                        // 2020/08/19 Update marky RSSを全ページ取得する
+                        if (genretag.tag == string.Empty)
+                        {
+                            page[j] = 10;   // ジャンルは10ページ
+                        }
+                        else
+                        {
+                            page[j] = (j >= 3 ? 3 : 0);    // 人気のタグは3ページ（24h、毎時のみ）
+                        };
                     }
                     item.page = page;
                     item.genre = genretag.genre;
