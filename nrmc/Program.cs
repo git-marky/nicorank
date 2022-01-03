@@ -131,9 +131,15 @@ namespace nrmc
                         switch (args[1])
                         {
                             case "ranking":
-                                CategoryManager category_manager = new CategoryManager();
+                                //CategoryManager category_manager = new CategoryManager();
+                                //category_manager.SetString(option_["dlrank_category"]);
+                                //category_manager.ParseCategoryFile();
+                                // 2019/07/22 Update marky
+                                GenreTagManager category_manager = new GenreTagManager();
+                                //category_manager.GetDate = NicoUtil.StringToDate(option_["dateTimePickerDlRankDate1"]);   //2019/07/29 DEL 常に当日とする
+                                category_manager.SetGenre(option_["dlrank_genre"]);
                                 category_manager.SetString(option_["dlrank_category"]);
-                                category_manager.ParseCategoryFile();
+                                category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
                                 network_mgr.DownloadRanking(GetDownloadKind(category_manager), option_["textBoxRankDlDir"]);
                                 break;
                             case "video":
@@ -294,6 +300,7 @@ namespace nrmc
             SearchingTagOption searching_tag_option = new SearchingTagOption();
             searching_tag_option.SetTagList(option_["textBoxTagNew"]);
             searching_tag_option.is_searching_kind_tag = bool.Parse(option_["radioButtonSearchKindTag"]);
+            searching_tag_option.is_searching_get_kind_api = bool.Parse(option_["radioButtonSearchGetKindAPI"]); //2019/06/10 ADD marky
             searching_tag_option.is_detail_getting = bool.Parse(option_["checkBoxIsGettingDetailNew"]);
             searching_tag_option.detail_info_lower = int.Parse(option_["numericUpDownConditionMylistNew"]);
             searching_tag_option.sort_kind_num = int.Parse(option_["listBoxSortNew"]);
@@ -334,8 +341,9 @@ namespace nrmc
             }
         }
 
-        private static DownloadKind GetDownloadKind(CategoryManager category_manager)
-        {
+        //private static DownloadKind GetDownloadKind(CategoryManager category_manager)
+        // 2019/07/22 Update marky
+        private static DownloadKind GetDownloadKind(GenreTagManager category_manager)        {
             DownloadKind download_kind = new DownloadKind();
             download_kind.SetDuration(bool.Parse(option_["checkBoxDlRankDurationTotal"]),
                 bool.Parse(option_["checkBoxDlRankDurationMonthly"]),
@@ -347,6 +355,8 @@ namespace nrmc
                 bool.Parse(option_["checkBoxDlRankMylist"]));
 
             download_kind.CategoryList = category_manager.GetDownloadCategoryItemList();
+            download_kind.GetDate = category_manager.GetDate;                                 // 2019/07/22 ADD marky
+            download_kind.GetTime = (bool.Parse(option_["radioButtonDlRankTime0"]) ? 0 : 5);  // 2019/07/22 ADD marky
 
             if (bool.Parse(option_["radioButtonDlRankRss"]))
             {
