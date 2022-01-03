@@ -1271,8 +1271,15 @@ namespace NicoTools
 
             for (int i = 0; i < video_id_list.Count; ++i)
             {
+                // 2020/10/20 ADD marky 公式動画はマイリストRSSのlinkがスレッドIDとなっているため変換
+                string video_id = video_id_list[i];
+                if (video_id.StartsWith("so"))
+                {
+                    video_id = ParseGetVideoInfo(GetVideoInfo2(video_id));
+                }
 
-                if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
+                //if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
+                if (mylist_video.Find(x => x.video_id == video_id) != null)
                 {
                     network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
                     network_.AddCustomHeader("Access-Control-Request-Method: PUT");
@@ -1298,6 +1305,7 @@ namespace NicoTools
                         {
                             network_.Reset();
                         }
+
                         if (str.Equals("OK") && dlg != null)
                         {
                             dlg(video_id_list[i], i + 1, video_id_list.Count);
@@ -1305,6 +1313,50 @@ namespace NicoTools
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// video.info API で動画情報を取得 2020/10/20 ADD marky
+        /// </summary>
+        /// <param name="video_id">動画ID</param>
+        /// <returns>video.info API の結果xml</returns>
+        public string GetVideoInfo2(string video_id)
+        {
+            CheckCookie();
+            return network_.GetAndReadFromWebUTF8("http://api.ce.nicovideo.jp/nicoapi/v1/video.info?v=" + video_id);
+        }
+
+        // GetVideoInfo2 で取得した xml を解析してthread id を返す 2020/10/20 ADD marky
+        public string ParseGetVideoInfo(string xml)
+        {
+            string thread_id = "";
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xml);
+            XmlElement element = doc.DocumentElement;
+            if (element.Attributes["status"].Value == "ok")
+            {
+                for (XmlNode node = element.FirstChild;
+                    node != null; node = node.NextSibling)
+                {
+                    switch (node.Name)
+                    {
+                        case "thread":
+                            for (XmlNode threadnode = node.FirstChild;
+                                threadnode != null; threadnode = threadnode.NextSibling)
+                            {
+                                switch (threadnode.Name)
+                                {
+                                    case "id":
+                                        thread_id = IJStringUtil.UnescapeHtml(threadnode.InnerText);
+                                        break;
+                                }
+                            }
+                            break;
+                    }
+                }
+            }
+            return thread_id;
         }
 
         public void DeleteMylist(string mylist_id, List<string> video_id_list)

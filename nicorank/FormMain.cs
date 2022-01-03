@@ -47,6 +47,8 @@ namespace nicorank
         private GenreTagManagerWithCListBox category_manager_;
         // 2020/02/16 ADD marky 前回の検索ジャンル
         private int search_genre_ = 0;
+        // 2020/10/20 ADD marky 検索ワード無の最大取得ページ
+        private const int MAX_PAGE_ = 1000;
 
         public FormMain()
         {
@@ -437,6 +439,12 @@ namespace nicorank
             searching_tag_option.detail_info_lower = (int)numericUpDownConditionMylistNew.Value;
             searching_tag_option.sort_kind_num = listBoxSortNew.SelectedIndex;
             searching_tag_option.is_page_all = radioButtonTagSearchPageAll.Checked;
+            // 2020/10/20 ADD marky 検索ワード無しの時は1000ページに制限
+            if (radioButtonSearchGetKindAPI.Checked && textBoxTagNew.Text.Trim().Equals(""))
+            {
+                searching_tag_option.is_page_all = false;
+                page_end = (page_end > MAX_PAGE_ ? MAX_PAGE_ : page_end);
+            }
             searching_tag_option.page_start = page_start;
             searching_tag_option.page_end = page_end;
             searching_tag_option.is_using_condition = checkBoxTagSearchIsUsingCondition.Checked;

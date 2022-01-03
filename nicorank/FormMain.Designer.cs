@@ -3476,12 +3476,13 @@
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(90, 53);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(244, 12);
+            this.label14.Size = new System.Drawing.Size(250, 12);
             this.label14.TabIndex = 70;
-            this.label14.Text = "↓複数のワードを検索する場合は or で区切ります\r\n";
+            this.label14.Text = "↓複数のワードを検索する場合は OR で区切ります\r\n";
             // 
             // textBoxTagSearchPageEnd
             // 
+            this.textBoxTagSearchPageEnd.Enabled = false;
             this.textBoxTagSearchPageEnd.Location = new System.Drawing.Point(356, 182);
             this.textBoxTagSearchPageEnd.Name = "textBoxTagSearchPageEnd";
             this.textBoxTagSearchPageEnd.Size = new System.Drawing.Size(42, 19);
@@ -3491,6 +3492,7 @@
             // 
             // textBoxTagSearchPageStart
             // 
+            this.textBoxTagSearchPageStart.Enabled = false;
             this.textBoxTagSearchPageStart.Location = new System.Drawing.Point(253, 182);
             this.textBoxTagSearchPageStart.Name = "textBoxTagSearchPageStart";
             this.textBoxTagSearchPageStart.Size = new System.Drawing.Size(37, 19);
@@ -3598,6 +3600,7 @@
             // labelTagSearchPage1
             // 
             this.labelTagSearchPage1.AutoSize = true;
+            this.labelTagSearchPage1.Enabled = false;
             this.labelTagSearchPage1.Location = new System.Drawing.Point(296, 185);
             this.labelTagSearchPage1.Name = "labelTagSearchPage1";
             this.labelTagSearchPage1.Size = new System.Drawing.Size(59, 12);
@@ -3607,6 +3610,7 @@
             // labelTagSearchPage2
             // 
             this.labelTagSearchPage2.AutoSize = true;
+            this.labelTagSearchPage2.Enabled = false;
             this.labelTagSearchPage2.Location = new System.Drawing.Point(402, 185);
             this.labelTagSearchPage2.Name = "labelTagSearchPage2";
             this.labelTagSearchPage2.Size = new System.Drawing.Size(47, 12);

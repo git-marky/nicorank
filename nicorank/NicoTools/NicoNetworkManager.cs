@@ -1127,9 +1127,17 @@ namespace NicoTools
             int redundant_search_count = 1;
             bool wait_required = false;
 
-            for (int i = 0; i < option.searching_tag_list.Count; ++i)
+            // 2020/10/20 ADD marky 検索ワード無しに対応
+            if (option.searching_tag_list.Count == 0)
             {
-                video_list.AddRange(SearchTag(option.searching_tag_list[i], option, ref log_number, redundant_search_count, ref wait_required));
+                video_list.AddRange(SearchTag("", option, ref log_number, redundant_search_count, ref wait_required));
+            }
+            else
+            {
+                for (int i = 0; i < option.searching_tag_list.Count; ++i)
+                {
+                    video_list.AddRange(SearchTag(option.searching_tag_list[i], option, ref log_number, redundant_search_count, ref wait_required));
+                }
             }
 
             // 重複を排除
