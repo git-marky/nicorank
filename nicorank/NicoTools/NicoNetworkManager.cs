@@ -18,7 +18,6 @@ namespace NicoTools
         private NicoNetwork niconico_no_user_session_network_ = new NicoNetwork();
         private MessageOut msgout_;
         private CancelObject cancel_object_;
-
         public delegate void StringDelegate(string str);
 
         // 冗長検索のロジックを表すデリゲート
@@ -186,6 +185,8 @@ namespace NicoTools
 
             int start_page = (option.is_page_all ? 1 : option.page_start);
             int end_page = (option.is_page_all ? int.MaxValue : option.page_end);
+            option.offset = 0;      // 2019/07/06 ADD marky
+            option.last_value = ""; // 2019/07/06 ADD marky
 
             wait_required = false;
 
@@ -207,7 +208,38 @@ namespace NicoTools
                     {
                         ret_list.Add(current_list[i]);
                     }
+
+                    // 2019/07/06 ADD marky
+                    option.offset += 1;
+                    string value = "";
+                    switch (option.GetSortMethod())
+                    {
+                        case NicoNetwork.SearchSortMethod.SubmitDate:
+                            value = current_list[i].submit_date.ToString("yyyy-MM-dd'T'HH:mm:ss'%2B09:00'");
+                            break;
+                        case NicoNetwork.SearchSortMethod.View:
+                            value = current_list[i].point.view.ToString();
+                            break;
+                        case NicoNetwork.SearchSortMethod.ResNew:
+                            value = current_list[i].last_comment_time.Replace("+","%2B");
+                            break;
+                        case NicoNetwork.SearchSortMethod.Res:
+                            value = current_list[i].point.res.ToString();
+                            break;
+                        case NicoNetwork.SearchSortMethod.Mylist:
+                            value = current_list[i].point.mylist.ToString();
+                            break;
+                        case NicoNetwork.SearchSortMethod.Time:
+                            value = current_list[i].length.ToString();
+                            break;
+                    }
+                    if (option.last_value != value)
+                    {
+                        option.offset = 1;
+                        option.last_value = value;
+                    }
                 }
+
                 if (wait_required == true &&
                     page < end_page)
                 {
@@ -250,17 +282,29 @@ namespace NicoTools
                 {
                     try
                     {
-                        if (is_searching_kind_tag)
+                         // 2019/07/06 ADD marky
+                        if (option.is_searching_get_kind_api)
                         {
-                            str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
+                            str = network.GetSearchByAPI(tag_word, option);
                         }
                         else
                         {
-                            str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
-                        }
-                        if (str.IndexOf("ここから先をご利用いただくにはログインしてください") >= 0)
-                        {
-                            throw new NiconicoLoginException();
+                            if (is_searching_kind_tag)
+                            {
+                                //str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
+                                // 2019/07/06 Update marky
+                                str = network.GetSearchTag(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api, option.offset, option.last_value);
+                            }
+                            else
+                            {
+                                //str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api);
+                                // 2019/07/06 Update marky
+                                str = network.GetSearchKeyword(tag_word, page, option.GetSortMethod(), option.GetSearchOrder(), option.is_searching_get_kind_api, option.offset, option.last_value);
+                            }
+                            if (str.IndexOf("ここから先をご利用いただくにはログインしてください") >= 0)
+                            {
+                                throw new NiconicoLoginException();
+                            }
                         }
                     }
                     catch (NiconicoAccessDeniedException)
@@ -510,7 +554,9 @@ namespace NicoTools
                     if (update_rank_kind == UpdateRankKind.AddingTag)
                     {
                         rank_file_video.tag_set.Add(video.tag_set);
-                        rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
+                        //rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
+                        rank_file_video.thumbnail_url = video.thumbnail_url;     // 2019/07/06 ADD marky
+                        rank_file_video.genre = video.genre;                     // 2019/07/06 ADD marky
                         new_rank_file.Add(rank_file_video);
                     }
                     else
@@ -526,7 +572,9 @@ namespace NicoTools
                         }
                         rank_file_video.submit_date = video.submit_date;
                         rank_file_video.tag_set = video.tag_set;
-                        rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
+                        //rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
+                        rank_file_video.thumbnail_url = video.thumbnail_url;     // 2019/07/06 ADD marky
+                        rank_file_video.genre = video.genre;                     // 2019/07/06 ADD marky
                         new_rank_file.Add(rank_file_video);
                     }
                     msgout_.Write(rank_file_video.video_id + " の情報を更新しました。\r\n");
@@ -1049,6 +1097,9 @@ namespace NicoTools
                                 video.thumbnail_url = result.data[j].thumbnailUrl;
                                 video.length = result.data[j].lengthSeconds;
                                 video.tag_set.ParseBlank(result.data[j].tags);
+                                // 2019/07/06 ADD marky
+                                video.last_comment_time = result.data[j].lastCommentTime;
+                                video.genre = result.data[j].genre;
                                 ++count;
                                 if (count >= start_num)
                                 {
@@ -1421,8 +1472,9 @@ namespace NicoTools
             [DataMember]
             public string tags = "";
 
-            [DataMember]
-            public string categoryTags = "";
+            // 2019/07/06 DELETE marky
+            //[DataMember]
+            //public string categoryTags = "";
 
             [DataMember]
             public string viewCounter = "";
@@ -1441,6 +1493,14 @@ namespace NicoTools
 
             [DataMember]
             public string lengthSeconds = "";
+
+            // 2019/07/06 ADD marky
+            [DataMember]
+            public string lastCommentTime = "";
+
+            // 2019/07/06 ADD marky
+            [DataMember]
+            public string genre = "";
         }
     }
 

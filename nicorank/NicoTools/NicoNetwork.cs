@@ -869,12 +869,17 @@ namespace NicoTools
         /// <param name="page">ページ数（1から始まる）</param>
         /// <param name="sort_method">検索時の並べ方指定</param>
         /// <param name="order">昇順 or 降順</param>
+        /// <param name="is_use_api">API利用有無</param>
+        /// <param name="offset">オフセット件数 2019/07/06 ADD marky</param>
         /// <returns>検索結果のHTML</returns>
-        public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        //public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        public string GetSearchKeyword(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api, int offset, string last_value)
         {
             if (is_use_api)
             {
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
+                //return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false);
+                // 2019/07/06 Update marky
+                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, false, offset, last_value);
             }
             else
             {
@@ -889,17 +894,33 @@ namespace NicoTools
         /// <param name="page">ページ数（1から始まる）</param>
         /// <param name="sort_method">検索時の並べ方指定</param>
         /// <param name="order">昇順 or 降順</param>
+        /// <param name="is_use_api">API利用有無</param>
+        /// <param name="offset">オフセット件数 2019/07/06 ADD marky</param>
         /// <returns>検索結果のHTML</returns>
-        public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        //public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api)
+        public string GetSearchTag(string search_word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_use_api, int offset, string last_value)
         {
             if (is_use_api)
             {
-                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
+                //return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true);
+                // 2019/07/06 Update marky
+                return GetSearchKeywordOrTagByAPI(search_word, page, sort_method, order, true, offset, last_value);
             }
             else
             {
                 return GetSearchKeywordOrTag(search_word, page, sort_method, order, true);
             }
+        }
+
+        /// <summary>
+        /// 指定したワードでAPI検索を行う
+        /// </summary>
+        /// <param name="search_word">検索ワード</param>
+        /// <param name="option">検索時のオプションクラス</param>
+        /// <returns>検索結果のHTML</returns>
+        public string GetSearchByAPI(string search_word, SearchingTagOption option)
+        {
+            return GetSearchKeywordOrTagByAPI(search_word, option);
         }
 
         /// <summary>
@@ -1892,7 +1913,9 @@ namespace NicoTools
         */
 
         //2017-03-03 UPDATE marky 検索API v2
-        private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag)
+        //2019-07-06 UPDATE marky 10万件以上に対応
+        private string GetSearchKeywordOrTagByAPI(string word, int page, SearchSortMethod sort_method, SearchOrder order, bool is_tag, int offset, string last_value)
         {
             CheckCookie();
 
@@ -1914,8 +1937,10 @@ namespace NicoTools
                     json += "title,description,tags";
                 }
                 //json += "&fields=contentId,title,description,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
-                //2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
-                json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+                ////2018/02/27 UPDATE marky 動画説明文にHTMLタグが入る仕様変更に対応
+                //json += "&fields=contentId,title,tags,categoryTags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds";
+                // 2019/07/06 UPDATE marky ジャンルに対応
+                json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre";
 
                 json += "&_sort=";
                 if (order == SearchOrder.Asc)
@@ -1951,9 +1976,197 @@ namespace NicoTools
                 }
 
                 json += "&_offset=";
-                json += ((page - 1) * 100).ToString();
+                //json += ((page - 1) * 100).ToString();
+                // 2019/07/06 Update marky
+                json += offset.ToString();
+
+                // 2019/07/06 ADD marky
+                if (last_value != "")
+                {
+                    json += "&filters";
+                    switch (sort_method)
+                    {
+                        case SearchSortMethod.SubmitDate:
+                            json += "[startTime]";
+                            break;
+                        case SearchSortMethod.View:
+                            json += "[viewCounter]";
+                            break;
+                        case SearchSortMethod.ResNew:
+                            json += "[lastCommentTime]";
+                            break;
+                        case SearchSortMethod.Res:
+                            json += "[commentCounter]";
+                            break;
+                        case SearchSortMethod.Mylist:
+                            json += "[mylistCounter]";
+                            break;
+                        case SearchSortMethod.Time:
+                            json += "[lengthSeconds]";
+                            break;
+                    }
+                    if (order == SearchOrder.Asc)
+                    {
+                        json += "[gte]=";
+                    }
+                    else
+                    {
+                        json += "[lte]=";
+                    }
+                    json += last_value;
+                }
+
                 json += "&_limit=100";
                 json += "&_context=" + issuer_ ;
+
+                network_.SetDefaultContentType();
+                string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+
+                //CheckDenied(str);
+                return str;
+            }
+            finally
+            {
+                network_.Reset();
+            }
+        }
+
+        //2017-03-03 ADD marky 検索API v3 10万件以上に対応
+        private string GetSearchKeywordOrTagByAPI(string word, SearchingTagOption option)
+        {
+            SearchSortMethod sort_method = option.GetSortMethod();
+            SearchOrder order = option.GetSearchOrder();
+            bool is_using_condition = option.is_using_condition;
+            string date_from = option.date_from.ToString("yyyy-MM-dd'T'HH:mm:ss'%2B09:00'");
+            string date_to = option.date_to.ToString("yyyy-MM-dd'T'HH:mm:ss'%2B09:00'");
+            string condition_lower = option.condition_lower.ToString();
+            string condition_upper = option.condition_upper.ToString();
+            string offset = option.offset.ToString();
+            string last_value = option.last_value;
+
+            CheckCookie();
+
+            if (is_no_cache_)
+            {
+                network_.SetMaxAgeZero();
+            }
+            try
+            {
+                string json = "q=";
+                json += word;
+                json += "&targets=";
+                if (option.is_searching_kind_tag)
+                { // tag search
+                    json += "tagsExact";
+                }
+                else
+                { // keyword search
+                    json += "title,description,tags";
+                }
+                json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre";
+
+                json += "&_sort=";
+                if (order == SearchOrder.Asc)
+                {
+                    json += "%2B";
+                }
+                else
+                {
+                    json += "-";
+                }
+                switch (sort_method)
+                {
+                    case SearchSortMethod.ResNew:
+                        json += "lastCommentTime";
+                        break;
+                    case SearchSortMethod.View:
+                        json += "viewCounter";
+                        break;
+                    case SearchSortMethod.SubmitDate:
+                        json += "startTime";
+                        break;
+                    case SearchSortMethod.Mylist:
+                        json += "mylistCounter";
+                        break;
+                    case SearchSortMethod.Res:
+                        json += "commentCounter";
+                        break;
+                    case SearchSortMethod.Time:
+                        json += "lengthSeconds";
+                        break;
+                }
+
+                json += "&_offset=";
+                json += offset;
+
+                if (!last_value.Equals(""))
+                {
+                    json += "&filters";
+                    switch (sort_method)
+                    {
+                        case SearchSortMethod.SubmitDate:
+                            json += "[startTime]";
+                            break;
+                        case SearchSortMethod.View:
+                            json += "[viewCounter]";
+                            break;
+                        case SearchSortMethod.ResNew:
+                            json += "[lastCommentTime]";
+                            break;
+                        case SearchSortMethod.Res:
+                            json += "[commentCounter]";
+                            break;
+                        case SearchSortMethod.Mylist:
+                            json += "[mylistCounter]";
+                            break;
+                        case SearchSortMethod.Time:
+                            json += "[lengthSeconds]";
+                            break;
+                    }
+                    if (order == SearchOrder.Asc)
+                    {
+                        json += "[gte]=";
+                    }
+                    else
+                    {
+                        json += "[lte]=";
+                    }
+                    json += last_value;
+                }
+
+                if (is_using_condition)
+                {
+                    switch (option.sort_kind_num)
+                    {
+                        case 0:
+                            json += "&filters[startTime][gte]=" + date_from + (last_value.Equals("") ? "&filters[startTime][lte]=" + date_to : "");
+                            break;
+                        case 1:
+                            json += (last_value.Equals("") ? "&filters[startTime][gte]=" + date_from : "") + "&filters[startTime][lte]=" + date_to;
+                            break;
+                        case 2:
+                            json += "&filters[viewCounter][gte]=" + condition_lower + (last_value.Equals("") ? "&filters[viewCounter][lte]=" + condition_upper : "");
+                            break;
+                        case 3:
+                            json += (last_value.Equals("") ? "&filters[viewCounter][gte]=" + condition_lower : "") + "&filters[viewCounter][lte]=" + condition_upper;
+                            break;
+                        case 6:
+                            json += "&filters[commentCounter][gte]=" + condition_lower + (last_value.Equals("") ? "&filters[commentCounter][lte]=" + condition_upper : "");
+                            break;
+                        case 7:
+                            json += (last_value.Equals("") ? "&filters[commentCounter][gte]=" + condition_lower : "") + "&filters[commentCounter][lte]=" + condition_upper;
+                            break;
+                        case 8:
+                            json += "&filters[mylistCounter][gte]=" + condition_lower + (last_value.Equals("") ? "&filters[mylistCounter][lte]=" + condition_upper : "");
+                            break;
+                        case 9:
+                            json += (last_value.Equals("") ? "&filters[mylistCounter][gte]=" + condition_lower : "") + "&filters[mylistCounter][lte]=" + condition_upper;
+                            break;
+                    }
+                }
+
+                json += "&_limit=100";
+                json += "&_context=" + issuer_;
 
                 network_.SetDefaultContentType();
                 string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);

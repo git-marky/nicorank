@@ -27,6 +27,9 @@ namespace NicoTools
         public string last_res_body = "";
         public string user_id = "";
         public TagSet tag_set = new TagSet();
+        // 2019/07/06 ADD marky
+        public string last_comment_time = "";
+        public string genre = "";
 
         public enum Status { OK, DELETED, NOT_FOUND, OTHER };
 
@@ -112,9 +115,13 @@ namespace NicoTools
                 buff.Append("\t");
                 buff.Append(NicoUtil.DateToString(submit_date));
                 buff.Append("\t");
-                buff.Append(video_id + ".png");
+                //buff.Append(video_id + ".png");
+                // 2019/07/06 Update marky
+                buff.Append(thumbnail_url);
                 buff.Append("\t");
-                buff.Append(pname);
+                //buff.Append(pname);
+                // 2019/07/06 Update marky
+                buff.Append(genre);
                 buff.Append("\t");
                 buff.Append(tag_set.ToString());
                 return buff.ToString();
@@ -205,6 +212,11 @@ namespace NicoTools
                                 }
                             }
                             break;
+                        // 2019/07/06 ADD marky
+                        case "genre":
+                            genre = IJStringUtil.UnescapeHtml(node.InnerText);
+                            break;
+
                     }
                 }
             }

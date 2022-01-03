@@ -267,10 +267,18 @@ namespace nicorank
         {
 
             // 2019/06/26 ADD marky
-            if (dateTimePickerDlRankDate1.Enabled && !CheckRankDlDate())
+            if (dateTimePickerDlRankDate1.Enabled)
             {
-                dateTimePickerDlRankDate1.Focus();
-                return;
+                if (!CheckRankDlDate())
+                {
+                    dateTimePickerDlRankDate1.Focus();
+                    return;
+                }
+                else
+                {
+                    // 翌日を指定して日を超したときはDL可能にする 2019/07/09 ADD
+                    category_manager_.GetDate = dateTimePickerDlRankDate1.Value;
+                }
             }
             DownloadKind download_kind = new DownloadKind();
             download_kind.SetDuration(checkBoxDlRankDurationTotal.Checked,

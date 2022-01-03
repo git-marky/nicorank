@@ -590,6 +590,9 @@ namespace NicoTools
         public int condition_lower;
         public int condition_upper;
 
+        public int offset;     //スナップショットAPIの改善対応 2019/7/06 ADD marky
+        public string last_value;     //スナップショットAPIの改善対応 2019/7/06 ADD marky
+
         public string searching_interval;
         public string getting_detail_interval;
 

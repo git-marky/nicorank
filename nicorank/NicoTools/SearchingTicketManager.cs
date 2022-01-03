@@ -209,6 +209,8 @@ namespace NicoTools
                     writer.WriteLine("searching_tag={0}", searching_tag);
                 }
 
+                writer.WriteLine("is_searching_get_kind_api={0}", option.is_searching_get_kind_api.ToString() ?? string.Empty); //2019/07/09 ADD marky
+
                 writer.WriteLine("is_searching_kind_tag={0}", option.is_searching_kind_tag.ToString() ?? string.Empty);
 
                 writer.WriteLine("is_detail_getting={0}", option.is_detail_getting.ToString());
@@ -274,6 +276,10 @@ namespace NicoTools
                         {
                             case "searching_tag":
                                 option.searching_tag_list.Add(value);
+                                break;
+                            //2019/07/09 ADD marky
+                            case "is_searching_get_kind_api":
+                                option.is_searching_get_kind_api = bool.Parse(value);
                                 break;
                             case "is_searching_kind_tag":
                                 option.is_searching_kind_tag = bool.Parse(value);
