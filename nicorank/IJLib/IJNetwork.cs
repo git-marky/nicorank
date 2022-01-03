@@ -151,6 +151,25 @@ namespace IJLib
             ReadAndSaveInner(uri, true, post_data, filename);
         }
 
+        // 2020/08/04 ADD marky OPTIONS,PUTでstream送信
+        public string OptionsToWeb(string uri)
+        {
+            return PutToWebInner(uri, false, null);
+        }
+
+        // 2020/08/04 ADD marky OPTIONS,PUTでstream送信
+        public string PutToWeb(string uri, string put_data)
+        {
+            byte[] put_data_byte = Encoding.UTF8.GetBytes(put_data);
+            return PutToWeb(uri, put_data_byte);
+        }
+
+        // 2020/08/04 ADD marky OPTIONS,PUTでstream送信
+        public string PutToWeb(string uri, byte[] put_data)
+        {
+            return PutToWebInner(uri, true, put_data);
+        }
+        
         /// <summary>
         /// uri のページにアクセスして、返ってきたHTTPヘッダーのLocation: を取得
         /// </summary>
@@ -299,6 +318,73 @@ namespace IJLib
                 try
                 {
                     rs.Write(post_data, 0, post_data.Length);
+                }
+                finally
+                {
+                    rs.Close();
+                }
+            }
+            return (HttpWebResponse)request.GetResponse();
+        }
+
+        // 2020/08/04 ADD marky OPTIONS,PUTでstream送信
+        private string PutToWebInner(string uri, bool is_put, byte[] put_data)
+        {
+            string ret = "";
+            HttpWebResponse response = GetResponse(uri, is_put, put_data);
+            if (response.StatusCode == HttpStatusCode.OK)
+            {
+                ret = "OK";
+            }
+            response.Close();
+
+            return ret;
+        }
+
+        // 2020/08/04 ADD marky OPTIONS,PUTでstream送信
+        private HttpWebResponse GetResponse(string uri, bool is_put, byte[] put_data)
+        {
+            HttpWebRequest request =
+                (HttpWebRequest)HttpWebRequest.Create(uri);
+
+            if (is_put)
+            {
+                request.Method = "PUT";
+                request.ContentLength = put_data.Length;
+            }
+            else
+            {
+                request.Method = "OPTIONS";
+            }
+
+            request.ContentType = content_type_;
+
+            request.Timeout = 15 * 1000;
+
+            request.CookieContainer = container_;
+            if (user_agent_ != null)
+            {
+                request.UserAgent = user_agent_;
+            }
+            if (referer_ != "")
+            {
+                request.Referer = referer_;
+            }
+            if (proxy_ != null)
+            {
+                request.Proxy = proxy_;
+            }
+            for (int i = 0; i < custom_header_.Count; ++i)
+            {
+                request.Headers.Add(custom_header_[i]);
+            }
+
+            if (is_put && put_data != null && put_data.Length > 0)
+            {
+                Stream rs = request.GetRequestStream();
+                try
+                {
+                    rs.Write(put_data, 0, put_data.Length);
                 }
                 finally
                 {

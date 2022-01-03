@@ -478,7 +478,9 @@ namespace NicoTools
                     video.title = video.title.Substring(video.title.IndexOf('：') + 1);
                 }
                 string link = IJStringUtil.GetStringBetweenTag(ref index, "link", html);
-                video.video_id = link.Substring(link.LastIndexOf('/') + 1);
+                //video.video_id = link.Substring(link.LastIndexOf('/') + 1);
+                // 2020/08/04 Update marky 7月27日リニューアル後？末尾にパラメータが付くようになったため除去
+                video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_mylist_rss2", "");
                 IJStringUtil.GetStringBetweenTag(ref index, "p", html);
                 video.description = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
                 // 2019/06/26 DEL marky

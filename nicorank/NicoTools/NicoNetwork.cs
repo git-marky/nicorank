@@ -1212,6 +1212,46 @@ namespace NicoTools
             UpdateMylistDescription(mylist_id, video_id_list, description_list, OnDefaultWaitEvent);
         }
 
+        ///// <summary>
+        ///// マイリストの個々の動画の説明文を更新する。1件だけではなくて、同じマイリスト内の複数の動画に対して説明文を更新できる。
+        ///// </summary>
+        ///// <param name="mylist_id">マイリストID</param>
+        ///// <param name="video_id_list">動画IDのリスト</param>
+        ///// <param name="description_list">説明文のリスト。動画IDのリストと対応がとれている必要がある</param>
+        ///// <param name="wait_millisecond">1件追加した後に呼び出されるイベント関数</param>
+        //public void UpdateMylistDescription(string mylist_id, List<string> video_id_list,
+        //    List<string> description_list, NetworkWaitDelegate dlg)
+        //{
+        //    CheckCookie();
+
+        //    string html = GetMylistPageFromMyPage();
+
+        //    string token = GetToken(html);
+
+        //    Thread.Sleep(1000);
+        //    string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/mylist/" + mylist_id);
+        //    Dictionary<string, string> id_key_pair = ParseMylistEditAndGetKey(str);
+
+        //    for (int i = 0; i < video_id_list.Count; ++i)
+        //    {
+        //        string value;
+        //        if (id_key_pair.TryGetValue(video_id_list[i], out value))
+        //        {
+        //            string post_data = IJNetwork.ConstructPostData(
+        //                "group_id",    mylist_id,
+        //                "item_type",   "0",
+        //                "item_id",     id_key_pair[video_id_list[i]],
+        //                "description", description_list[i],
+        //                "token",       token);
+        //            network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylist/update/", post_data);
+        //            if (dlg != null)
+        //            {
+        //                dlg(video_id_list[i], i + 1, video_id_list.Count);
+        //            }
+        //        }
+        //    }
+        //}
+        // 2020/08/04 Update marky 7月27日リニューアルに対応
         /// <summary>
         /// マイリストの個々の動画の説明文を更新する。1件だけではなくて、同じマイリスト内の複数の動画に対して説明文を更新できる。
         /// </summary>
@@ -1224,29 +1264,43 @@ namespace NicoTools
         {
             CheckCookie();
 
-            string html = GetMylistPageFromMyPage();
-
-            string token = GetToken(html);
-
-            Thread.Sleep(1000);
-            string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/mylist/" + mylist_id);
-            Dictionary<string, string> id_key_pair = ParseMylistEditAndGetKey(str);
+            //マイリストRSSからIDリスト取得
+            List<Video> mylist_video = new List<Video>();
+            NicoListManager.ParsePointRss(GetMylistHtml(mylist_id, true), DateTime.Now, mylist_video, false, true);
 
             for (int i = 0; i < video_id_list.Count; ++i)
             {
-                string value;
-                if (id_key_pair.TryGetValue(video_id_list[i], out value))
+
+                if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
                 {
-                    string post_data = IJNetwork.ConstructPostData(
-                        "group_id",    mylist_id,
-                        "item_type",   "0",
-                        "item_id",     id_key_pair[video_id_list[i]],
-                        "description", description_list[i],
-                        "token",       token);
-                    network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylist/update/", post_data);
-                    if (dlg != null)
+                    network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
+                    network_.AddCustomHeader("Access-Control-Request-Method: PUT");
+                    network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
+                    network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                    string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items/" + video_id_list[i]);
+                    network_.Reset();
+
+                    if (str.Equals("OK"))
                     {
-                        dlg(video_id_list[i], i + 1, video_id_list.Count);
+                        network_.AddCustomHeader("X-Frontend-Id: 6");
+                        network_.AddCustomHeader("X-Frontend-Version: 0");
+                        network_.AddCustomHeader("X-Niconico-Language: ja-jp");
+                        network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
+                        network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
+                        network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                        string put_data = IJNetwork.ConstructPostData("description", description_list[i]);
+                        try
+                        {
+                            str = network_.PutToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items/" + video_id_list[i], put_data);
+                        }
+                        finally
+                        {
+                            network_.Reset();
+                        }
+                        if (str.Equals("OK") && dlg != null)
+                        {
+                            dlg(video_id_list[i], i + 1, video_id_list.Count);
+                        }
                     }
                 }
             }
