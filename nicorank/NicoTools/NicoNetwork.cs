@@ -2247,6 +2247,7 @@ namespace NicoTools
         
         protected List<CategoryItem> category_list;
         protected DateTime getdate_; //過去ログ日付 2019/06/26 ADD marky
+        protected int gettime_;      //過去ログ生成時間 2019/06/29 ADD marky
         protected bool[] target_ = new bool[target_name.Length];
         protected bool[] duration_ = new bool[duration_name.Length];
 
@@ -2281,6 +2282,13 @@ namespace NicoTools
         {
             get { return getdate_; }
             set { getdate_ = value; }
+        }
+
+        //過去ログ日付 2019/06/29 ADD marky
+        public int GetTime
+        {
+            get { return gettime_; }
+            set { gettime_ = value; }
         }
 
         /// <summary>
@@ -2418,6 +2426,7 @@ namespace NicoTools
         public virtual void GetRankingLogList(ref List<string> name_list, ref List<string> filename_list)
         {
             DateTime logdate;
+            string logtime;
 
             for (int j = 0; j < duration_name.Length; ++j)
             {
@@ -2428,9 +2437,11 @@ namespace NicoTools
                 switch (duration_name[j])
                 {
                     case "monthly":
+                        if (gettime_ == 5) { continue; } // 5時は24時と全期間のみ 2019/06/29 ADD
                         logdate = new DateTime(getdate_.Year, getdate_.Month, 1);
                         break;
                     case "weekly":
+                        if (gettime_ == 5) { continue; } // 5時は24時と全期間のみ 2019/06/29 ADD
                         string[] week = { "月", "火", "水", "木", "金", "土", "日" };
                         logdate = getdate_.AddDays(Array.IndexOf(week,getdate_.ToString("ddd")) * (-1));
                         break;
@@ -2440,6 +2451,9 @@ namespace NicoTools
                         logdate = getdate_;
                         break;
                 }
+                // 2019/06/29 ADD
+                logtime = logdate.ToString("yyyy-MM-dd");
+                if (gettime_ == 5) { logtime += "_05"; }
 
                 for (int k = 0; k < category_list.Count; ++k)
                 {
@@ -2449,11 +2463,15 @@ namespace NicoTools
                     }
                     if (name_list != null)
                     {
-                        name_list.Add(duration_name[j] + "/" + logdate.ToString("yyyy-MM-dd") + "/" + category_list[k].id + ".json");
+                        //name_list.Add(duration_name[j] + "/" + logdate.ToString("yyyy-MM-dd") + "/" + category_list[k].id + ".json");
+                        // 2019/06/29 Update
+                        name_list.Add(duration_name[j] + "/" + logtime + "/" + category_list[k].id + ".json");
                     }
                     if (filename_list != null)
                     {
-                        filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + logdate.ToString("yyyy-MM-dd") + "_");
+                        //filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + logdate.ToString("yyyy-MM-dd") + "_");
+                        // 2019/06/29 Update
+                        filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + logtime + "_");
                     }
                 }
             }

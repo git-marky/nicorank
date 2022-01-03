@@ -570,7 +570,10 @@ namespace NicoTools
                             video.point.mylist = result[j].count.mylist;
                             video.title = result[j].title;
                             video.submit_date = DateTime.Parse(result[j].registeredAt, null, System.Globalization.DateTimeStyles.RoundtripKind);
-                            video_list.Add(video);
+                            if (RankFile.SearchVideo(video_list, video.video_id) < 0)
+                            {
+                                video_list.Add(video);
+                            }
 
                         }
                     }

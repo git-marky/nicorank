@@ -232,7 +232,7 @@ namespace nicorank
                 {
                     ComboBox c = (ComboBox)control_list[i];
                     // 2019/06/26 ADD marky
-                    if (c.Name == "comboBoxGenre")
+                    if (c.Name == "comboBoxDlRankGenre")
                     {
                         continue;
                     }

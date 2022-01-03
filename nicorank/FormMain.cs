@@ -52,7 +52,7 @@ namespace nicorank
             InitializeComponent();
             //category_manager_ = new CategoryManagerWithCListBox(checkedListBoxDlRankCategory);
             // 2019/06/26 Update marky
-            category_manager_ = new GenreTagManager(checkedListBoxDlRankCategory, comboBoxGenre);
+            category_manager_ = new GenreTagManager(checkedListBoxDlRankCategory, comboBoxDlRankGenre);
 
         }
 
@@ -282,6 +282,7 @@ namespace nicorank
 
             download_kind.CategoryList = category_manager_.GetDownloadCategoryItemList();
             download_kind.GetDate = category_manager_.GetDate;  // 2019/06/26 ADD marky
+            download_kind.GetTime = (radioButtonDlRankTime0.Checked ? 0 : 5);  // 2019/06/29 ADD marky
 
             if (radioButtonDlRankRss.Checked)
             {
@@ -1532,10 +1533,10 @@ namespace nicorank
         }
 
         // 2019/06/26 ADD marky
-        private void comboBoxGenre_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBoxDlRankGenre_SelectedIndexChanged(object sender, EventArgs e)
         {
             // タグリスト再作成
-            category_manager_.SetTagList((string)comboBoxGenre.SelectedItem);
+            category_manager_.SetTagList((string)comboBoxDlRankGenre.SelectedItem);
         }
 
         // 2019/06/26 ADD marky
@@ -1549,7 +1550,7 @@ namespace nicorank
                 category_manager_.GetDate = dateTimePickerDlRankDate1.Value;
                 // タグリスト再作成
                 category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
-                category_manager_.SetTagList((string)comboBoxGenre.SelectedItem);
+                category_manager_.SetTagList((string)comboBoxDlRankGenre.SelectedItem);
             }
         }
 
@@ -1557,6 +1558,7 @@ namespace nicorank
         private void radioButtonDlRank_CheckedChanged(object sender, EventArgs e)
         {
             dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
+            groupBox40.Enabled = radioButtonDlRankHtml.Checked;                  //生成時間は過去ログのみ 2019/06/29 ADD
             checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
             if (radioButtonDlRankRss.Checked) { dateTimePickerDlRankDate1.Value = DateTime.Now.Date; } //RSSは当日に戻す
         }

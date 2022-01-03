@@ -441,8 +441,11 @@
             this.buttonCheckLogin = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageDlRank = new System.Windows.Forms.TabPage();
+            this.groupBox40 = new System.Windows.Forms.GroupBox();
+            this.radioButtonDlRankTime0 = new System.Windows.Forms.RadioButton();
+            this.radioButtonDlRankTime5 = new System.Windows.Forms.RadioButton();
             this.groupBox39 = new System.Windows.Forms.GroupBox();
-            this.comboBoxGenre = new System.Windows.Forms.ComboBox();
+            this.comboBoxDlRankGenre = new System.Windows.Forms.ComboBox();
             this.buttonDlRankUncheckAll = new System.Windows.Forms.Button();
             this.buttonDlRankCheckAll = new System.Windows.Forms.Button();
             this.groupBox13 = new System.Windows.Forms.GroupBox();
@@ -557,6 +560,7 @@
             this.groupBox26.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageDlRank.SuspendLayout();
+            this.groupBox40.SuspendLayout();
             this.groupBox39.SuspendLayout();
             this.groupBox13.SuspendLayout();
             this.groupBox12.SuspendLayout();
@@ -5068,6 +5072,7 @@
             // 
             // tabPageDlRank
             // 
+            this.tabPageDlRank.Controls.Add(this.groupBox40);
             this.tabPageDlRank.Controls.Add(this.groupBox39);
             this.tabPageDlRank.Controls.Add(this.buttonDlRankUncheckAll);
             this.tabPageDlRank.Controls.Add(this.buttonDlRankCheckAll);
@@ -5092,9 +5097,42 @@
             this.tabPageDlRank.Text = "ランキングDL";
             this.tabPageDlRank.UseVisualStyleBackColor = true;
             // 
+            // groupBox40
+            // 
+            this.groupBox40.Controls.Add(this.radioButtonDlRankTime0);
+            this.groupBox40.Controls.Add(this.radioButtonDlRankTime5);
+            this.groupBox40.Location = new System.Drawing.Point(327, 136);
+            this.groupBox40.Name = "groupBox40";
+            this.groupBox40.Size = new System.Drawing.Size(71, 69);
+            this.groupBox40.TabIndex = 48;
+            this.groupBox40.TabStop = false;
+            this.groupBox40.Text = "生成時間";
+            // 
+            // radioButtonDlRankTime0
+            // 
+            this.radioButtonDlRankTime0.AutoSize = true;
+            this.radioButtonDlRankTime0.Checked = true;
+            this.radioButtonDlRankTime0.Location = new System.Drawing.Point(9, 21);
+            this.radioButtonDlRankTime0.Name = "radioButtonDlRankTime0";
+            this.radioButtonDlRankTime0.Size = new System.Drawing.Size(41, 16);
+            this.radioButtonDlRankTime0.TabIndex = 0;
+            this.radioButtonDlRankTime0.TabStop = true;
+            this.radioButtonDlRankTime0.Text = "0時";
+            this.radioButtonDlRankTime0.UseVisualStyleBackColor = true;
+            // 
+            // radioButtonDlRankTime5
+            // 
+            this.radioButtonDlRankTime5.AutoSize = true;
+            this.radioButtonDlRankTime5.Location = new System.Drawing.Point(9, 43);
+            this.radioButtonDlRankTime5.Name = "radioButtonDlRankTime5";
+            this.radioButtonDlRankTime5.Size = new System.Drawing.Size(41, 16);
+            this.radioButtonDlRankTime5.TabIndex = 1;
+            this.radioButtonDlRankTime5.Text = "5時";
+            this.radioButtonDlRankTime5.UseVisualStyleBackColor = true;
+            // 
             // groupBox39
             // 
-            this.groupBox39.Controls.Add(this.comboBoxGenre);
+            this.groupBox39.Controls.Add(this.comboBoxDlRankGenre);
             this.groupBox39.Location = new System.Drawing.Point(122, 61);
             this.groupBox39.Name = "groupBox39";
             this.groupBox39.Size = new System.Drawing.Size(191, 50);
@@ -5102,14 +5140,14 @@
             this.groupBox39.TabStop = false;
             this.groupBox39.Text = "ジャンル";
             // 
-            // comboBoxGenre
+            // comboBoxDlRankGenre
             // 
-            this.comboBoxGenre.FormattingEnabled = true;
-            this.comboBoxGenre.Location = new System.Drawing.Point(8, 16);
-            this.comboBoxGenre.Name = "comboBoxGenre";
-            this.comboBoxGenre.Size = new System.Drawing.Size(177, 20);
-            this.comboBoxGenre.TabIndex = 0;
-            this.comboBoxGenre.SelectedIndexChanged += new System.EventHandler(this.comboBoxGenre_SelectedIndexChanged);
+            this.comboBoxDlRankGenre.FormattingEnabled = true;
+            this.comboBoxDlRankGenre.Location = new System.Drawing.Point(8, 16);
+            this.comboBoxDlRankGenre.Name = "comboBoxDlRankGenre";
+            this.comboBoxDlRankGenre.Size = new System.Drawing.Size(177, 20);
+            this.comboBoxDlRankGenre.TabIndex = 0;
+            this.comboBoxDlRankGenre.SelectedIndexChanged += new System.EventHandler(this.comboBoxDlRankGenre_SelectedIndexChanged);
             // 
             // buttonDlRankUncheckAll
             // 
@@ -5279,7 +5317,7 @@
             this.checkBoxDlRankDurationDaily.Name = "checkBoxDlRankDurationDaily";
             this.checkBoxDlRankDurationDaily.Size = new System.Drawing.Size(60, 16);
             this.checkBoxDlRankDurationDaily.TabIndex = 1;
-            this.checkBoxDlRankDurationDaily.Text = "デイリー";
+            this.checkBoxDlRankDurationDaily.Text = "24時間";
             this.checkBoxDlRankDurationDaily.UseVisualStyleBackColor = true;
             // 
             // checkBoxDlRankDurationTotal
@@ -5287,9 +5325,9 @@
             this.checkBoxDlRankDurationTotal.AutoSize = true;
             this.checkBoxDlRankDurationTotal.Location = new System.Drawing.Point(14, 109);
             this.checkBoxDlRankDurationTotal.Name = "checkBoxDlRankDurationTotal";
-            this.checkBoxDlRankDurationTotal.Size = new System.Drawing.Size(48, 16);
+            this.checkBoxDlRankDurationTotal.Size = new System.Drawing.Size(60, 16);
             this.checkBoxDlRankDurationTotal.TabIndex = 4;
-            this.checkBoxDlRankDurationTotal.Text = "合計";
+            this.checkBoxDlRankDurationTotal.Text = "全期間";
             this.checkBoxDlRankDurationTotal.UseVisualStyleBackColor = true;
             // 
             // checkBoxDlRankDurationHourly
@@ -5355,7 +5393,7 @@
             // 
             this.checkBoxRankingDlSetHour.AutoSize = true;
             this.checkBoxRankingDlSetHour.Enabled = false;
-            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(334, 170);
+            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(334, 260);
             this.checkBoxRankingDlSetHour.Name = "checkBoxRankingDlSetHour";
             this.checkBoxRankingDlSetHour.Size = new System.Drawing.Size(184, 16);
             this.checkBoxRankingDlSetHour.TabIndex = 39;
@@ -5367,7 +5405,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Enabled = false;
-            this.label28.Location = new System.Drawing.Point(404, 192);
+            this.label28.Location = new System.Drawing.Point(404, 282);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(17, 12);
             this.label28.TabIndex = 42;
@@ -5377,7 +5415,7 @@
             // textBoxRankingDlHour
             // 
             this.textBoxRankingDlHour.Enabled = false;
-            this.textBoxRankingDlHour.Location = new System.Drawing.Point(362, 189);
+            this.textBoxRankingDlHour.Location = new System.Drawing.Point(362, 279);
             this.textBoxRankingDlHour.Name = "textBoxRankingDlHour";
             this.textBoxRankingDlHour.Size = new System.Drawing.Size(36, 19);
             this.textBoxRankingDlHour.TabIndex = 40;
@@ -5755,6 +5793,8 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPageDlRank.ResumeLayout(false);
             this.tabPageDlRank.PerformLayout();
+            this.groupBox40.ResumeLayout(false);
+            this.groupBox40.PerformLayout();
             this.groupBox39.ResumeLayout(false);
             this.groupBox13.ResumeLayout(false);
             this.groupBox13.PerformLayout();
@@ -6238,7 +6278,10 @@
         private System.Windows.Forms.RadioButton radioButtonSearchGetKindAPI;
         private System.Windows.Forms.GroupBox groupBox38;
         private System.Windows.Forms.GroupBox groupBox39;
-        private System.Windows.Forms.ComboBox comboBoxGenre;
+        private System.Windows.Forms.ComboBox comboBoxDlRankGenre;
+        private System.Windows.Forms.GroupBox groupBox40;
+        private System.Windows.Forms.RadioButton radioButtonDlRankTime0;
+        private System.Windows.Forms.RadioButton radioButtonDlRankTime5;
     }
 }
 
