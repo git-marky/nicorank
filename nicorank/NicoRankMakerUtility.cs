@@ -170,17 +170,112 @@ namespace nicorank
 
     }
 
-    // 2019/06/26 ADD marky
+    // 2019-07-22 ADD marky
     public class GenreTagManager : CategoryManager
     {
-        private Dictionary<string, GenreTagItem> genre_item_dic_ = new Dictionary<string, GenreTagItem>();
-        private string genre_config_ = "全ジャンル";
+
+        protected  Dictionary<string, GenreTagItem> genre_item_dic_ = new Dictionary<string, GenreTagItem>();
+        protected  string genre_config_ = "全ジャンル";
+        protected  DateTime getdate_ = DateTime.Now.Date; //当日の過去ログをデフォルトとする
+
+        public string GetGenre()
+        {
+            return genre_config_;
+        }
+
+        public void SetGenre(string genre)
+        {
+            genre_config_ = genre;
+        }
+
+        public DateTime GetDate
+        {
+            get { return getdate_; }
+            set { getdate_ = value; }
+        }
+
+        // ランキングジャンル、人気のタグ一覧を取得
+        public virtual void ParseGenreTagFile(string json)
+        {
+            genre_item_dic_.Clear();
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(GenreTagList[]));
+            using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+            {
+                GenreTagList[] result = (GenreTagList[])serializer.ReadObject(ms);
+                if (result != null)
+                {
+                    for (int j = 0; j < result.Length; ++j)
+                    {
+                        GenreTagItem tag = new GenreTagItem();
+                        tag.genre = result[j].genre;
+                        tag.file = result[j].file;
+                        tag.id = tag.file.Replace(".json", "");
+                        if (!string.IsNullOrEmpty(result[j].tag))
+                        {
+                            tag.tag = result[j].tag;
+                            tag.name = tag.genre + "：" + result[j].tag;
+                        }
+                        else
+                        {
+                            tag.tag = "";
+                            tag.name = tag.genre;
+                        }
+                        genre_item_dic_.Add(tag.name, tag);
+                    }
+                }
+                SetTagList(genre_config_);
+            }
+        }
+
+        public virtual void SetTagList(string genre)
+        {
+            category_item_dic_.Clear();
+
+            foreach (GenreTagItem genretag in genre_item_dic_.Values)
+            {
+                if (genre.Equals("全ジャンル") || genretag.genre.Equals(genre))
+                {
+                    CategoryItem item = new CategoryItem();
+                    item.id = genretag.id;
+                    item.short_name = genretag.tag;
+                    item.name = genretag.name;
+                    int[] page = new int[5];
+                    for (int j = 0; j < page.Length; ++j)
+                    {
+                        page[j] = 1;
+                    }
+                    item.page = page;
+                    item.genre = genretag.genre;
+                    category_item_dic_.Add(item.name, item);
+                }
+            }
+        }
+
+        public override List<CategoryItem> GetDownloadCategoryItemList()
+        {
+            List<CategoryItem> c_list = new List<CategoryItem>();
+
+            foreach (CategoryItem item in category_item_dic_.Values)
+            {
+                if (Array.IndexOf(category_config_, item.name) >= 0)
+                {
+                    c_list.Add(item);
+                }
+            }
+
+            return c_list;
+        }
+    }
+
+    // 2019/06/26 ADD marky
+    public class GenreTagManagerWithCListBox : GenreTagManager
+    {
         private CheckedListBox clistbox_;
         private ComboBox combobox_;
-        private DateTime getdate_ = DateTime.Now.Date; //当日の過去ログをデフォルトとする
         private bool loadflag = true;
 
-        public GenreTagManager(CheckedListBox clistbox, ComboBox combobox)
+        public GenreTagManagerWithCListBox(CheckedListBox clistbox, ComboBox combobox)
         {
             clistbox_ = clistbox;
             combobox_ = combobox;
@@ -201,28 +296,6 @@ namespace nicorank
             return cate_buff.ToString();
         }
 
-        public string GetGenre()
-        {
-            //return genre_config_;
-            return (string)combobox_.SelectedItem;
-        }
-
-        public void SetGenre(string genre)
-        {
-            genre_config_ = genre;
-        }
-
-        //public string GetDate
-        //{
-        //    get { return getdate_.ToString("yyyy-MM-dd"); }
-        //    set { getdate_ = new DateTime(int.Parse(value.Substring(1,4)),int.Parse(value.Substring(6,2)),int.Parse(value.Substring(9,2))); }
-        //}
-        public DateTime GetDate
-        {
-            get { return getdate_; }
-            set { getdate_ = value; }
-        }
-
         public override List<CategoryItem> GetDownloadCategoryItemList()
         {
             List<CategoryItem> c_list = new List<CategoryItem>();
@@ -237,8 +310,7 @@ namespace nicorank
         }
 
         // ランキングジャンル、人気のタグ一覧を取得
-        // 2019-06-26 ADD marky
-        public void ParseGenreTagFile(string json)
+        public override void ParseGenreTagFile(string json)
         {
             int index = -1;
             genre_item_dic_.Clear();
@@ -279,7 +351,7 @@ namespace nicorank
             loadflag = false;
         }
 
-        public void SetTagList(string genre)
+        public override void SetTagList(string genre)
         {
             if (!loadflag)  //ロード中はコンフィグ値を上書きしない
             {

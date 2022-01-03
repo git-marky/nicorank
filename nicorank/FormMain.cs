@@ -44,7 +44,7 @@ namespace nicorank
         private TransDetailOption trans_detail_option_ = new TransDetailOption();
         //private CategoryManagerWithCListBox category_manager_;
         // 2019/06/26 Update marky
-        private GenreTagManager category_manager_;
+        private GenreTagManagerWithCListBox category_manager_;
 
         public FormMain()
         {
@@ -52,7 +52,7 @@ namespace nicorank
             InitializeComponent();
             //category_manager_ = new CategoryManagerWithCListBox(checkedListBoxDlRankCategory);
             // 2019/06/26 Update marky
-            category_manager_ = new GenreTagManager(checkedListBoxDlRankCategory, comboBoxDlRankGenre);
+            category_manager_ = new GenreTagManagerWithCListBox(checkedListBoxDlRankCategory, comboBoxDlRankGenre);
 
         }
 
@@ -1556,9 +1556,19 @@ namespace nicorank
             {
                 // ログ日付変更
                 category_manager_.GetDate = dateTimePickerDlRankDate1.Value;
-                // タグリスト再作成
-                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
-                category_manager_.SetTagList((string)comboBoxDlRankGenre.SelectedItem);
+                try
+                {
+                    // タグリスト再作成
+                    category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                    category_manager_.SetTagList((string)comboBoxDlRankGenre.SelectedItem);
+                }
+                catch (Exception ee)
+                {
+                    textBoxInfo.AppendText(ee.Message + "\r\n");
+                    //MessageBox.Show(this, ee.Message, "エラー",
+                    //    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
             }
         }
 
