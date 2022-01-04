@@ -2127,6 +2127,7 @@ namespace NicoTools
             SearchSortMethod sort_method = option.GetSortMethod();
             SearchOrder order = option.GetSearchOrder();
             bool is_using_condition = option.is_using_condition;
+            bool is_using_date = option.is_using_date;  // 2020/11/24 ADD marky
             string date_from = option.date_from.ToString("yyyy-MM-dd'T'HH:mm:ss'%2B09:00'");
             string date_to = option.date_to.ToString("yyyy-MM-dd'T'HH:mm:ss'%2B09:00'");
             string condition_lower = option.condition_lower.ToString();
@@ -2255,6 +2256,19 @@ namespace NicoTools
                             json += (last_value.Equals("") ? "&filters[mylistCounter][gte]=" + condition_lower : "") + "&filters[mylistCounter][lte]=" + condition_upper;
                             break;
                     }
+                    // 2020/11/24 ADD marky 日時指定を併用可能に
+                    if (is_using_date)
+                    {
+                        switch (option.sort_kind_num)
+                        {
+                            case 0:
+                            case 1:
+                                break;
+                            default:
+                                json += "&filters[startTime][gte]=" + date_from + "&filters[startTime][lte]=" + date_to;
+                                break;
+                        }
+                    }
                 }
 
                 // 2020/02/11 ADD marky ジャンル追加
@@ -2346,6 +2360,7 @@ namespace NicoTools
             SearchSortMethod sort_method = option.GetSortMethod();
             SearchOrder order = option.GetSearchOrder();
             bool is_using_condition = option.is_using_condition;
+            bool is_using_date = option.is_using_date;      // 2020/11/24 ADD marky 日時指定を併用可能に
             string date_from = option.date_from.ToString("yyyy-MM-dd");
             string date_to = option.date_to.ToString("yyyy-MM-dd");
             string genre_id = option.genre_id;
@@ -2365,9 +2380,17 @@ namespace NicoTools
                         str += (str != "" ? "&" : "?") ;
                         str += "start=" + date_from + "&end=" + date_to;
                         break;
+                    // 2020/11/24 ADD marky 日時指定を併用可能に
+                    default:
+                        if (is_using_date)
+                        {
+                            str += (str != "" ? "&" : "?");
+                            str += "start=" + date_from + "&end=" + date_to;
+                        }
+                        break;
                 }
             }
-            
+
             if (!genre_id.Equals("all"))
             {
                 str += ((str != "" ? "&" : "?") + "genre=" + genre_id);

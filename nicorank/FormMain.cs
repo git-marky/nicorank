@@ -448,6 +448,7 @@ namespace nicorank
             searching_tag_option.page_start = page_start;
             searching_tag_option.page_end = page_end;
             searching_tag_option.is_using_condition = checkBoxTagSearchIsUsingCondition.Checked;
+            searching_tag_option.is_using_date = checkBoxTagSearchDate.Checked; // 2020/11/24 ADD marky 日時指定を併用可能に
             searching_tag_option.condition_lower = IJStringUtil.ToNumberWithDef(textBoxTagSearchLower.Text, 0);
             searching_tag_option.condition_upper = IJStringUtil.ToNumberWithDef(textBoxTagSearchUpper.Text, int.MaxValue);
             searching_tag_option.date_from = dateTimePickerTagSearchFrom.Value;
@@ -1281,6 +1282,8 @@ namespace nicorank
             textBoxTagSearchLower.Enabled = enabled;
             textBoxTagSearchUpper.Enabled = enabled;
             labelTagSearchUnlimited.Enabled = enabled;
+            // 2020/11/24 ADD marky
+            checkBoxTagSearchDate.Enabled = enabled;
         }
 
         private void radioButtonTagSearchPage_CheckedChanged(object sender, EventArgs e)
