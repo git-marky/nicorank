@@ -345,6 +345,11 @@ namespace NicoTools
                                 break;
                             }
                         }
+                        //2020/11/23 ADD marky .NET4.0にすると、HTMLタグ検索の最終ページ超えで「要求は中止されました: 接続が予期せずに閉じられました」エラーを返す現象に対応
+                        else if (e.Status == System.Net.WebExceptionStatus.ConnectionClosed)
+                        {
+                            break;
+                        }
                         throw;
                     }
                     break;
