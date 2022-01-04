@@ -411,15 +411,18 @@ namespace NicoTools
 
             //data = data.Substring(start, end - start);
 
-            //sessionが取得できないケース
-            if (data.IndexOf("\"dmcInfo\":null") != -1)
-            {
-                DownloadAndSaveFlv_old(video_id, save_flv_filename, dlg);
-                return;
-            }
+            ////sessionが取得できないケース
+            //if (data.IndexOf("\"dmcInfo\":null") != -1)
+            //{
+            //    DownloadAndSaveFlv_old(video_id, save_flv_filename, dlg);
+            //    return;
+            //}
 
-            startstr = "\"session_api\":";
-            endtstr = ",\"storyboard_session_api";
+            //startstr = "\"session_api\":";
+            //endtstr = ",\"storyboard_session_api";
+            // 2021/03/16 Update marky sessionフォーマット変更
+            startstr = "\"session\":";
+            endtstr = ",\"storyboard";
             if (data.IndexOf(startstr) == -1)
             {
                 throw new NiconicoAccessFailedException();
@@ -451,11 +454,11 @@ namespace NicoTools
                     writer.WriteStartElement("session");
 
                     writer.WriteStartElement("recipe_id");
-                    writer.WriteString(result.recipe_id);
+                    writer.WriteString(result.recipeId);
                     writer.WriteEndElement(); // <recipe_id ... />
 
                     writer.WriteStartElement("content_id");
-                    writer.WriteString(result.content_id);
+                    writer.WriteString(result.contentId);
                     writer.WriteEndElement(); // <content_id ... />
 
                     writer.WriteStartElement("content_type");
@@ -485,7 +488,7 @@ namespace NicoTools
                     writer.WriteEndElement(); // <file_extension ... />
 
                     writer.WriteStartElement("use_well_known_port");
-                    writer.WriteString((result.urls[0].is_well_known_port ? "yes" : "no"));
+                    writer.WriteString((result.urls[0].isWellKnownPort ? "yes" : "no"));
                     writer.WriteEndElement(); // <use_well_known_port ... />
 
                     writer.WriteEndElement(); // <http_output_download_parameters ... />
@@ -530,7 +533,7 @@ namespace NicoTools
                     writer.WriteStartElement("heartbeat");
 
                     writer.WriteStartElement("lifetime");
-                    writer.WriteString(result.heartbeat_lifetime.ToString());
+                    writer.WriteString(result.heartbeatLifetime.ToString());
                     writer.WriteEndElement(); // <lifetime ... />
 
                     writer.WriteEndElement(); // <heartbeat ... />
@@ -557,7 +560,7 @@ namespace NicoTools
                     writer.WriteStartElement("content_auth");
 
                     writer.WriteStartElement("auth_type");
-                    writer.WriteString(result.auth_types.http);
+                    writer.WriteString(result.authTypes.http);
                     writer.WriteEndElement(); // <auth_type ... />
 
                     writer.WriteStartElement("service_id");
@@ -565,7 +568,7 @@ namespace NicoTools
                     writer.WriteEndElement(); // <service_id ... />
 
                     writer.WriteStartElement("service_user_id");
-                    writer.WriteString(result.service_user_id);
+                    writer.WriteString(result.serviceUserId);
                     writer.WriteEndElement(); // <service_user_id ... />
 
                     writer.WriteStartElement("max_content_count");
@@ -573,7 +576,7 @@ namespace NicoTools
                     writer.WriteEndElement(); // <max_content_count ... />
 
                     writer.WriteStartElement("content_key_timeout");
-                    writer.WriteString(result.content_key_timeout.ToString());
+                    writer.WriteString(result.contentKeyTimeout.ToString());
                     writer.WriteEndElement(); // <content_key_timeout ... />
 
                     writer.WriteEndElement(); // <content_auth ... />
@@ -581,7 +584,7 @@ namespace NicoTools
                     writer.WriteStartElement("client_info");
 
                     writer.WriteStartElement("player_id");
-                    writer.WriteString(result.player_id);
+                    writer.WriteString(result.playerId);
                     writer.WriteEndElement(); // <player_id ... />
 
                     writer.WriteEndElement(); // <client_info ... />
@@ -3487,17 +3490,86 @@ namespace NicoTools
     }
 
     //2018-09-14 ADD marky 検索API v2
+    //[DataContract]
+    //class sessionAPI
+    //{
+    //    [DataMember]
+    //    public string recipe_id = "";
+
+    //    [DataMember]
+    //    public string player_id = "";
+
+    //    [DataMember]
+    //    public  List<string> videos = null;
+
+    //    [DataMember]
+    //    public List<string> audios = null;
+
+    //    [DataMember]
+    //    public List<string> movies = null;
+
+    //    [DataMember]
+    //    public List<string> protocols = null;
+
+    //    [DataMember]
+    //    public auth_typesC auth_types = null;
+
+    //    [DataContract]
+    //    public class auth_typesC
+    //    {
+    //        [DataMember]
+    //        public string http = "";
+    //    }
+
+    //    [DataMember]
+    //    public string service_user_id = "";
+
+    //    [DataMember]
+    //    public string token = "";
+
+    //    [DataMember]
+    //    public string signature = "";
+
+    //    [DataMember]
+    //    public string content_id = "";
+
+    //    [DataMember]
+    //    public long heartbeat_lifetime = 0;
+
+    //    [DataMember]
+    //    public long content_key_timeout = 0;
+
+    //    [DataMember]
+    //    public float priority = 0;
+
+    //    [DataMember]
+    //    public List<urlC> urls = null;
+
+    //    [DataContract]
+    //    public class urlC
+    //    {
+    //        [DataMember]
+    //        public string url = "";
+
+    //        [DataMember]
+    //        public Boolean is_well_known_port = false;
+
+    //        [DataMember]
+    //        public Boolean is_ssl = false;
+    //    }
+    //}
+    // 2021/03/16 Update marky  sessionフォーマット変更
     [DataContract]
     class sessionAPI
     {
         [DataMember]
-        public string recipe_id = "";
+        public string recipeId = "";
 
         [DataMember]
-        public string player_id = "";
+        public string playerId = "";
 
         [DataMember]
-        public  List<string> videos = null;
+        public List<string> videos = null;
 
         [DataMember]
         public List<string> audios = null;
@@ -3509,17 +3581,18 @@ namespace NicoTools
         public List<string> protocols = null;
 
         [DataMember]
-        public auth_typesC auth_types = null;
+        public auth_typesC authTypes = null;
 
         [DataContract]
         public class auth_typesC
         {
             [DataMember]
             public string http = "";
+            public string hls = "";
         }
 
         [DataMember]
-        public string service_user_id = "";
+        public string serviceUserId = "";
 
         [DataMember]
         public string token = "";
@@ -3528,16 +3601,19 @@ namespace NicoTools
         public string signature = "";
 
         [DataMember]
-        public string content_id = "";
+        public string contentId = "";
 
         [DataMember]
-        public long heartbeat_lifetime = 0;
+        public long heartbeatLifetime = 0;
 
         [DataMember]
-        public long content_key_timeout = 0;
+        public long contentKeyTimeout = 0;
 
         [DataMember]
         public float priority = 0;
+
+        [DataMember]
+        public List<string> transferPresets = null;
 
         [DataMember]
         public List<urlC> urls = null;
@@ -3549,10 +3625,10 @@ namespace NicoTools
             public string url = "";
 
             [DataMember]
-            public Boolean is_well_known_port = false;
+            public Boolean isWellKnownPort = false;
 
             [DataMember]
-            public Boolean is_ssl = false;
+            public Boolean isSsl = false;
         }
     }
 
