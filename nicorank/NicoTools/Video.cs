@@ -30,6 +30,9 @@ namespace NicoTools
         // 2019/07/06 ADD marky
         public string last_comment_time = "";
         public string genre = "";
+        // 2021/05/20 ADD marky
+        public string like = "";
+        public string user_name = "";
 
         public enum Status { OK, DELETED, NOT_FOUND, OTHER };
 
@@ -123,6 +126,12 @@ namespace NicoTools
                 // 2019/07/06 Update marky
                 buff.Append(genre);
                 buff.Append("\t");
+                // 2021/05/20 Add marky
+                buff.Append(user_id);
+                buff.Append("\t");
+                // 2021/05/20 Add marky
+                buff.Append(like.Equals("") ? like : IJStringUtil.ToStringWithComma(int.Parse(like)));
+                buff.Append("\t");
                 buff.Append(tag_set.ToString());
                 return buff.ToString();
             }
@@ -192,6 +201,18 @@ namespace NicoTools
                             break;
                         case "user_id":
                             user_id = IJStringUtil.UnescapeHtml(node.InnerText);
+                            break;
+                        // 2021/05/20 ADD marky
+                        case "user_nickname": 
+                            user_name = IJStringUtil.UnescapeHtml(node.InnerText);
+                            break;
+                        // 2021/05/20 ADD marky
+                        case "ch_id":
+                            user_id = IJStringUtil.UnescapeHtml(node.InnerText);
+                            break;
+                        // 2021/05/20 ADD marky
+                        case "ch_name":
+                            user_name = IJStringUtil.UnescapeHtml(node.InnerText);
                             break;
                         case "tags":
                             if (node.Attributes["domain"] != null && node.Attributes["domain"].Value == "jp")

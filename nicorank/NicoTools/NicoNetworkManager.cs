@@ -393,7 +393,8 @@ namespace NicoTools
                     {
                         int dummy;
                         video_list[i] = video;
-                        video_list[i].pname = TagSet.GetPname(video_list[i].tag_set, out dummy);
+                        // 2021/05/20 DEL marky
+                        //video_list[i].pname = TagSet.GetPname(video_list[i].tag_set, out dummy);
                     }
                     else
                     {
@@ -565,6 +566,8 @@ namespace NicoTools
                         //rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
                         rank_file_video.thumbnail_url = video.thumbnail_url;     // 2019/07/06 ADD marky
                         rank_file_video.genre = video.genre;                     // 2019/07/06 ADD marky
+                        rank_file_video.user_id = video.user_id;                 // 2021/05/20 ADD marky
+                        rank_file_video.user_name = video.user_name;             // 2021/05/20 ADD marky
                         new_rank_file.Add(rank_file_video);
                     }
                     else
@@ -583,6 +586,8 @@ namespace NicoTools
                         //rank_file_video.pname = TagSet.GetPname(video.tag_set, out dummy);
                         rank_file_video.thumbnail_url = video.thumbnail_url;     // 2019/07/06 ADD marky
                         rank_file_video.genre = video.genre;                     // 2019/07/06 ADD marky
+                        rank_file_video.user_id = video.user_id;                 // 2021/05/20 ADD marky
+                        rank_file_video.user_name = video.user_name;             // 2021/05/20 ADD marky
                         new_rank_file.Add(rank_file_video);
                     }
                     msgout_.Write(rank_file_video.video_id + " の情報を更新しました。\r\n");
@@ -647,8 +652,9 @@ namespace NicoTools
                 Video video = NicoUtil.GetVideo(niconico_network_, video_id_list[i], cancel_object_, msgout_);
                 if (video.IsStatusOK())
                 {
-                    int dummy;
-                    video.pname = TagSet.GetPname(video.tag_set, out dummy);
+                    // 2021/05/20 DEL marky
+                    //int dummy;
+                    //video.pname = TagSet.GetPname(video.tag_set, out dummy);
                     // すでに動画がリストに含まれている場合は取得した情報で上書きする。
                     rank_file.AddOrOverwrite(video);
                     msgout_.Write(video_id_list[i] + " の情報を取得しました。\r\n");
@@ -1112,6 +1118,10 @@ namespace NicoTools
                                 // 2019/07/06 ADD marky
                                 video.last_comment_time = result.data[j].lastCommentTime;
                                 video.genre = result.data[j].genre;
+                                // 2021/05/20 ADD marky
+                                video.user_id = video.video_id.Substring(0,2) == "so" ? result.data[j].channelId : result.data[j].userId;
+                                video.like = result.data[j].likeCounter;
+
                                 ++count;
                                 if (count >= start_num)
                                 {
@@ -1521,6 +1531,18 @@ namespace NicoTools
             // 2019/07/06 ADD marky
             [DataMember]
             public string genre = "";
+
+            // 2021/05/20 ADD marky
+            [DataMember]
+            public string userId = "";
+
+            // 2021/05/20 ADD marky
+            [DataMember]
+            public string channelId = "";
+
+            // 2021/05/20 ADD marky
+            [DataMember]
+            public string likeCounter = "";
         }
     }
 

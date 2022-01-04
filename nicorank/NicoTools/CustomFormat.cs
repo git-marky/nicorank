@@ -244,8 +244,10 @@ namespace NicoTools
     class CustomFormatElementBlock
     {
         //public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Tag, ExtractTag, Expression, UserText, Special };
-        // 2019/09/26 Update marky
-        public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Url, Genre, Tag, ExtractTag, Expression, UserText, Special };
+        //// 2019/09/26 Update marky
+        //public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Url, Genre, Tag, ExtractTag, Expression, UserText, Special };
+        // 2021/05/20 Update marky
+        public enum Kind { Literal, Id, View, Res, Mylist, Title, Date, Description, LineNumber, Url, Genre, UserId, UserName, Like, Tag, ExtractTag, Expression, UserText, Special };
         public enum Rounding { Nearest, Floor, Ceil };
         private Kind kind_;
         private string text_;
@@ -318,6 +320,15 @@ namespace NicoTools
                     break;
                 case "genre":         //2019/09/26 ADD marky
                     kind_ = Kind.Genre;
+                    break;
+                case "user_id":       //2021/05/20 ADD marky
+                    kind_ = Kind.UserId;
+                    break;
+                case "user_name":     //2021/05/20 ADD marky
+                    kind_ = Kind.UserName;
+                    break;
+                case "like":          //2021/05/20 ADD marky
+                    kind_ = Kind.Like;
                     break;
                 case "tag":
                     kind_ = Kind.Tag;
@@ -518,6 +529,15 @@ namespace NicoTools
                 case Kind.Genre: //2019/09/26 ADD marky
                     video.genre = str;
                     break;
+                case Kind.UserId:   //2021/05/20 ADD marky
+                    video.user_id = str;
+                    break;
+                case Kind.UserName: //2021/05/20 ADD marky
+                    video.user_name = str;
+                    break;
+                case Kind.Like:     //2021/05/20 ADD marky
+                    video.like = str.Equals("") ? str : IJStringUtil.ToIntFromCommaValue(str).ToString();
+                    break;
                 case Kind.Tag: // text_ は separator
                     if (arrange_ == "daily")
                     {
@@ -585,6 +605,15 @@ namespace NicoTools
                 case Kind.Genre: //2019/09/26 ADD marky
                     buff.Append(video.genre);
                     break;
+                case Kind.UserId:   // 2021/05/20 ADD marky
+                    buff.Append(video.user_id);
+                    break;
+                case Kind.UserName: // 2021/05/20 ADD marky
+                    buff.Append(video.user_name);
+                    break;
+                case Kind.Like:     // 2021/05/20 ADD marky
+                    buff.Append(is_comma_ && video.like != "" ? IJStringUtil.ToStringWithComma(int.Parse(video.like)) : video.like);
+                    break;
                 case Kind.Tag: // text_ は separator
                     if (arrange_ == "daily")
                     {
@@ -614,9 +643,14 @@ namespace NicoTools
 
         private string DoCalc(string exp, Video video)
         {
+            //exp = exp.Replace("view", video.point.view.ToString("0.0")).
+            //    Replace("res", video.point.res.ToString("0.0")).
+            //    Replace("mylist", video.point.mylist.ToString("0.0"));
+            // 2021/05/20 Update marky
             exp = exp.Replace("view", video.point.view.ToString("0.0")).
                 Replace("res", video.point.res.ToString("0.0")).
-                Replace("mylist", video.point.mylist.ToString("0.0"));
+                Replace("mylist", video.point.mylist.ToString("0.0")).
+                Replace("like", video.like.Equals("") ? "0.0" : int.Parse(video.like).ToString("0.0"));
             double val = Expression.Evaluate(exp).GetDouble();
             if (is_nan_to_zero_ && (double.IsNaN(val) || double.IsInfinity(val)))
             {

@@ -256,8 +256,19 @@ namespace NicoTools
                         {
                             video.genre = info[11];
                         }
+                        // 2021/05/20 ADD marky
+                        if (info[12] != "")
+                        {
+                            video.user_id = info[12];
+                        }
+                        if (info[13] != "")
+                        {
+                            video.like = IJStringUtil.ToIntFromCommaValueWithDef(info[13], 0).ToString();
+                        }
 
-                        video.tag_set.Parse(info[12]);
+                        //video.tag_set.Parse(info[12]);
+                        // 2021/05/20 Update marky
+                        video.tag_set.Parse(info[14]);
 
                         video_list_.Add(video);
                     }

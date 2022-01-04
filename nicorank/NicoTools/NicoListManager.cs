@@ -116,7 +116,7 @@ namespace NicoTools
                 if (index >= 0)
                 {
                     video.point -= video_list_diff2[index].point;
-                    // 2019/09/26 ADD marky 
+                    // 2019/09/26 ADD marky 前回の値を継承
                     if (video.thumbnail_url.Equals("") && video_list_diff2[index].thumbnail_url != "")
                     {
                         video.thumbnail_url = video_list_diff2[index].thumbnail_url;
@@ -129,6 +129,23 @@ namespace NicoTools
                     {
                         video.tag_set = video_list_diff2[index].tag_set;
                     }
+                    // 2021/05/20 ADD marky
+                    if (video.user_id.Equals("") && video_list_diff2[index].user_id != "")
+                    {
+                        video.user_id = video_list_diff2[index].user_id;
+                    }
+                    if (video_list_diff2[index].like != "")
+                    {
+                        if (video.like.Equals(""))
+                        {
+                            video.like = video_list_diff2[index].like; //いいね！を継承
+                        }
+                        else
+                        {
+                            video.like = (int.Parse(video.like) - int.Parse(video_list_diff2[index].like)).ToString(); //いいね！差分を計算
+                        }
+                    }
+
                     video_list.Add(video);
                 }
                 else

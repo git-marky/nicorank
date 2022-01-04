@@ -2159,7 +2159,9 @@ namespace NicoTools
                 { // keyword search
                     json += "title,description,tags";
                 }
-                json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre";
+                //json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre";
+                // 2021/05/20 Add marky
+                json += "&fields=contentId,title,tags,viewCounter,mylistCounter,commentCounter,startTime,thumbnailUrl,lengthSeconds,lastCommentTime,genre,userId,channelId,likeCounter";
 
                 json += "&_sort=";
                 if (order == SearchOrder.Asc)

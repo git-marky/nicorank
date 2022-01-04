@@ -1472,6 +1472,8 @@ namespace nicorank
                     "<date format=\"yyyy年MM月dd日 HH：mm：ss\"/>\r\n" +
                     "<thumbnail_url/>\r\n" +
                     "<genre/>\r\n" +
+                    "<user_id/>\r\n" +  // 2021/05/20 ADD marky
+                    "<like/>\r\n" +     // 2021/05/20 ADD marky
                     "<tag separator=\"\\n\"/>\r\n";
                 if ((string)((Control)sender).Tag == "Input")
                 {
