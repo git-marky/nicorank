@@ -1119,7 +1119,7 @@ namespace NicoTools
                                 video.last_comment_time = result.data[j].lastCommentTime;
                                 video.genre = result.data[j].genre;
                                 // 2021/05/20 ADD marky
-                                video.user_id = video.video_id.Substring(0,2) == "so" ? result.data[j].channelId : result.data[j].userId;
+                                video.user_id = video.video_id.StartsWith("so") ? result.data[j].channelId : result.data[j].userId;
                                 video.like = result.data[j].likeCounter;
 
                                 ++count;

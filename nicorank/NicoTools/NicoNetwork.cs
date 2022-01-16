@@ -1279,6 +1279,9 @@ namespace NicoTools
                 if (video_id.StartsWith("so"))
                 {
                     video_id = ParseGetVideoInfo(GetVideoInfo2(video_id));
+                    // 2021/05/24 Update marky GetVideoInfo2がjsonを返すようになった ↓は有料動画を取得できないからボツ
+                    //VideoInfo video_info = new VideoInfo(GetVideoInfo(video_id));
+                    //video_id = video_info.thread_id;
                 }
 
                 //if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
@@ -1329,36 +1332,58 @@ namespace NicoTools
             return network_.GetAndReadFromWebUTF8("http://api.ce.nicovideo.jp/nicoapi/v1/video.info?v=" + video_id);
         }
 
-        // GetVideoInfo2 で取得した xml を解析してthread id を返す 2020/10/20 ADD marky
-        public string ParseGetVideoInfo(string xml)
+        //// GetVideoInfo2 で取得した xml を解析してthread id を返す 2020/10/20 ADD marky 
+        //public string ParseGetVideoInfo(string xml)
+        //{
+        //    string thread_id = "";
+
+        //    XmlDocument doc = new XmlDocument();
+        //    doc.LoadXml(xml);
+        //    XmlElement element = doc.DocumentElement;
+        //    if (element.Attributes["status"].Value == "ok")
+        //    {
+        //        for (XmlNode node = element.FirstChild;
+        //            node != null; node = node.NextSibling)
+        //        {
+        //            switch (node.Name)
+        //            {
+        //                case "thread":
+        //                    for (XmlNode threadnode = node.FirstChild;
+        //                        threadnode != null; threadnode = threadnode.NextSibling)
+        //                    {
+        //                        switch (threadnode.Name)
+        //                        {
+        //                            case "id":
+        //                                thread_id = IJStringUtil.UnescapeHtml(threadnode.InnerText);
+        //                                break;
+        //                        }
+        //                    }
+        //                    break;
+        //            }
+        //        }
+        //    }
+        //    return thread_id;
+        //}
+        // 2021/05/24 Update marky GetVideoInfo2がjsonを返すようになった
+        public string ParseGetVideoInfo(string json)
         {
             string thread_id = "";
 
-            XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xml);
-            XmlElement element = doc.DocumentElement;
-            if (element.Attributes["status"].Value == "ok")
+            int start = json.IndexOf("\"thread\":{\"id\":\"") + 16;
+            if (start < 0)
             {
-                for (XmlNode node = element.FirstChild;
-                    node != null; node = node.NextSibling)
-                {
-                    switch (node.Name)
-                    {
-                        case "thread":
-                            for (XmlNode threadnode = node.FirstChild;
-                                threadnode != null; threadnode = threadnode.NextSibling)
-                            {
-                                switch (threadnode.Name)
-                                {
-                                    case "id":
-                                        thread_id = IJStringUtil.UnescapeHtml(threadnode.InnerText);
-                                        break;
-                                }
-                            }
-                            break;
-                    }
-                }
+                return "";
             }
+            int end = json.IndexOf("\"", start);
+            if (end < 0)
+            {
+                return "";
+            }
+            else
+            {
+                thread_id = json.Substring(start, end - start);
+            }
+
             return thread_id;
         }
 
