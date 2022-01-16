@@ -1153,6 +1153,58 @@ namespace NicoTools
         }
     }
 
+    // 2021/07/24 ADD marky
+    /// <summary>
+    /// <see cref="Video"/> クラスの <see cref="NicoTools.Video.user_id"/> を
+    /// 対象としたフィルター。
+    /// </summary>
+    public class UserIdFilter : TextFilterBase
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="is_regex"></param>
+        /// <param name="ignore_case"></param>
+        /// <param name="match_all"></param>
+        public UserIdFilter(string pattern, bool is_regex, bool ignore_case, bool match_all)
+            : base(pattern, is_regex, ignore_case, match_all)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="is_regex"></param>
+        public UserIdFilter(string pattern, bool is_regex)
+            : this(pattern, is_regex, false, false)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pattern"></param>
+        public UserIdFilter(string pattern)
+            : this(pattern, false, false, true)
+        {
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="video"></param>
+        /// <returns></returns>
+        protected override string GetText(Video video)
+        {
+            return video.user_id;
+        }
+    }
+
 
     /// <summary>
     /// 
@@ -1204,16 +1256,30 @@ namespace NicoTools
         // (?<token_open_paren>\()
         // |
         // (?<token_close_paren>\))
+        //private const string token_regex =
+        //    "(?<token_pattern>(?<pattern_name>(?:id|title|description|submit|view|comment|myl" +
+        //    "ist|pname|length|tag|ltag|utag)list)(?:(?<pattern_option_indicator>@)(?<pattern_" +
+        //    "option>[air]*))?:(?:(?<list_pattern_paren>\\()[\\r\\n]+(?:(?<pattern_value>[^\\r" +
+        //    "\\n]+)[\\r\\n]+)*?\\)(?:[\\r\\n]|$)|(?<list_pattern_paren>{)[\\r\\n]+(?:(?<patter" +
+        //    "n_value>[^\\r\\n]+)[\\r\\n]+)*?}(?:[\\r\\n]|$)))|(?<token_pattern>(?<pattern_name" +
+        //    ">submit):(?<pattern_value>\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} *, *\\d{4}/" +
+        //    "\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}| *, *\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2" +
+        //    "}|\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} *,))|(?<token_pattern>(?<pattern_nam" +
+        //    "e>id|title|description|submit|view|comment|mylist|pname|length|tag|ltag|utag)(?:" +
+        //    "(?<pattern_option_indicator>@)(?<pattern_option>[air]*))?:(?<pattern_value>[^\")" +
+        //    " \\r\\n]+|\"(?:[^\"\\\\]|\\\\.)+\"))|(?<token_not>-)|(?<token_or>\\bor\\b)|(?<token_" +
+        //    "and>\\band\\b)|(?<token_open_paren>\\()|(?<token_close_paren>\\))";
+        // 2021/07/24 Update marky
         private const string token_regex =
             "(?<token_pattern>(?<pattern_name>(?:id|title|description|submit|view|comment|myl" +
-            "ist|pname|length|tag|ltag|utag)list)(?:(?<pattern_option_indicator>@)(?<pattern_" +
+            "ist|pname|length|tag|ltag|utag|userid)list)(?:(?<pattern_option_indicator>@)(?<pattern_" +
             "option>[air]*))?:(?:(?<list_pattern_paren>\\()[\\r\\n]+(?:(?<pattern_value>[^\\r" +
             "\\n]+)[\\r\\n]+)*?\\)(?:[\\r\\n]|$)|(?<list_pattern_paren>{)[\\r\\n]+(?:(?<patter" +
             "n_value>[^\\r\\n]+)[\\r\\n]+)*?}(?:[\\r\\n]|$)))|(?<token_pattern>(?<pattern_name" +
             ">submit):(?<pattern_value>\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} *, *\\d{4}/" +
             "\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}| *, *\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2" +
             "}|\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} *,))|(?<token_pattern>(?<pattern_nam" +
-            "e>id|title|description|submit|view|comment|mylist|pname|length|tag|ltag|utag)(?:" +
+            "e>id|title|description|submit|view|comment|mylist|pname|length|tag|ltag|utag|userid)(?:" +
             "(?<pattern_option_indicator>@)(?<pattern_option>[air]*))?:(?<pattern_value>[^\")" +
             " \\r\\n]+|\"(?:[^\"\\\\]|\\\\.)+\"))|(?<token_not>-)|(?<token_or>\\bor\\b)|(?<token_" +
             "and>\\band\\b)|(?<token_open_paren>\\()|(?<token_close_paren>\\))";
@@ -1255,6 +1321,7 @@ namespace NicoTools
             atomic_filter_parsers_.Add("tag", ParseVideoTagFilter);
             atomic_filter_parsers_.Add("ltag", ParseVideoTagFilter);
             atomic_filter_parsers_.Add("utag", ParseVideoTagFilter);
+            atomic_filter_parsers_.Add("userid", ParseUserIdFilter);    // 2021/07/24 ADD marky
             atomic_filter_parsers_.Add("idlist", ParseVideoIdListFilter);
             atomic_filter_parsers_.Add("titlelist", ParseVideoTitleListFilter);
             atomic_filter_parsers_.Add("descriptionlist", ParseVideoDescriptionListFilter);
@@ -1267,6 +1334,7 @@ namespace NicoTools
             atomic_filter_parsers_.Add("taglist", ParseVideoTagListFilter);
             atomic_filter_parsers_.Add("ltaglist", ParseVideoTagListFilter);
             atomic_filter_parsers_.Add("utaglist", ParseVideoTagListFilter);
+            atomic_filter_parsers_.Add("useridlist", ParseUserIdListFilter);    // 2021/07/24 ADD marky
         }
 
         /// <summary>
@@ -1608,6 +1676,61 @@ namespace NicoTools
             {
                 // オプションが全て省略されているのでデフォルトオプションを用いる
                 filter = new VideoIdFilter(pattern_value);
+            }
+
+            return filter;
+        }
+
+        // 2021/07/24 ADD marky
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private IVideoFilter ParseUserIdFilter()
+        {
+            IVideoFilter filter;
+
+            bool is_regex_option_present;
+            bool is_ignore_case_option_preset;
+            bool is_match_all_option_present;
+
+            bool is_option_present = ParsePatternOptions(out is_regex_option_present,
+                                                         out is_ignore_case_option_preset,
+                                                         out is_match_all_option_present);
+
+            string pattern_value = ParsePatternValue();
+
+
+            if (is_option_present)
+            {
+                // オプションの指定有り
+
+                if (is_regex_option_present)
+                {
+                    try
+                    {
+                        // Regex オプションが指定されているので、他のオプションは無視
+                        filter = new UserIdFilter(pattern_value, true);
+                    }
+                    catch (ArgumentException e)
+                    {
+                        ThrowParseException(FilterParseException.ParseErrorType.RegexFormat, e);
+                        return null;
+                    }
+                }
+                else
+                {
+                    // Regex オプションが指定されていないので、他のオプションも設定
+                    filter = new UserIdFilter(pattern_value,
+                                               is_regex_option_present,
+                                               is_ignore_case_option_preset,
+                                               is_match_all_option_present);
+                }
+            }
+            else
+            {
+                // オプションが全て省略されているのでデフォルトオプションを用いる
+                filter = new UserIdFilter(pattern_value);
             }
 
             return filter;
@@ -3234,6 +3357,84 @@ namespace NicoTools
                         filter = null;
                         break;
                 }
+            }
+
+            return filter;
+        }
+        
+        // 2021/07/24 ADD marky
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private IVideoFilter ParseUserIdListFilter()
+        {
+            IVideoFilter filter;
+
+            bool is_regex_option_present;
+            bool is_ignore_case_option_preset;
+            bool is_match_all_option_present;
+
+            bool is_option_present = ParsePatternOptions(out is_regex_option_present,
+                                                         out is_ignore_case_option_preset,
+                                                         out is_match_all_option_present);
+
+            IVideoFilter sub_filter;
+            IList<IVideoFilter> sub_filters;
+
+            if (token_.Groups["list_pattern_paren"].Value == "(")
+            {
+                filter = new AndFilter();
+                sub_filters = ((AndFilter)filter).SubFilters;
+            }
+            else if (token_.Groups["list_pattern_paren"].Value == "{")
+            {
+                filter = new OrFilter();
+                sub_filters = ((OrFilter)filter).SubFilters;
+            }
+            else
+            {
+                ThrowParseException(FilterParseException.ParseErrorType.Syntax);
+
+                return null;
+            }
+
+            foreach (Capture capture in token_.Groups["pattern_value"].Captures)
+            {
+                string pattern_value = capture.Value;
+                if (is_option_present)
+                {
+                    // オプションの指定有り
+
+                    if (is_regex_option_present)
+                    {
+                        try
+                        {
+                            // Regex オプションが指定されているので、他のオプションは無視
+                            sub_filter = new UserIdFilter(pattern_value, true);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            ThrowParseException(FilterParseException.ParseErrorType.RegexFormat, e);
+                            return null;
+                        }
+                    }
+                    else
+                    {
+                        // Regex オプションが指定されていないので、他のオプションも設定
+                        sub_filter = new UserIdFilter(pattern_value,
+                            is_regex_option_present,
+                            is_ignore_case_option_preset,
+                            is_match_all_option_present);
+                    }
+                }
+                else
+                {
+                    // オプションが全て省略されているのでデフォルトオプションを用いる
+                    sub_filter = new UserIdFilter(pattern_value);
+                }
+
+                sub_filters.Add(sub_filter);
             }
 
             return filter;

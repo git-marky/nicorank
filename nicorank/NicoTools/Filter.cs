@@ -144,6 +144,11 @@ namespace NicoTools
                     return new FilterDeleteTag(true, line, start_line + 1, end_line);
                 case "[delete !tag]":
                     return new FilterDeleteTag(false, line, start_line + 1, end_line);
+                // 2021/07/24 ADD marky 
+                case "[ng user id]":
+                    return new FilterElementUserId(false, line, start_line + 1, end_line);
+                case "[pickup user id]":
+                    return new FilterElementUserId(true, line, start_line + 1, end_line);
             }
             throw new FormatException();
         }
@@ -541,6 +546,40 @@ namespace NicoTools
                     video.tag_set.DeleteTag(word_list_[i]);
                 }
             }
+        }
+    }
+
+    // 2021/07/24 ADD marky
+    class FilterElementUserId : FilterElement
+    {
+        public FilterElementUserId(bool is_affirmation, string[] line, int start_line, int end_line)
+            : base(is_affirmation, line, start_line, end_line)
+        {
+
+        }
+
+        public override string ToString()
+        {
+            if (is_affirmation_)
+            {
+                return "[pickup user id]\r\n" + base.ToString();
+            }
+            else
+            {
+                return "[ng user id]\r\n" + base.ToString();
+            }
+        }
+
+        public override bool IsThrough(Video video)
+        {
+            for (int i = 0; i < word_list_.Count; ++i)
+            {
+                if (word_list_[i] == video.user_id)
+                {
+                    return is_affirmation_;
+                }
+            }
+            return !is_affirmation_;
         }
     }
 }

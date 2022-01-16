@@ -1140,7 +1140,12 @@ namespace NicoTools
                                 video.title = result.data[j].title ?? "";
                                 video.submit_date = DateTime.Parse(result.data[j].startTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
                                 video.thumbnail_url = result.data[j].thumbnailUrl;
-                                video.length = result.data[j].lengthSeconds;
+                                //video.length = result.data[j].lengthSeconds;
+                                // 2021/07/24 Update marky 秒を分：秒形式に
+                                int length = int.Parse(result.data[j].lengthSeconds);
+                                int second;
+                                int minute = Math.DivRem(length, 60, out second);
+                                video.length = minute.ToString() + ':' + second.ToString();
                                 video.tag_set.ParseBlank(result.data[j].tags);
                                 // 2019/07/06 ADD marky
                                 video.last_comment_time = result.data[j].lastCommentTime;
