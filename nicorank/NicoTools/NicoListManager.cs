@@ -484,6 +484,20 @@ namespace NicoTools
         {
             int index = -1;
 
+
+            string genre = "";
+            if (!is_mylist)
+            {
+                // nico-memoが存在する場合は2回目でnico-thumbnailを取得
+                index = html.IndexOf("<title>", index + 1);
+                string title = IJStringUtil.GetStringBetweenTag(ref index, "title", html);
+                Match t = Regex.Match(title, "(.*)の動画ランキング");
+                if (t.Success)
+                {
+                    genre = t.Groups[1].Value;
+                }
+            }
+
             while ((index = html.IndexOf("<item>", index + 1)) >= 0)
             {
                 Video video = new Video();
@@ -515,7 +529,26 @@ namespace NicoTools
                 {
                     video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_specified_ranking_rss2", "");
                 }
-                IJStringUtil.GetStringBetweenTag(ref index, "p", html);
+                //IJStringUtil.GetStringBetweenTag(ref index, "p", html);
+                // 2021/12/08 Update marky start nico-thumbnailを取得
+                string thumbnail = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
+                Match m = Regex.Match(thumbnail, "src=\"([^\"]*)\"");
+                if (m.Success)
+                {
+                    video.thumbnail_url = m.Groups[1].Value;
+                }
+                else if (is_mylist)
+                {
+                    // nico-memoが存在する場合は2回目でnico-thumbnailを取得
+                    thumbnail = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
+                    m = Regex.Match(thumbnail, "src=\"([^\"]*)\"");
+                    if (m.Success)
+                    {
+                        video.thumbnail_url = m.Groups[1].Value.Replace(".M","");
+                    }
+                }
+                // 2021/12/08 Update marky end
+
                 video.description = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
                 // 2019/06/26 DEL marky
                 //if (!is_mylist) // 読み飛ばし
@@ -528,6 +561,7 @@ namespace NicoTools
 
                 if (!is_mylist)
                 {
+                    //「合計」をSkip
                     IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
                     // 2019/06/26 DEL marky
                     //if (!is_total)
@@ -541,10 +575,18 @@ namespace NicoTools
 
                 string view_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
                 string res_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
+                // 2021/12/08 ADD marky
+                if (!is_mylist)
+                {
+                    string like_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);  
+                    video.like = IJStringUtil.ToIntFromCommaValueWithDef(like_str, 0).ToString();
+                }
                 string mylist_str = IJStringUtil.GetStringBetweenTag(ref index, "strong", html);
                 video.point.view = IJStringUtil.ToIntFromCommaValue(view_str);
                 video.point.res = IJStringUtil.ToIntFromCommaValue(res_str);
                 video.point.mylist = IJStringUtil.ToIntFromCommaValue(mylist_str);
+                // 2021/12/08 ADD marky
+                video.genre = genre;
                 if (RankFile.SearchVideo(video_list, video.video_id) < 0)
                 {
                     video_list.Add(video);
@@ -621,6 +663,7 @@ namespace NicoTools
                             video.point.mylist = result[j].count.mylist;
                             video.like = result[j].count.like;          // 2021/07/30 ADD marky
                             if (video.like == null){ video.like = ""; } // 2021/07/30 ADD marky 07/30以前はlike未定義
+                            video.thumbnail_url = result[j].thumbnail.url;  // 2021/12/08 ADD marky
                             video.title = result[j].title;
                             video.submit_date = DateTime.Parse(result[j].registeredAt, null, System.Globalization.DateTimeStyles.RoundtripKind);
                             if (RankFile.SearchVideo(video_list, video.video_id) < 0)
