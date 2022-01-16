@@ -3686,6 +3686,9 @@ namespace NicoTools
 
             [DataMember]
             public int mylist = 0;
+
+            [DataMember]
+            public string like = "";    // 2021/07/30 ADD marky
         }
 
         [DataMember]

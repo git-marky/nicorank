@@ -611,6 +611,8 @@ namespace NicoTools
                             video.point.view = result[j].count.view; ;
                             video.point.res = result[j].count.comment;
                             video.point.mylist = result[j].count.mylist;
+                            video.like = result[j].count.like;          // 2021/07/30 ADD marky
+                            if (video.like == null){ video.like = ""; } // 2021/07/30 ADD marky 07/30以前はlike未定義
                             video.title = result[j].title;
                             video.submit_date = DateTime.Parse(result[j].registeredAt, null, System.Globalization.DateTimeStyles.RoundtripKind);
                             if (RankFile.SearchVideo(video_list, video.video_id) < 0)
