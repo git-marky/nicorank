@@ -992,6 +992,17 @@ namespace NicoTools
                 video.video_id = html.Substring(start, end - start);
                 index = end;    // 2018/12/12 ADD marky 再生時間が取得出来ていなかったのでインデックスを進める
 
+                //サムネイルURL 2021/06/29 ADD marky
+                start = html.IndexOf("data-original=\"", index) + 15;
+                end = html.IndexOf('"', start);
+                c = html.IndexOf(".M", start);
+                if (end > c)
+                {
+                    end = c;
+                }
+                video.thumbnail_url = html.Substring(start, end - start);
+                index = end;
+
                 //再生時間
                 video.length = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
 
@@ -1005,16 +1016,19 @@ namespace NicoTools
                 //コメント
                 string resStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
                 video.point.res = IJStringUtil.ToIntFromCommaValue(resStr);
+                //いいね！ 2021/06/29 ADD marky
+                string likeStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+                video.like = likeStr;
                 //マイリスト
                 //string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
                 //2020/07/28 Update marky 07/27仕様変更に伴うマイリストコメントページへのリンク削除に対応
                 string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
                 video.point.mylist = IJStringUtil.ToIntFromCommaValue(mylistStr);
 
-                // 宣伝ポイント。将来実装するときのため
-                //string comStr = 
-                IJStringUtil.GetStringBetweenTag(ref index, "a", html); // 読み捨て
-                //video.com = IJStringUtil.ToIntFromCommaValue(comStr);
+                //// 宣伝ポイント。将来実装するときのため 2021/06/29 DELETE marky
+                ////string comStr = 
+                //IJStringUtil.GetStringBetweenTag(ref index, "a", html); // 読み捨て
+                ////video.com = IJStringUtil.ToIntFromCommaValue(comStr);
 
                 ++count;
                 if (count >= start_num)
