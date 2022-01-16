@@ -395,13 +395,17 @@ namespace nicorank
 
         public void MakeNewMylistGroup()
         {
-            string mylist_id = nico_mylist_.MakeNewMylistGroup((bool)param_[0], (string)param_[1], (string)param_[2], (int)param_[3], (int)param_[4]);
+            //string mylist_id = nico_mylist_.MakeNewMylistGroup((bool)param_[0], (string)param_[1], (string)param_[2], (int)param_[3], (int)param_[4]);
+            // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
+            string mylist_id = nico_mylist_.MakeNewMylistGroup((bool)param_[0], (string)param_[1], (string)param_[2], (int)param_[3]);
             msg_receiver_.UpdateMylistId(mylist_id);
         }
 
         public void UpdateMylistGroup()
         {
-            nico_mylist_.UpdateMylistGroup((string)param_[0], (bool)param_[1], (string)param_[2], (string)param_[3], (int)param_[4], (int)param_[5]);
+            //nico_mylist_.UpdateMylistGroup((string)param_[0], (bool)param_[1], (string)param_[2], (string)param_[3], (int)param_[4], (int)param_[5]);
+            // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
+            nico_mylist_.UpdateMylistGroup((string)param_[0], (bool)param_[1], (string)param_[2], (string)param_[3], (int)param_[4]);
         }
 
         public void AddMylist()

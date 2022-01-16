@@ -770,15 +770,23 @@ namespace nicorank
 
                     if (radioButtonMylistUpdate.Checked)
                     {
+                        //StartThread(nicorank_mgr_.UpdateMylistGroup, null, false, textBoxMylistUpdateId.Text, radioButtonMylistPublic.Checked,
+                        //    textBoxMylistName.Text, textBoxMylistUpdateDescription.Text,
+                        //    comboBoxMylistNewOrder.SelectedIndex, comboBoxMylistNewColor.SelectedIndex);
+                        // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
                         StartThread(nicorank_mgr_.UpdateMylistGroup, null, false, textBoxMylistUpdateId.Text, radioButtonMylistPublic.Checked,
                             textBoxMylistName.Text, textBoxMylistUpdateDescription.Text,
-                            comboBoxMylistNewOrder.SelectedIndex, comboBoxMylistNewColor.SelectedIndex);
+                            comboBoxMylistNewOrder.SelectedIndex);
                     }
                     else
                     {
+                        //StartThread(nicorank_mgr_.MakeNewMylistGroup, null, false, radioButtonMylistPublic.Checked,
+                        //    textBoxMylistName.Text, textBoxMylistUpdateDescription.Text,
+                        //    comboBoxMylistNewOrder.SelectedIndex, comboBoxMylistNewColor.SelectedIndex);
+                        // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
                         StartThread(nicorank_mgr_.MakeNewMylistGroup, null, false, radioButtonMylistPublic.Checked,
                             textBoxMylistName.Text, textBoxMylistUpdateDescription.Text,
-                            comboBoxMylistNewOrder.SelectedIndex, comboBoxMylistNewColor.SelectedIndex);
+                            comboBoxMylistNewOrder.SelectedIndex);
                     }
                 }
                 if (mylist_new_counter <= 0)

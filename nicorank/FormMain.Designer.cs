@@ -479,8 +479,6 @@
             this.radioButtonDlRankRss = new System.Windows.Forms.RadioButton();
             this.radioButtonDlRankHtml = new System.Windows.Forms.RadioButton();
             this.buttonDlRank = new System.Windows.Forms.Button();
-            this.tabPageTagComment = new System.Windows.Forms.TabPage();
-            this.label29 = new System.Windows.Forms.Label();
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.button1 = new System.Windows.Forms.Button();
             this.textBoxFirefoxProfileDir = new System.Windows.Forms.TextBox();
@@ -497,6 +495,8 @@
             this.label45 = new System.Windows.Forms.Label();
             this.selectFileBoxMakeUserIdFromFile = new nicorank.SelectFileBox();
             this.selectFileBoxMakeUserIdFromDir = new nicorank.SelectFileBox();
+            this.tabPageTagComment = new System.Windows.Forms.TabPage();
+            this.label29 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -572,10 +572,10 @@
             this.groupBox12.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox17.SuspendLayout();
-            this.tabPageTagComment.SuspendLayout();
             this.tabPage10.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMakeUserIdColumn)).BeginInit();
+            this.tabPageTagComment.SuspendLayout();
             this.SuspendLayout();
             // 
             // radioButtonInputFromTextBox
@@ -885,7 +885,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(256, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(258, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -900,7 +900,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(231, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(233, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -928,7 +928,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(258, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(260, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -2208,6 +2208,7 @@
             this.comboBoxMylistNewColor.Name = "comboBoxMylistNewColor";
             this.comboBoxMylistNewColor.Size = new System.Drawing.Size(121, 20);
             this.comboBoxMylistNewColor.TabIndex = 6;
+            this.comboBoxMylistNewColor.Visible = false;
             // 
             // label37
             // 
@@ -2217,6 +2218,7 @@
             this.label37.Size = new System.Drawing.Size(32, 12);
             this.label37.TabIndex = 20;
             this.label37.Text = "カラー";
+            this.label37.Visible = false;
             // 
             // comboBoxMylistNewOrder
             // 
@@ -5097,7 +5099,6 @@
             this.tabControl1.Controls.Add(this.tabPage14);
             this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPageMylist);
-            //this.tabControl1.Controls.Add(this.tabPageTagComment);    //2021/12/08 DEL marky
             this.tabControl1.Controls.Add(this.tabPageTimer);
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Controls.Add(this.tabPage2);
@@ -5508,29 +5509,6 @@
             this.buttonDlRank.UseVisualStyleBackColor = true;
             this.buttonDlRank.Click += new System.EventHandler(this.buttonRankDl_Click);
             // 
-            // tabPageTagComment
-            // 
-            this.tabPageTagComment.Controls.Add(this.label29);
-            this.tabPageTagComment.Controls.Add(this.label96);
-            this.tabPageTagComment.Controls.Add(this.textBoxTagVideoId);
-            this.tabPageTagComment.Controls.Add(this.groupBox24);
-            this.tabPageTagComment.Controls.Add(this.groupBox16);
-            this.tabPageTagComment.Location = new System.Drawing.Point(4, 40);
-            this.tabPageTagComment.Name = "tabPageTagComment";
-            this.tabPageTagComment.Size = new System.Drawing.Size(552, 404);
-            this.tabPageTagComment.TabIndex = 22;
-            this.tabPageTagComment.Text = "タグ・コメント";
-            this.tabPageTagComment.UseVisualStyleBackColor = true;
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(20, 9);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(224, 12);
-            this.label29.TabIndex = 17;
-            this.label29.Text = "このタブにあるボタンは各3回までしか押せません";
-            // 
             // tabPage10
             // 
             this.tabPage10.Controls.Add(this.button1);
@@ -5705,6 +5683,29 @@
             this.selectFileBoxMakeUserIdFromDir.Size = new System.Drawing.Size(423, 23);
             this.selectFileBoxMakeUserIdFromDir.TabIndex = 3;
             // 
+            // tabPageTagComment
+            // 
+            this.tabPageTagComment.Controls.Add(this.label29);
+            this.tabPageTagComment.Controls.Add(this.label96);
+            this.tabPageTagComment.Controls.Add(this.textBoxTagVideoId);
+            this.tabPageTagComment.Controls.Add(this.groupBox24);
+            this.tabPageTagComment.Controls.Add(this.groupBox16);
+            this.tabPageTagComment.Location = new System.Drawing.Point(4, 40);
+            this.tabPageTagComment.Name = "tabPageTagComment";
+            this.tabPageTagComment.Size = new System.Drawing.Size(552, 404);
+            this.tabPageTagComment.TabIndex = 22;
+            this.tabPageTagComment.Text = "タグ・コメント";
+            this.tabPageTagComment.UseVisualStyleBackColor = true;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(20, 9);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(224, 12);
+            this.label29.TabIndex = 17;
+            this.label29.Text = "このタブにあるボタンは各3回までしか押せません";
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -5849,13 +5850,13 @@
             this.groupBox9.PerformLayout();
             this.groupBox17.ResumeLayout(false);
             this.groupBox17.PerformLayout();
-            this.tabPageTagComment.ResumeLayout(false);
-            this.tabPageTagComment.PerformLayout();
             this.tabPage10.ResumeLayout(false);
             this.tabPage10.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownMakeUserIdColumn)).EndInit();
+            this.tabPageTagComment.ResumeLayout(false);
+            this.tabPageTagComment.PerformLayout();
             this.ResumeLayout(false);
 
         }

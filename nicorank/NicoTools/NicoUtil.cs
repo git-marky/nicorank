@@ -297,17 +297,25 @@ namespace NicoTools
             cancel_object_ = cancel_object;
         }
 
-        public string MakeNewMylistGroup(bool is_setting_public, string title, string description, int order, int color)
+        //public string MakeNewMylistGroup(bool is_setting_public, string title, string description, int order, int color)
+        // 2021/12/18 Update marky
+        public string MakeNewMylistGroup(bool is_setting_public, string title, string description, int order)
         {
             string mylist_id;
-            niconico_network_.MakeNewAndUpdateMylistGroup(is_setting_public, title, description, order, color, out mylist_id);
+            //niconico_network_.MakeNewAndUpdateMylistGroup(is_setting_public, title, description, order, color, out mylist_id);
+            // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
+            niconico_network_.MakeNewMylistGroup(is_setting_public, title, description, order, out mylist_id);
             msgout_.Write("マイリストを新規作成しました。\r\n");
             return mylist_id;
         }
 
-        public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color)
+        //public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color)
+        // 2021/12/18 Update marky
+        public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order)
         {
-            string str = niconico_network_.UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color);
+            //string str = niconico_network_.UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color);
+            // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
+            string str = niconico_network_.UpdateMylistGroup(mylist_id, is_setting_public, title, description, order);
             msgout_.Write("マイリストを更新しました。\r\n");
             return str;
         }

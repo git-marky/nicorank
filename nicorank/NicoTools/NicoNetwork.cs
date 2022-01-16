@@ -58,6 +58,9 @@ namespace NicoTools
 
         private string issuer_ = "Niconico_Ranking_Maker/%%version%%";
 
+        //2021/12/18 ADD marky
+        private readonly string[] mylist_sort = { "addedAt", "mylistComment", "title", "registeredAt", "viewCount", "lastCommentTime", "commentCount", "mylistCount", "duration" };
+
         public NicoNetwork()
         {
             network_ = new IJNetwork();
@@ -1030,35 +1033,161 @@ namespace NicoTools
             return network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/my/mylist");
         }
 
+        ///// <summary>
+        ///// マイリストを新規作成する。
+        ///// </summary>
+        ///// <param name="title">新規作成するマイリストのタイトル</param>
+        ///// <returns>サーバからの応答</returns>
+        //public string MakeNewMylistGroup(string title)
+        //{
+        //    CheckCookie();
+
+        //    string html = GetMylistPageFromMyPage();
+
+        //    string token = GetToken(html);
+            
+        //    Thread.Sleep(1000);
+
+        //    return MakeNewMylistGroup(title, token);
+        //}
+
+        //public string MakeNewMylistGroup(string title, string token)
+        //{
+        //    CheckCookie();
+
+        //    string post_data = IJNetwork.ConstructPostData(
+        //        "name",         title,
+        //        "default_sort", "1",
+        //        "token",        token);
+        //    return network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylistgroup/add", post_data);
+        //}
+
+        // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
         /// <summary>
         /// マイリストを新規作成する。
         /// </summary>
-        /// <param name="title">新規作成するマイリストのタイトル</param>
-        /// <returns>サーバからの応答</returns>
-        public string MakeNewMylistGroup(string title)
+        /// <param name="is_setting_public">マイリストを公開するかどうか</param>
+        /// <param name="title">マイリストタイトル</param>
+        /// <param name="description">マイリスト説明文</param>
+        /// <param name="order">マイリストの項目の並び順</param>
+        /// <param name="mylist_id">マイリストID</param>
+        public void MakeNewMylistGroup(bool is_setting_public, string title, string description, int order, out string mylist_id)
         {
             CheckCookie();
 
-            string html = GetMylistPageFromMyPage();
+            network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
+            network_.AddCustomHeader("Access-Control-Request-Method: POST");
+            network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+            network_.SetReferer(nicovideo_uri_ + "/my/mylist");
+            string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists");
+            network_.Reset();
 
-            string token = GetToken(html);
-            
-            Thread.Sleep(1000);
+            if (str.Equals("OK"))
+            {
+                network_.SetReferer(nicovideo_uri_ + "/my/mylist");
+                network_.AddCustomHeader("X-Frontend-Id: 6");
+                network_.AddCustomHeader("X-Frontend-Version: 0");
+                network_.AddCustomHeader("X-Niconico-Language: ja-jp");
+                network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
+                network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                try
+                {
+                    //string post_data = "";
+                    //string url_option = mylist_sort[order / 2];
 
-            return MakeNewMylistGroup(title, token);
+                    //post_data = post_data + "?name=" + Uri.EscapeDataString(title);
+                    //post_data = post_data + "&isPublic=" + (is_setting_public ? "true" : "false");
+                    //post_data = post_data + "&defaultSortKey=" + url_option;
+                    //post_data = post_data + "&defaultSortOrder=" + (order < 6 ? (order % 2 == 0 ? "asc" : "desc") : (order % 2 == 0 ? "desc" : "asc"));
+                    //post_data = post_data + "&description=" + Uri.EscapeDataString(description);
+
+                    string post_data = IJNetwork.ConstructPostData(
+                        "name", title,
+                        "isPublic", (is_setting_public ? "true" : "false"),
+                        "defaultSortKey", mylist_sort[order / 2],
+                        "defaultSortOrder", (order < 6 ? (order % 2 == 0 ? "asc" : "desc") : (order % 2 == 0 ? "desc" : "asc")),
+                        "description", description);
+
+                    str = network_.PostAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/users/me/mylists", post_data);
+                }
+                finally
+                {
+                    network_.Reset();
+                }
+
+                if (str.IndexOf("\"status\":200") >= 0) // "status":200 OK
+                {
+                    Match m = Regex.Match(str, "{\"mylistId\":(.*)}}");
+                    if (m.Success)
+                    {
+                        mylist_id = m.Groups[1].Value;
+                    }
+                    else
+                    {
+                        throw new NiconicoAddingMylistFailedException("マイリストの新規作成に失敗しました。マイリストIDの取得に失敗しました。");
+                    }
+                    return;
+                }
+                else
+                {
+                    throw new NiconicoAddingMylistFailedException("マイリストの新規作成に失敗しました。サーバからエラーが返ってきました。");
+                }
+            }
+
+            throw new NiconicoAddingMylistFailedException("マイリストの新規作成に失敗しました。サーバからエラーが返ってきました。");
+
         }
 
-        public string MakeNewMylistGroup(string title, string token)
-        {
-            CheckCookie();
+        ///// <summary>
+        ///// マイリストの冒頭の説明文などを更新
+        ///// </summary>
+        ///// <param name="mylist_id">マイリストID</param>
+        ///// <param name="is_setting_public">マイリストを公開するかどうか</param>
+        ///// <param name="title">マイリストタイトル</param>
+        ///// <param name="description">マイリスト説明文</param>
+        ///// <param name="order">マイリストの項目の並び順</param>
+        ///// <param name="color">マイリストの色</param>
+        ///// <returns>サーバからの応答</returns>
+        //public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color)
+        //{
+        //    CheckCookie();
 
-            string post_data = IJNetwork.ConstructPostData(
-                "name",         title,
-                "default_sort", "1",
-                "token",        token);
-            return network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylistgroup/add", post_data);
-        }
+        //    string html = GetMylistPageFromMyPage();
 
+        //    string token = GetToken(html);
+
+        //    Thread.Sleep(1000);
+        //    return UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color, token);
+        //}
+
+        ///// <summary>
+        ///// マイリストの冒頭の説明文などを更新
+        ///// </summary>
+        ///// <param name="mylist_id">マイリストID</param>
+        ///// <param name="is_setting_public">マイリストを公開するかどうか</param>
+        ///// <param name="title">マイリストタイトル</param>
+        ///// <param name="description">マイリスト説明文</param>
+        ///// <param name="order">マイリストの項目の並び順</param>
+        ///// <param name="color">マイリストの色</param>
+        ///// <param name="token">トークン</param>
+        ///// <returns>サーバからの応答</returns>
+        //public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color, string token)
+        //{
+        //    CheckCookie();
+
+        //    string post_data = IJNetwork.ConstructPostData(
+        //        "group_id",     mylist_id,
+        //        "name",         title,
+        //        "description",  description,
+        //        "public",       (is_setting_public ? "1" : "0"),
+        //        "default_sort", order.ToString(),
+        //        "icon_id",      color.ToString(),
+        //        "token",        token);
+
+        //    return network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylistgroup/update", post_data);
+        //}
+
+        // 2021/12/18 Update marky マイリストAPI(/api/mylistgroup/)の廃止に対応
         /// <summary>
         /// マイリストの冒頭の説明文などを更新
         /// </summary>
@@ -1067,74 +1196,81 @@ namespace NicoTools
         /// <param name="title">マイリストタイトル</param>
         /// <param name="description">マイリスト説明文</param>
         /// <param name="order">マイリストの項目の並び順</param>
-        /// <param name="color">マイリストの色</param>
-        /// <returns>サーバからの応答</returns>
-        public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color)
+        public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order)
         {
             CheckCookie();
 
-            string html = GetMylistPageFromMyPage();
+            network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
+            network_.AddCustomHeader("Access-Control-Request-Method: PUT");
+            network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+            network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id);
+            string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id);
+            network_.Reset();
 
-            string token = GetToken(html);
-
-            Thread.Sleep(1000);
-            return UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color, token);
-        }
-
-        /// <summary>
-        /// マイリストの冒頭の説明文などを更新
-        /// </summary>
-        /// <param name="mylist_id">マイリストID</param>
-        /// <param name="is_setting_public">マイリストを公開するかどうか</param>
-        /// <param name="title">マイリストタイトル</param>
-        /// <param name="description">マイリスト説明文</param>
-        /// <param name="order">マイリストの項目の並び順</param>
-        /// <param name="color">マイリストの色</param>
-        /// <param name="token">トークン</param>
-        /// <returns>サーバからの応答</returns>
-        public string UpdateMylistGroup(string mylist_id, bool is_setting_public, string title, string description, int order, int color, string token)
-        {
-            CheckCookie();
-
-            string post_data = IJNetwork.ConstructPostData(
-                "group_id",     mylist_id,
-                "name",         title,
-                "description",  description,
-                "public",       (is_setting_public ? "1" : "0"),
-                "default_sort", order.ToString(),
-                "icon_id",      color.ToString(),
-                "token",        token);
-
-            return network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylistgroup/update", post_data);
-        }
-
-        public string MakeNewAndUpdateMylistGroup(bool is_setting_public, string title, string description, int order, int color, out string mylist_id)
-        {
-            CheckCookie();
-
-            string html = GetMylistPageFromMyPage();
-
-            string token = GetToken(html);
-
-            Thread.Sleep(1000);
-            string str = MakeNewMylistGroup(title, token);
-
-            if (str.IndexOf("\"status\":\"ok\"") >= 0)
+            if (str.Equals("OK"))
             {
-                int index = str.IndexOf("\"id\"");
-                index = str.IndexOf(':', index) + 1;
-                int end = str.IndexOf(',', index);
-                mylist_id = str.Substring(index, end - index);
-                Thread.Sleep(1000);
-                str = UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color, token);
-            }
-            else
-            {
-                mylist_id = "";
-            }
+                network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id);
+                network_.AddCustomHeader("X-Frontend-Id: 6");
+                network_.AddCustomHeader("X-Frontend-Version: 0");
+                network_.AddCustomHeader("X-Niconico-Language: ja-jp");
+                network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
+                network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                try
+                {
+                    string put_data = IJNetwork.ConstructPostData(
+                        "name", title,
+                        "isPublic", (is_setting_public ? "true" : "false"),
+                        "defaultSortKey", mylist_sort[order / 2],
+                        "defaultSortOrder", (order < 6 ? (order % 2 == 0 ? "asc" : "desc") : (order % 2 == 0 ? "desc" : "asc")),
+                        "description", description);
 
-            return str;
+                    str = network_.PutToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id, put_data);
+                }
+                finally
+                {
+                    network_.Reset();
+                }
+
+                if (str.Equals("OK"))
+                {
+                    return str;
+                }
+                else
+                {
+                    throw new NiconicoAddingMylistFailedException("マイリストの更新に失敗しました。サーバからエラーが返ってきました。");
+                }
+            }
+            throw new NiconicoAddingMylistFailedException("マイリストの更新に失敗しました。サーバからエラーが返ってきました。");
         }
+
+        // 2021/12/18 Delete marky マイリストAPI(/api/mylistgroup/)の廃止に対応
+        //public string MakeNewAndUpdateMylistGroup(bool is_setting_public, string title, string description, int order, int color, out string mylist_id)
+        //{
+        //    CheckCookie();
+
+        //    string html = GetMylistPageFromMyPage();
+
+        //    string token = GetToken(html);
+
+        //    Thread.Sleep(1000);
+        //    string str = MakeNewMylistGroup(title, token);
+
+        //    if (str.IndexOf("\"status\":\"ok\"") >= 0)
+        //    {
+        //        int index = str.IndexOf("\"id\"");
+        //        index = str.IndexOf(':', index) + 1;
+        //        int end = str.IndexOf(',', index);
+        //        mylist_id = str.Substring(index, end - index);
+        //        Thread.Sleep(1000);
+        //        str = UpdateMylistGroup(mylist_id, is_setting_public, title, description, order, color, token);
+        //    }
+        //    else
+        //    {
+        //        mylist_id = "";
+        //    }
+
+        //    return str;
+        //}
 
         ///// <summary>
         ///// 指定した動画をマイリストに加える。token を取得するため、最初に動画のページを取りに行く。
@@ -1308,7 +1444,7 @@ namespace NicoTools
         /// <param name="mylist_id">マイリストID</param>
         /// <param name="video_id_list">動画IDのリスト</param>
         /// <param name="description_list">説明文のリスト。動画IDのリストと対応がとれている必要がある</param>
-        /// <param name="wait_millisecond">1件追加した後に呼び出されるイベント関数</param>
+        /// <param name="dlg">1件追加した後に呼び出されるイベント関数</param>
         public void UpdateMylistDescription(string mylist_id, List<string> video_id_list,
             List<string> description_list, NetworkWaitDelegate dlg)
         {
