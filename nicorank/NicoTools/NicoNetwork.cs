@@ -687,16 +687,16 @@ namespace NicoTools
             return network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/watch/" + video_id);
         }
 
-        /// <summary>
-        /// 動画のHTMLページを取得する
-        /// </summary>
-        /// <param name="video_id">動画ID</param>
-        /// <returns>取得したHTML</returns>
-        public string GetMylistAddPage(string video_id)
-        {
-            CheckCookie();
-            return network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/mylist_add/video/" + video_id);
-        }
+        ///// <summary>
+        ///// 動画のHTMLページを取得する2021/09/15 DEL marky マイリスト登録ページ(/mylist_add/video/)の廃止に対応
+        ///// </summary>
+        ///// <param name="video_id">動画ID</param>
+        ///// <returns>取得したHTML</returns>
+        //public string GetMylistAddPage(string video_id)
+        //{
+        //    CheckCookie();
+        //    return network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/mylist_add/video/" + video_id);
+        //}
 
         /// <summary>
         /// getflv API で動画情報を取得
@@ -1136,71 +1136,117 @@ namespace NicoTools
             return str;
         }
 
+        ///// <summary>
+        ///// 指定した動画をマイリストに加える。token を取得するため、最初に動画のページを取りに行く。
+        ///// </summary>
+        ///// <param name="mylist_id">マイリストID</param>
+        ///// <param name="video_id">動画ID</param>
+        ///// <returns>サーバからの応答</returns>
+        //public string AddMylist(string mylist_id, string video_id)
+        //{
+        //    CheckCookie();
+        //    string html = GetMylistAddPage(video_id);
+
+        //    Match match = Regex.Match(html, "<input type=\"hidden\" name=\"item_id\" value=\"([0-9]+)\">");
+
+        //    if (!match.Success)
+        //    {
+        //        if (html.IndexOf("このアイテムはマイリストに登録できません。") >= 0)
+        //        {
+        //            throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。このアイテムはマイリストに登録できません。");
+        //        }
+        //        else
+        //        {
+        //            throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。html の解析ができませんでした。");
+        //        }
+        //    }
+
+        //    string item_id = match.Groups[1].Value;
+
+        //    //--- 2014/10/19 UPDATE marky マイリスト追加の仕様変更対応
+        //    //string token = GetToken(html);
+        //    string token = GetTokenAddPage(html);
+        //    //---
+
+        //    Thread.Sleep(500);
+        //    string str = AddMylist(mylist_id, item_id, "", token);
+
+        //    if (str.IndexOf("\"code\":\"EXIST\"") >= 0)
+        //    {
+        //        throw new NiconicoAddingMylistExistException();
+        //    }
+        //    if (str.IndexOf("\"status\":\"ok\"") < 0)
+        //    {
+        //        throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。サーバからエラーが返ってきました。");
+        //    }
+        //    return str;
+        //}
+
+        ///// <summary>
+        ///// 指定した動画をマイリストに加える
+        ///// </summary>
+        ///// <param name="mylist_id">マイリストID</param>
+        ///// <param name="item_id">アイテムID（thread ID？）</param>
+        ///// <param name="token">token（動画追加ページのHTMLに書かれている認証キーみたいなもの）</param>
+        ///// <returns>サーバからの応答</returns>
+        //public string AddMylist(string mylist_id, string item_id, string description, string token)
+        //{
+        //    CheckCookie();
+        //    string post_data = IJNetwork.ConstructPostData(
+        //        "group_id",    mylist_id,
+        //        "item_type",   "0",
+        //        "item_id",     item_id,
+        //        "description", description,
+        //        "token",       token);
+        //    string str = network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylist/add", post_data);
+        //    return str;
+        //}
+        // 2021/09/15 Update marky マイリスト登録ページ(/mylist_add/video/)の廃止に対応
         /// <summary>
-        /// 指定した動画をマイリストに加える。token を取得するため、最初に動画のページを取りに行く。
+        /// 指定した動画をマイリストに加える。
         /// </summary>
         /// <param name="mylist_id">マイリストID</param>
         /// <param name="video_id">動画ID</param>
-        /// <returns>サーバからの応答</returns>
-        public string AddMylist(string mylist_id, string video_id)
+        public void AddMylist(string mylist_id, string video_id)
         {
             CheckCookie();
-            string html = GetMylistAddPage(video_id);
 
-            Match match = Regex.Match(html, "<input type=\"hidden\" name=\"item_id\" value=\"([0-9]+)\">");
+            network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
+            network_.AddCustomHeader("Access-Control-Request-Method: POST");
+            network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
+            network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+            string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items?itemId=" + video_id + "&description=");
+            network_.Reset();
 
-            if (!match.Success)
+            if (str.Equals("OK"))
             {
-                if (html.IndexOf("このアイテムはマイリストに登録できません。") >= 0)
+                network_.AddCustomHeader("X-Frontend-Id: 6");
+                network_.AddCustomHeader("X-Frontend-Version: 0");
+                network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
+                network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
+                network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                try
                 {
-                    throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。このアイテムはマイリストに登録できません。");
+                    str = network_.PostAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items?itemId=" + video_id + "&description=", "");
                 }
-                else
+                finally
                 {
-                    throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。html の解析ができませんでした。");
+                    network_.Reset();
+                }
+
+                if (str.IndexOf("\"status\":201") >=0) // "status":201 Created
+                {
+                    return;
+                }else if (str.IndexOf("\"status\":200") >= 0) // "status":200 OK
+                {
+                    throw new NiconicoAddingMylistExistException();
                 }
             }
 
-            string item_id = match.Groups[1].Value;
-
-            //--- 2014/10/19 UPDATE marky マイリスト追加の仕様変更対応
-            //string token = GetToken(html);
-            string token = GetTokenAddPage(html);
-            //---
-
-            Thread.Sleep(500);
-            string str = AddMylist(mylist_id, item_id, "", token);
-
-            if (str.IndexOf("\"code\":\"EXIST\"") >= 0)
-            {
-                throw new NiconicoAddingMylistExistException();
-            }
-            if (str.IndexOf("\"status\":\"ok\"") < 0)
-            {
-                throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。サーバからエラーが返ってきました。");
-            }
-            return str;
+            throw new NiconicoAddingMylistFailedException("マイリストの追加に失敗しました。サーバからエラーが返ってきました。");
         }
 
-        /// <summary>
-        /// 指定した動画をマイリストに加える
-        /// </summary>
-        /// <param name="mylist_id">マイリストID</param>
-        /// <param name="item_id">アイテムID（thread ID？）</param>
-        /// <param name="token">token（動画追加ページのHTMLに書かれている認証キーみたいなもの）</param>
-        /// <returns>サーバからの応答</returns>
-        public string AddMylist(string mylist_id, string item_id, string description, string token)
-        {
-            CheckCookie();
-            string post_data = IJNetwork.ConstructPostData(
-                "group_id",    mylist_id,
-                "item_type",   "0",
-                "item_id",     item_id,
-                "description", description,
-                "token",       token);
-            string str = network_.PostAndReadFromWebUTF8(nicovideo_uri_ + "/api/mylist/add", post_data);
-            return str;
-        }
+
 
         /// <summary>
         /// マイリストの個々の動画の説明文を更新する。1件だけではなくて、同じマイリスト内の複数の動画に対して説明文を更新できる。
@@ -1274,18 +1320,19 @@ namespace NicoTools
 
             for (int i = 0; i < video_id_list.Count; ++i)
             {
-                // 2020/10/20 ADD marky 公式動画はマイリストRSSのlinkがスレッドIDとなっているため変換
-                string video_id = video_id_list[i];
-                if (video_id.StartsWith("so"))
-                {
-                    video_id = ParseGetVideoInfo(GetVideoInfo2(video_id));
-                    // 2021/05/24 Update marky GetVideoInfo2がjsonを返すようになった ↓は有料動画を取得できないからボツ
-                    //VideoInfo video_info = new VideoInfo(GetVideoInfo(video_id));
-                    //video_id = video_info.thread_id;
-                }
+                //// 2020/10/20 ADD marky 公式動画はマイリストRSSのlinkがスレッドIDとなっているため変換
+                //string video_id = video_id_list[i];
+                //if (video_id.StartsWith("so"))
+                //{
+                //    video_id = ParseGetVideoInfo(GetVideoInfo2(video_id));
+                //    // 2021/05/24 Update marky GetVideoInfo2がjsonを返すようになった ↓は有料動画を取得できないからボツ
+                //    //VideoInfo video_info = new VideoInfo(GetVideoInfo(video_id));
+                //    //video_id = video_info.thread_id;
+                //}
 
-                //if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
-                if (mylist_video.Find(x => x.video_id == video_id) != null)
+                //if (mylist_video.Find(x => x.video_id == video_id) != null)
+                // 2021/09/15 Update marky ParsePointRss内で公式動画をsoのIDに戻したので上記変換は不要に
+                if (mylist_video.Find(x => x.video_id == video_id_list[i]) != null)
                 {
                     network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
                     network_.AddCustomHeader("Access-Control-Request-Method: PUT");

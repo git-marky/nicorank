@@ -502,6 +502,14 @@ namespace NicoTools
                 if (is_mylist)
                 {
                     video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_mylist_rss2", "");
+                    // 2021/09/15 ADD marky マイリストRSSでは公式動画がスレッドIDとなっていたためsoのIDに変換
+                    int id;
+                    if (int.TryParse(video.video_id, out id))   // IDが数字だけの場合
+                    {
+                        NicoNetwork network = new NicoNetwork();
+                        Video video2 = new Video(network.GetThumbInfo(video.video_id));
+                        video.video_id = video2.video_id;
+                    }
                 }
                 else
                 {
