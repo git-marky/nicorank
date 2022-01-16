@@ -391,10 +391,19 @@ namespace NicoTools
                     Video video = NicoUtil.GetVideo(niconico_network_, video_list[i].video_id, cancel_object_, msgout_);
                     if (video.IsStatusOK())
                     {
-                        int dummy;
-                        video_list[i] = video;
-                        // 2021/05/20 DEL marky
-                        //video_list[i].pname = TagSet.GetPname(video_list[i].tag_set, out dummy);
+                        //int dummy;
+                        //video_list[i] = video;
+                        //// 2021/05/20 DEL marky
+                        ////video_list[i].pname = TagSet.GetPname(video_list[i].tag_set, out dummy);
+                        // 2021/07/01 Update marky HTML検索で取得したいいね！数を上書き消去しないよう変更
+                        video_list[i].point = video.point;
+                        video_list[i].title = video.title;
+                        video_list[i].submit_date = video.submit_date;
+                        video_list[i].tag_set = video.tag_set;
+                        video_list[i].thumbnail_url = video.thumbnail_url;
+                        video_list[i].genre = video.genre;
+                        video_list[i].user_id = video.user_id;
+                        video_list[i].user_name = video.user_name;
                     }
                     else
                     {
@@ -996,7 +1005,9 @@ namespace NicoTools
                 start = html.IndexOf("data-original=\"", index) + 15;
                 end = html.IndexOf('"', start);
                 c = html.IndexOf(".M", start);
-                if (end > c)
+                //if (end > c)
+                // 2021/07/04 Update marky 中サイズサムネが無い動画がページ末に来た時に対応
+                if (c > 0 && end > c)
                 {
                     end = c;
                 }
@@ -1018,7 +1029,9 @@ namespace NicoTools
                 video.point.res = IJStringUtil.ToIntFromCommaValue(resStr);
                 //いいね！ 2021/06/29 ADD marky
                 string likeStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
-                video.like = likeStr;
+                //video.like = likeStr;
+                // 2021/07/05 Update marky カンマ除去
+                video.like = IJStringUtil.ToIntFromCommaValueWithDef(likeStr, 0).ToString();
                 //マイリスト
                 //string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
                 //2020/07/28 Update marky 07/27仕様変更に伴うマイリストコメントページへのリンク削除に対応
