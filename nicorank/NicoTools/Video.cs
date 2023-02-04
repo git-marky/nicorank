@@ -360,7 +360,7 @@ namespace NicoTools
         }
     }
 
-    // Video をポイント降順でソートするためのクラス。
+    // Video を投稿日時降順でソートするためのクラス。
     public class VideoSubmitDateComparer : IComparer<Video>
     {
         public int Compare(Video x, Video y)

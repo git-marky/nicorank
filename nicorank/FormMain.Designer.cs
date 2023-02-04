@@ -493,10 +493,11 @@
             this.radioButtonMakeUserIdFromDir = new System.Windows.Forms.RadioButton();
             this.radioButtonMakeUserIdFromFile = new System.Windows.Forms.RadioButton();
             this.label45 = new System.Windows.Forms.Label();
-            this.selectFileBoxMakeUserIdFromFile = new nicorank.SelectFileBox();
-            this.selectFileBoxMakeUserIdFromDir = new nicorank.SelectFileBox();
             this.tabPageTagComment = new System.Windows.Forms.TabPage();
             this.label29 = new System.Windows.Forms.Label();
+            this.checkBoxIsFilterBeforeDetail = new System.Windows.Forms.CheckBox();
+            this.selectFileBoxMakeUserIdFromFile = new nicorank.SelectFileBox();
+            this.selectFileBoxMakeUserIdFromDir = new nicorank.SelectFileBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -885,7 +886,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(258, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(260, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -900,7 +901,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(233, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(235, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -928,7 +929,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(260, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(262, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -997,6 +998,7 @@
             // checkBoxIsOutputFilteredVideo
             // 
             this.checkBoxIsOutputFilteredVideo.AutoSize = true;
+            this.checkBoxIsOutputFilteredVideo.Enabled = false;
             this.checkBoxIsOutputFilteredVideo.Location = new System.Drawing.Point(437, 54);
             this.checkBoxIsOutputFilteredVideo.Name = "checkBoxIsOutputFilteredVideo";
             this.checkBoxIsOutputFilteredVideo.Size = new System.Drawing.Size(103, 16);
@@ -3303,6 +3305,7 @@
             // 
             // tabPage8
             // 
+            this.tabPage8.Controls.Add(this.checkBoxIsFilterBeforeDetail);
             this.tabPage8.Controls.Add(this.checkBoxTagSearchDate);
             this.tabPage8.Controls.Add(this.groupBoxSearchGenre);
             this.tabPage8.Controls.Add(this.groupBox38);
@@ -3470,7 +3473,7 @@
             // checkBoxSaveSearch
             // 
             this.checkBoxSaveSearch.AutoSize = true;
-            this.checkBoxSaveSearch.Location = new System.Drawing.Point(44, 101);
+            this.checkBoxSaveSearch.Location = new System.Drawing.Point(15, 101);
             this.checkBoxSaveSearch.Name = "checkBoxSaveSearch";
             this.checkBoxSaveSearch.Size = new System.Drawing.Size(105, 16);
             this.checkBoxSaveSearch.TabIndex = 72;
@@ -5663,26 +5666,6 @@
             this.label45.TabIndex = 0;
             this.label45.Text = "投稿者情報作成";
             // 
-            // selectFileBoxMakeUserIdFromFile
-            // 
-            this.selectFileBoxMakeUserIdFromFile.FileDialog = this.openFileDialog1;
-            this.selectFileBoxMakeUserIdFromFile.FileName = "";
-            this.selectFileBoxMakeUserIdFromFile.FolderBrowserDialog = null;
-            this.selectFileBoxMakeUserIdFromFile.Location = new System.Drawing.Point(21, 67);
-            this.selectFileBoxMakeUserIdFromFile.Name = "selectFileBoxMakeUserIdFromFile";
-            this.selectFileBoxMakeUserIdFromFile.Size = new System.Drawing.Size(423, 23);
-            this.selectFileBoxMakeUserIdFromFile.TabIndex = 6;
-            // 
-            // selectFileBoxMakeUserIdFromDir
-            // 
-            this.selectFileBoxMakeUserIdFromDir.FileDialog = null;
-            this.selectFileBoxMakeUserIdFromDir.FileName = "";
-            this.selectFileBoxMakeUserIdFromDir.FolderBrowserDialog = this.folderBrowserDialog1;
-            this.selectFileBoxMakeUserIdFromDir.Location = new System.Drawing.Point(21, 121);
-            this.selectFileBoxMakeUserIdFromDir.Name = "selectFileBoxMakeUserIdFromDir";
-            this.selectFileBoxMakeUserIdFromDir.Size = new System.Drawing.Size(423, 23);
-            this.selectFileBoxMakeUserIdFromDir.TabIndex = 3;
-            // 
             // tabPageTagComment
             // 
             this.tabPageTagComment.Controls.Add(this.label29);
@@ -5705,6 +5688,39 @@
             this.label29.Size = new System.Drawing.Size(224, 12);
             this.label29.TabIndex = 17;
             this.label29.Text = "このタブにあるボタンは各3回までしか押せません";
+            // 
+            // checkBoxIsFilterBeforeDetail
+            // 
+            this.checkBoxIsFilterBeforeDetail.AutoSize = true;
+            this.checkBoxIsFilterBeforeDetail.Checked = true;
+            this.checkBoxIsFilterBeforeDetail.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxIsFilterBeforeDetail.Enabled = false;
+            this.checkBoxIsFilterBeforeDetail.Location = new System.Drawing.Point(128, 101);
+            this.checkBoxIsFilterBeforeDetail.Name = "checkBoxIsFilterBeforeDetail";
+            this.checkBoxIsFilterBeforeDetail.Size = new System.Drawing.Size(160, 16);
+            this.checkBoxIsFilterBeforeDetail.TabIndex = 77;
+            this.checkBoxIsFilterBeforeDetail.Text = "詳細情報取得前にフィルター";
+            this.checkBoxIsFilterBeforeDetail.UseVisualStyleBackColor = true;
+            // 
+            // selectFileBoxMakeUserIdFromFile
+            // 
+            this.selectFileBoxMakeUserIdFromFile.FileDialog = this.openFileDialog1;
+            this.selectFileBoxMakeUserIdFromFile.FileName = "";
+            this.selectFileBoxMakeUserIdFromFile.FolderBrowserDialog = null;
+            this.selectFileBoxMakeUserIdFromFile.Location = new System.Drawing.Point(21, 67);
+            this.selectFileBoxMakeUserIdFromFile.Name = "selectFileBoxMakeUserIdFromFile";
+            this.selectFileBoxMakeUserIdFromFile.Size = new System.Drawing.Size(423, 23);
+            this.selectFileBoxMakeUserIdFromFile.TabIndex = 6;
+            // 
+            // selectFileBoxMakeUserIdFromDir
+            // 
+            this.selectFileBoxMakeUserIdFromDir.FileDialog = null;
+            this.selectFileBoxMakeUserIdFromDir.FileName = "";
+            this.selectFileBoxMakeUserIdFromDir.FolderBrowserDialog = this.folderBrowserDialog1;
+            this.selectFileBoxMakeUserIdFromDir.Location = new System.Drawing.Point(21, 121);
+            this.selectFileBoxMakeUserIdFromDir.Name = "selectFileBoxMakeUserIdFromDir";
+            this.selectFileBoxMakeUserIdFromDir.Size = new System.Drawing.Size(423, 23);
+            this.selectFileBoxMakeUserIdFromDir.TabIndex = 3;
             // 
             // FormMain
             // 
@@ -6331,6 +6347,7 @@
         private System.Windows.Forms.GroupBox groupBoxSearchGenre;
         private System.Windows.Forms.ComboBox comboBoxSearchGenre;
         private System.Windows.Forms.CheckBox checkBoxTagSearchDate;
+        private System.Windows.Forms.CheckBox checkBoxIsFilterBeforeDetail;
     }
 }
 

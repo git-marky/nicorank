@@ -625,6 +625,7 @@ namespace NicoTools
 
         public bool is_detail_getting;
         public int detail_info_lower;
+        public bool is_filter_before_detail = true; // 2022/05/05 ADD marky 詳細情報取得前にフィルター適用
 
         public int sort_kind_num;
         public bool is_page_all;

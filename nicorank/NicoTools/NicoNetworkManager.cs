@@ -150,7 +150,9 @@ namespace NicoTools
 
             if (option.is_detail_getting)
             {
-                GetDetail(video_list, option.detail_info_lower, filter, option.getting_detail_interval);
+                //GetDetail(video_list, option.detail_info_lower, filter, option.getting_detail_interval);
+                // 2022/05/05 Update marky 詳細情報取得前にフィルターリングするか選択
+                GetDetail(video_list, option.detail_info_lower, filter, option.getting_detail_interval, option.is_filter_before_detail);
             }
             if (option.is_searching_get_kind_api) // Title が "false" になることがある不具合の回避
             {
@@ -378,7 +380,8 @@ namespace NicoTools
             }
         }
 
-        private void GetDetail(List<Video> video_list, int detail_info_lower, IFilterManager filter, string interval)
+        //private void GetDetail(List<Video> video_list, int detail_info_lower, IFilterManager filter, string interval)
+        private void GetDetail(List<Video> video_list, int detail_info_lower, IFilterManager filter, string interval, bool is_filter_before_detail)
         {
             msgout_.Write("詳細情報を取得中…\r\n");
             double interval_lower = 0.3, interval_upper = 0.5;
@@ -386,7 +389,9 @@ namespace NicoTools
 
             for (int i = 0; i < video_list.Count; ++i)
             {
-                if (video_list[i].point.mylist >= detail_info_lower && filter.IsThrough(video_list[i]))
+                //if (video_list[i].point.mylist >= detail_info_lower && filter.IsThrough(video_list[i]))
+                // 2022/05/05 Update marky 詳細情報取得前にフィルターリングするか選択
+                if (video_list[i].point.mylist >= detail_info_lower && (!is_filter_before_detail || filter.IsThrough(video_list[i])))
                 {
                     Video video = NicoUtil.GetVideo(niconico_network_, video_list[i].video_id, cancel_object_, msgout_);
                     if (video.IsStatusOK())
@@ -412,6 +417,11 @@ namespace NicoTools
                     cancel_object_.Wait((int)(interval_lower * 1000), (int)(interval_upper * 1000));
                 }
                 cancel_object_.CheckCancel();
+                //2022/05/05 ADD marky 途中経過を表示
+                if (i != 0 && i % 100 == 0)
+                {
+                    msgout_.Write(i.ToString() + "件目/" + video_list.Count.ToString() + "件を取得…\r\n");
+                }
             }
             msgout_.Write("詳細情報を取得しました。\r\n");
         }
@@ -978,6 +988,11 @@ namespace NicoTools
             // 2018/12/12 Update marky 広告枠を取得しないようキーワード変更
             while ((index = html.IndexOf("data-video-id", index + 1)) >= 0)
             {
+                // 2022/05/05 ADD marky 次の投稿日時がないか、ライブ公開中を含む場合は除外
+                if (html.IndexOf("video_uploaded", index + 1) < 0 ||
+                    html.Substring(index, html.IndexOf("video_uploaded", index + 1) - index).IndexOf("<span class=\"videoLive\">") >= 0)
+                { continue; }
+
                 Video video = new Video();
 
                 //投稿日時

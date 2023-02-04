@@ -437,6 +437,8 @@ namespace nicorank
             searching_tag_option.is_searching_kind_tag = radioButtonSearchKindTag.Checked;
             searching_tag_option.is_detail_getting = checkBoxIsGettingDetailNew.Checked;
             searching_tag_option.detail_info_lower = (int)numericUpDownConditionMylistNew.Value;
+            // 2022/05/05 ADD marky 詳細情報にフィルター適用追加
+            searching_tag_option.is_filter_before_detail = checkBoxIsFilterBeforeDetail.Checked;
             searching_tag_option.sort_kind_num = listBoxSortNew.SelectedIndex;
             searching_tag_option.is_page_all = radioButtonTagSearchPageAll.Checked;
             // 2020/10/20 ADD marky 検索ワード無しの時は1000ページに制限
@@ -1138,6 +1140,8 @@ namespace nicorank
             buttonWatchFilter.Enabled = checkBoxFilter.Checked;
             buttonSelectFilterPath.Enabled = checkBoxFilter.Checked;
             checkBoxIsOutputFilteredVideo.Enabled = checkBoxFilter.Checked;
+            // 2022/05/05 ADD marky
+            checkBoxIsFilterBeforeDetail.Enabled = (checkBoxFilter.Checked && checkBoxIsGettingDetailNew.Checked);
         }
 
         private void checkBoxIsSameToInput_CheckedChanged(object sender, EventArgs e)
@@ -1312,6 +1316,8 @@ namespace nicorank
             labelGettingDetail1.Enabled = checkBoxIsGettingDetailNew.Checked;
             labelGettingDetail2.Enabled = checkBoxIsGettingDetailNew.Checked;
             numericUpDownConditionMylistNew.Enabled = checkBoxIsGettingDetailNew.Checked;
+            // 2022/05/05 ADD marky
+            checkBoxIsFilterBeforeDetail.Enabled = (checkBoxFilter.Checked && checkBoxIsGettingDetailNew.Checked);
         }
 
         private void textBoxTransChangeSize_Validating(object sender, CancelEventArgs e)
