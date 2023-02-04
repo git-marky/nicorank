@@ -339,19 +339,19 @@ namespace NicoTools
             int total_wait_time = (wait_time * rank_file.Count + large_wait_time * (rank_file.Count / large_wait_num)) / 1000 / 60 + 1;
             msgout_.Write(rank_file.Count + "件の追加には推定" + total_wait_time.ToString() + "分かかります。\r\n");
 
-            // 2023/01/18 del marky
-            //List<Video> exist_video_list = new List<Video>();
+            List<Video> exist_video_list = new List<Video>();
             //NicoListManager.ParsePointRss(niconico_network_.GetMylistHtml(mylist_id, true), DateTime.Now, exist_video_list, false, true);
+            // 2023/01/21 Update marky
+            niconico_network_.GetMylistJson(mylist_id, exist_video_list);
             cancel_object_.Wait(1000);
 
             for (int i = 0; i < rank_file.Count; ++i)
             {
-                // 2023/01/18 del marky
-                //if (RankFile.SearchVideo(exist_video_list, rank_file[i]) >= 0)
-                //{
-                //    msgout_.Write(rank_file[i] + " はすでに存在します。\r\n");
-                //    continue;
-                //}
+                if (RankFile.SearchVideo(exist_video_list, rank_file[i]) >= 0)
+                {
+                    msgout_.Write(rank_file[i] + " はすでに存在します。\r\n");
+                    continue;
+                }
                 for (int j = 0; j < try_times; ++j)
                 {
                     try

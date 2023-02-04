@@ -113,6 +113,34 @@ namespace IJLib
             }
         }
 
+        // 2023/01/21 ADD marky
+        public static string GetValueByKey(ref int start_index, string keyName, string str)
+        {
+            int start;
+            string value = "";
+
+            start = str.IndexOf("\"" + keyName + "\":", start_index);
+            if (start < 0)
+            {
+                return "";
+            }
+
+            start = start + keyName.Length + 3;
+            start_index = start + 1;
+            // }で終わる時はそちらを取得、それ以外はカンマまでを取得
+            int end = (str.IndexOf('}', start) < str.IndexOf(',', start) ? str.IndexOf('}', start) : str.IndexOf(',', start));
+            if (end < 0)
+            {
+                return "";
+            }
+            else
+            {
+                start_index = end + 1;
+                value = IJStringUtil.UnescapeHtml(str.Substring(start, end - start));
+                return value.Replace("\"", "");     // 数値型はそのまま、文字列型はダブルクォーテーションを除いて返す
+            }
+        }
+
         public static string ToStringWithComma(int value)
         {
             if (value < 1000)

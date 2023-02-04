@@ -1017,7 +1017,9 @@ namespace NicoTools
                 index = end;    // 2018/12/12 ADD marky 再生時間が取得出来ていなかったのでインデックスを進める
 
                 //サムネイルURL 2021/06/29 ADD marky
-                start = html.IndexOf("data-original=\"", index) + 15;
+                //start = html.IndexOf("data-original=\"", index) + 15;
+                // 2023/01/21 Update marky フォーマット変更に対応
+                start = html.IndexOf("img class=\"thumb\" src=\"", index) + 23;
                 end = html.IndexOf('"', start);
                 c = html.IndexOf(".M", start);
                 //if (end > c)

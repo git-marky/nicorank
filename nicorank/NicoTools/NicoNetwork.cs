@@ -996,6 +996,55 @@ namespace NicoTools
             }
         }
 
+        // 2023/01/21 ADD marky
+        /// <summary>
+        /// 指定したマイリストIDのJsonデータから動画リストを取得する（ログインユーザ作成分のみ取得可能）
+        /// </summary>
+        /// <param name="mylist_id">マイリストID</param>
+        /// <param name="mylist_video">マイリストの動画リスト</param>
+        public void GetMylistJson(string mylist_id, List<Video> mylist_video)
+        {
+            CheckCookie();
+
+            int page = 1;
+            bool isNext = true;
+
+            while (isNext)
+            {
+                network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language");
+                network_.AddCustomHeader("Access-Control-Request-Method: GET");
+                //network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + "?ref=pc_mypage_menu");
+                network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "?pageSize=100&page=" + page.ToString());
+                network_.Reset();
+
+                if (str.Equals("OK"))
+                {
+                    network_.AddCustomHeader("X-Frontend-Id: 6");
+                    network_.AddCustomHeader("X-Frontend-Version: 0");
+                    network_.AddCustomHeader("X-Niconico-Language: ja-jp");
+                    //network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                    try
+                    {
+                        str = network_.GetAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "?pageSize=100&page=" + page.ToString());
+                    }
+                    catch { str = ""; }
+                    finally
+                    {
+                        network_.Reset();
+                    }
+
+                    if (!str.Equals(""))
+                    {
+                        NicoListManager.ParseMylistJson(str, mylist_video, ref isNext);
+                        page++;
+                    }
+                    else { break; }
+                }
+                else { break; }
+            }
+        }
+
         /// <summary>
         /// マイページのマイリスト編集画面からマイリストの情報を取得する
         /// </summary>
@@ -1360,7 +1409,7 @@ namespace NicoTools
 
             network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
             network_.AddCustomHeader("Access-Control-Request-Method: POST");
-            network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
+            //network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
             network_.AddCustomHeader("Origin: " + nicovideo_uri_);
             string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items?itemId=" + video_id + "&description=");
             network_.Reset();
@@ -1370,8 +1419,8 @@ namespace NicoTools
                 network_.AddCustomHeader("X-Frontend-Id: 6");
                 network_.AddCustomHeader("X-Frontend-Version: 0");
                 network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
-                network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
-                network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                //network_.SetReferer(nicovideo_uri_ + "/watch/" + video_id);
+                //network_.AddCustomHeader("Origin: " + nicovideo_uri_);
                 try
                 {
                     str = network_.PostAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items?itemId=" + video_id + "&description=", "");
@@ -1463,7 +1512,9 @@ namespace NicoTools
 
             //マイリストRSSからIDリスト取得
             List<Video> mylist_video = new List<Video>();
-            NicoListManager.ParsePointRss(GetMylistHtml(mylist_id, true), DateTime.Now, mylist_video, false, true);
+            //NicoListManager.ParsePointRss(GetMylistHtml(mylist_id, true), DateTime.Now, mylist_video, false, true);
+            // 2023/01/21 Update marky
+            GetMylistJson(mylist_id, mylist_video);
 
             for (int i = 0; i < video_id_list.Count; ++i)
             {
@@ -1483,7 +1534,7 @@ namespace NicoTools
                 {
                     network_.AddCustomHeader("Access-Control-Request-Headers: x-frontend-id,x-frontend-version,x-niconico-language,x-request-with");
                     network_.AddCustomHeader("Access-Control-Request-Method: PUT");
-                    network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
+                    //network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
                     network_.AddCustomHeader("Origin: " + nicovideo_uri_);
                     string str = network_.OptionsToWeb("https://nvapi.nicovideo.jp/v1/users/me/mylists/" + mylist_id + "/items/" + video_id_list[i]);
                     network_.Reset();
@@ -1494,8 +1545,8 @@ namespace NicoTools
                         network_.AddCustomHeader("X-Frontend-Version: 0");
                         network_.AddCustomHeader("X-Niconico-Language: ja-jp");
                         network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
-                        network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
-                        network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+                        //network_.SetReferer(nicovideo_uri_ + "/my/mylist/" + mylist_id + "?ref=pc_mypage_mylist");
+                        //network_.AddCustomHeader("Origin: " + nicovideo_uri_);
                         string put_data = IJNetwork.ConstructPostData("description", description_list[i]);
                         try
                         {

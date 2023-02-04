@@ -605,6 +605,65 @@ namespace NicoTools
             }
         }
 
+        // 2023/01/21 ADD marky
+        // マイリストのJsonを解析する
+        public static void ParseMylistJson(string json, List<Video> video_list, ref bool isNext)
+        {
+            int index = -1;
+            string hasNext;
+
+            //string genre = "";
+
+            while ((index = json.IndexOf("\"watchId\":\"", index + 1)) >= 0)
+            {
+                Video video = new Video();
+
+                video.video_id = IJStringUtil.GetValueByKey(ref index, "watchId", json);
+                video.description = IJStringUtil.GetValueByKey(ref index, "description", json);
+                video.title = IJStringUtil.GetValueByKey(ref index, "title", json);
+
+                string date_str = IJStringUtil.GetValueByKey(ref index, "registeredAt", json);
+                video.submit_date = DateTime.Parse(date_str, null, System.Globalization.DateTimeStyles.RoundtripKind);
+
+
+                string view_str = IJStringUtil.GetValueByKey(ref index, "view", json);
+                string res_str = IJStringUtil.GetValueByKey(ref index, "comment", json);
+                string mylist_str = IJStringUtil.GetValueByKey(ref index, "mylist", json);
+                video.point.view = int.Parse(view_str);
+                video.point.res = int.Parse(res_str);
+                video.point.mylist = int.Parse(mylist_str);
+                video.like = IJStringUtil.GetValueByKey(ref index, "like", json);
+
+                video.thumbnail_url = IJStringUtil.GetValueByKey(ref index, "url", json);
+
+                video.length = IJStringUtil.GetValueByKey(ref index, "duration", json);
+                video.last_res_body = IJStringUtil.GetValueByKey(ref index, "latestCommentSummary", json);
+
+                video.user_id = IJStringUtil.GetValueByKey(ref index, "id", json);
+                video.user_name = IJStringUtil.GetValueByKey(ref index, "name", json);
+
+                //video.genre = genre;
+
+                if (RankFile.SearchVideo(video_list, video.video_id) < 0)
+                {
+                    video_list.Add(video);
+                }
+            }
+
+            //続きがあるか
+            index = 0;
+            hasNext = IJStringUtil.GetValueByKey(ref index, "hasNext", json);
+            if (bool.TryParse(hasNext, out bool ret))
+            {
+                isNext = ret;
+            }
+            else
+            {
+                isNext = false;
+            }
+
+        }
+
         // video_dic は高速化のため
         public static void ParseRankingTermPointHtml(string html, DateTime getting_dt, List<Video> video_list, Dictionary<string, Video> video_dic)
         {
