@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ニコニコランキングメーカー")]
-[assembly: AssemblyCopyright("Copyright © rankingloid, hazychill and other contributors 2008-2019 under GNU GPL Version 2")]
+[assembly: AssemblyCopyright("Copyright © rankingloid, hazychill and other contributors 2008-2023 under GNU GPL Version 2")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // すべての値を指定するか、下のように '*' を使ってビルドおよびリビジョン番号を 
 // 既定値にすることができます:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("3.07.0.11")]
-[assembly: AssemblyFileVersion("3.07.0.11")]
+[assembly: AssemblyVersion("3.07.0.13")]
+[assembly: AssemblyFileVersion("3.07.0.13")]

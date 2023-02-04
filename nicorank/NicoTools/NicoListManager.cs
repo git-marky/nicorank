@@ -512,10 +512,18 @@ namespace NicoTools
                 //video.video_id = link.Substring(link.LastIndexOf('/') + 1);
                 // 2020/08/04 Update marky 7月27日リニューアル後？末尾にパラメータが付くようになったため除去
                 //video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_mylist_rss2", "");
-                // 2020/08/10 ADD Update 7月27日リニューアル後？ランキングRSSにもパラメータが付くようになったため除去
+                // 2023/01/18 Update marky パラメータの変更"?ref=rss_mylist_rss2.0"に対応、汎用的にパラメータを除去
+                video.video_id = link.Substring(link.LastIndexOf('/') + 1);
+                if (video.video_id.LastIndexOf('?') > 0 ) {
+                    video.video_id = video.video_id.Substring(0, video.video_id.LastIndexOf('?')); 
+                }
+
+                // 2020/08/10 ADD marky 7月27日リニューアル後？ランキングRSSにもパラメータが付くようになったため除去
                 if (is_mylist)
                 {
-                    video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_mylist_rss2", "");
+                    // 2023/01/18 del marky パラメータの変更に対応
+                    //video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_mylist_rss2", "");
+
                     // 2021/09/15 ADD marky マイリストRSSでは公式動画がスレッドIDとなっていたためsoのIDに変換
                     int id;
                     if (int.TryParse(video.video_id, out id))   // IDが数字だけの場合
@@ -525,10 +533,13 @@ namespace NicoTools
                         video.video_id = video2.video_id;
                     }
                 }
-                else
-                {
-                    video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_specified_ranking_rss2", "");
-                }
+                // 2023/01/18 del marky パラメータの変更に対応
+                //else
+                //{
+                //    video.video_id = link.Substring(link.LastIndexOf('/') + 1).Replace("?ref=rss_specified_ranking_rss2", "");
+                //}
+                // 2020/08/10 ADD marky end
+
                 //IJStringUtil.GetStringBetweenTag(ref index, "p", html);
                 // 2021/12/08 Update marky start nico-thumbnailを取得
                 string thumbnail = IJStringUtil.GetStringBetweenTag(ref index, "p", html);
