@@ -382,6 +382,11 @@ namespace nicorank
                                     }
                                 }
                                 ((RadioButton)c[0]).Checked = bool.Parse(sa[2]);
+                                // 2022/08/07 ADD marky
+                                if (sa[1] == "radioButtonBrowserIE" && bool.Parse(sa[2]))
+                                {
+                                    radioButtonBrowserEdge.Checked = true;
+                                }
                                 break;
                             case "checkBox":
                                 ((CheckBox)c[0]).Checked = bool.Parse(sa[2]);

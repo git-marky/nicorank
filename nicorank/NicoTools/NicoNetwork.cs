@@ -15,6 +15,11 @@ using System.Text.RegularExpressions;
 using System.Runtime.Serialization;     //2018/09/14 Add marky Dmcサーバ対応
 using System.Runtime.Serialization.Json;//2018/09/14 Add marky Dmcサーバ対応
 using System.Timers;                    //2018/09/14 Add marky Dmcサーバ対応
+using System.Linq;
+using Org.BouncyCastle.Crypto;              //2022/08/07 Add marky Chrome AES対応
+using Org.BouncyCastle.Crypto.Modes;        //2022/08/07 Add marky Chrome AES対応
+using Org.BouncyCastle.Crypto.Engines;      //2022/08/07 Add marky Chrome AES対応
+using Org.BouncyCastle.Crypto.Parameters;   //2022/08/07 Add marky Chrome AES対応
 
 namespace NicoTools
 {
@@ -29,7 +34,9 @@ namespace NicoTools
         /// <summary>
         /// ブラウザからクッキーを自動取得して設定するときにブラウザの種類を指定するための列挙型
         /// </summary>
-        public enum CookieKind { None, IE, Firefox3, Opera, Chrome };
+        //public enum CookieKind { None, IE, Firefox3, Opera, Chrome };
+        //2022/08/07 Update marky Chrome AES対応
+        public enum CookieKind { None, Edge, Firefox3, Opera, Chrome };
 
         public enum SearchSortMethod { SubmitDate, View, ResNew, Res, Mylist, Time };
         public enum SearchOrder { Asc, Desc };
@@ -38,7 +45,9 @@ namespace NicoTools
 
         private static Random random_ = new Random(); // for Wait
 
-        private CookieKind cookie_kind_ = CookieKind.IE; // クッキーを読み込むブラウザ
+        //private CookieKind cookie_kind_ = CookieKind.IE; // クッキーを読み込むブラウザ
+        // 2022/08/07 Update marky
+        private CookieKind cookie_kind_ = CookieKind.None; // クッキーを読み込むブラウザ
         private IJNetwork network_; // ネットワーク通信用
         private bool is_loaded_cookie_ = false; // 通信を一度でもしたことがあるなら true になる
         private int wait_millisecond_; // デフォルトのイベント関数で Sleep するときのミリ秒数を保存
@@ -1117,7 +1126,9 @@ namespace NicoTools
 
                 if (str.IndexOf("\"status\":200") >= 0) // "status":200 OK
                 {
-                    Match m = Regex.Match(str, "{\"mylistId\":(.*)}}");
+                    //Match m = Regex.Match(str, "{\"mylistId\":(.*)}}");
+                    // 2022/08/07 Update marky 階層化に対応 {\"mylistId\":73556289,\"mylist\":{\"id\":73556289,\"name\":・・・
+                    Match m = Regex.Match(str, "{\"mylistId\":([0-9]+)\x2C");
                     if (m.Success)
                     {
                         mylist_id = m.Groups[1].Value;
@@ -2050,8 +2061,12 @@ namespace NicoTools
             string user_session = "";
             switch (cookie_kind_)
             {
-                case CookieKind.IE:
-                    user_session = NicoUserSession.GetUserSessionFromIE(nicovideo_uri_);
+                //case CookieKind.IE:
+                //    user_session = NicoUserSession.GetUserSessionFromIE(nicovideo_uri_);
+                //    break;
+                // 2022/08/07 Update marky
+                case CookieKind.Edge:
+                    user_session = NicoUserSession.GetUserSessionFromEdge();
                     break;
                 case CookieKind.Firefox3:
                     user_session = NicoUserSession.GetUserSessionFromFilefox3(firefox_profile_dir_);
@@ -3162,45 +3177,45 @@ namespace NicoTools
             return buff.ToString().Replace(';', ',');
         }
 
-        /// <summary>
-        /// IE から user_session を取得
-        /// </summary>
-        /// <param name="url">サイト（ニコニコ動画）のURL</param>
-        /// <returns>user_session</returns>
-        public static string GetUserSessionFromIE(string url)
-        {
-            string user_session = "";
-            string cookie;
-            if (System.Environment.OSVersion.Version.Major >= 6) // Windows Vista or later
-            {
-                try
-                {
-                    // まずは integrity level が低（保護モード）のクッキーを取得してみる。
-                    // これは IE8 以降でしか動かない
-                    // （動作未確認）
-                    cookie = GetProtectedCookieFromIEApi(url);
-                    user_session = CutUserSession(cookie);
-                }
-                catch (Exception) { }
-            }
-            if (user_session != "")
-            {
-                return user_session;
-            }
-            try
-            {
-                // 次に integrity level が中（通常モード）のクッキーを取得してみる。
-                cookie = GetCookieFromIEApi(url);
-                user_session = CutUserSession(cookie);
-            }
-            catch (Exception) { }
-            if (user_session != "")
-            {
-                return user_session;
-            }
-            // それでも取得できなければ直接クッキーファイルを解析
-            return GetUserSessionFromIECookieFile();
-        }
+        ///// <summary>
+        ///// IE から user_session を取得 2022/08/07 DEL marky
+        ///// </summary>
+        ///// <param name="url">サイト（ニコニコ動画）のURL</param>
+        ///// <returns>user_session</returns>
+        //public static string GetUserSessionFromIE(string url)
+        //{
+        //    string user_session = "";
+        //    string cookie;
+        //    if (System.Environment.OSVersion.Version.Major >= 6) // Windows Vista or later
+        //    {
+        //        try
+        //        {
+        //            // まずは integrity level が低（保護モード）のクッキーを取得してみる。
+        //            // これは IE8 以降でしか動かない
+        //            // （動作未確認）
+        //            cookie = GetProtectedCookieFromIEApi(url);
+        //            user_session = CutUserSession(cookie);
+        //        }
+        //        catch (Exception) { }
+        //    }
+        //    if (user_session != "")
+        //    {
+        //        return user_session;
+        //    }
+        //    try
+        //    {
+        //        // 次に integrity level が中（通常モード）のクッキーを取得してみる。
+        //        cookie = GetCookieFromIEApi(url);
+        //        user_session = CutUserSession(cookie);
+        //    }
+        //    catch (Exception) { }
+        //    if (user_session != "")
+        //    {
+        //        return user_session;
+        //    }
+        //    // それでも取得できなければ直接クッキーファイルを解析
+        //    return GetUserSessionFromIECookieFile();
+        //}
 
         /// <summary>
         /// Firefox3 から user_session を取得。
@@ -3267,14 +3282,15 @@ namespace NicoTools
                     // クッキーの有効時刻（unixtime）を取得
                     int expire_time = (data[pos] << 24) | (data[pos + 1] << 16) | (data[pos + 2] << 8) | data[pos + 3];
 
-                    DateTime dt = IJStringUtil.UnixToDate(expire_time);
-                    DateTime now = DateTime.Now;
-
-                    if (dt < now.AddYears(-1) || now.AddYears(1) < dt) // 現在から1年前後以外の日付は無効とみなす
-                    {
-                        i = pos - 1;
-                        continue;
-                    }
+                    // 2022/08/07 DEL marky 日付が10年？となった
+                    //DateTime dt = IJStringUtil.UnixToDate(expire_time);
+                    //DateTime now = DateTime.Now;
+                    //
+                    //if (dt < now.AddYears(-1) || now.AddYears(1) < dt) // 現在から1年前後以外の日付は無効とみなす
+                    //{
+                    //    i = pos - 1;
+                    //    continue;
+                    //}
 
                     if (expire_time > cand_expire_time) // クッキーの有効時刻が最も遅いものを採用
                     {
@@ -3356,7 +3372,12 @@ namespace NicoTools
 
                 if (cookie_filename == "" || !File.Exists(cookie_filename))
                 {
-                    return "";
+                    //2022/08/07 ADD marky
+                    cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera Software\Opera Stable\Network\Cookies";
+                    if (cookie_filename == "" || !File.Exists(cookie_filename))
+                    {
+                        return "";
+                    }
                 }
                 FileStream fs = new FileStream(cookie_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
                 byte[] data = new byte[fs.Length];
@@ -3383,41 +3404,46 @@ namespace NicoTools
                 //    return user_session;
                 //}
 
-                //2019/01/28 UPDATE marky ChromeエンジンOperaに対応
-                for (int i = 0; i < data.Length; ++i)
-                {
-                    int pos = i;
-                    if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
-                    {
-                        pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
-                        //encrypted_valueは[1 0 0]で始まるぽい
-                        if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
-                        {
-                            Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
-                            for (int k = 0; k < 310; ++k)
-                            {
-                                encryptedValue[k] = data[pos + k];
-                            }
-                            string user_session = "";
-                            var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
-                            var plainText = Encoding.ASCII.GetString(decodedData);
-                            user_session = plainText;
-                            return user_session;
-                        }
-                        else
-                        {
-                            i = pos;
-                            continue;
-                        }
-                    }
-                }
+                ////2019/01/28 UPDATE marky ChromeエンジンOperaに対応
+                //for (int i = 0; i < data.Length; ++i)
+                //{
+                //    int pos = i;
+                //    if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
+                //    {
+                //        pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
+                //        //encrypted_valueは[1 0 0]で始まるぽい
+                //        if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
+                //        {
+                //            Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
+                //            for (int k = 0; k < 310; ++k)
+                //            {
+                //                encryptedValue[k] = data[pos + k];
+                //            }
+                //            string user_session = "";
+                //            var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                //            var plainText = Encoding.ASCII.GetString(decodedData);
+                //            user_session = plainText;
+                //            return user_session;
+                //        }
+                //        else
+                //        {
+                //            i = pos;
+                //            continue;
+                //        }
+                //    }
+                //}
+
+                //2022/08/07 UPDATE marky AES暗号化に対応
+                string local_state = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera Software\Opera Stable\Local State";
+                string user_session = GetDecryptData(data, local_state);
+                return user_session;
             }
             catch (Exception) { }
             return "";
         }
 
         /// <summary>
-        /// Firefox3 から user_session を取得。エラーが起こった場合、例外を投げずに空文字を返す
+        /// Chrome から user_session を取得。エラーが起こった場合、例外を投げずに空文字を返す
         /// </summary>
         /// <returns>user_session</returns>
         public static string GetUserSessionFromChrome()
@@ -3431,7 +3457,12 @@ namespace NicoTools
 
                 if (cookie_filename == "" || !File.Exists(cookie_filename))
                 {
-                    return "";
+                    //2022/08/07 ADD marky
+                    cookie_filename = System.Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Google\Chrome\User Data\Default\Network\Cookies";
+                    if (cookie_filename == "" || !File.Exists(cookie_filename))
+                    {
+                        return "";
+                    }
                 }
 
                 FileStream fs = new FileStream(cookie_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -3479,114 +3510,261 @@ namespace NicoTools
                 //    }
                 //    i = pos - 1;
                 //}
- 
-               //2019/01/28 UPDATE marky クッキー値の暗号化に対応
-                for (int i = 0; i < data.Length; ++i)
-                {
-                    int pos = i;
-                    if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
-                    {
-                        pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
-                        //encrypted_valueは[1 0 0]で始まるぽい
-                        if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
-                        {
-                            Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
-                            for (int k = 0; k < 310; ++k)
-                            {
-                                encryptedValue[k] = data[pos + k];
-                            }
 
-                            var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
-                            var plainText = Encoding.ASCII.GetString(decodedData);
-                            cand_user_session = plainText;
+                ////2019/01/28 UPDATE marky クッキー値の暗号化に対応
+                // for (int i = 0; i < data.Length; ++i)
+                // {
+                //     int pos = i;
+                //     if (MatchString(data, "user_session/", ref pos))   //name="user_session",value="",path="/"を探す（2回ヒットする）
+                //     {
+                //         pos = pos + 16;                         //pathから16ﾊﾞｲﾄ後にencrypted_valueが始まるぽい
+                //         encrypted_valueは[1 0 0]で始まるぽい ->DPAPIで暗号化されたcookie
+                //         if (((long)data[pos] == 1) && ((long)data[pos + 1] == 0) && ((long)data[pos + 2] == 0))
+                //         {
+                //             Byte[] encryptedValue = new Byte[310];  //encrypted_valueは310ﾊﾞｲﾄぽい
+                //             for (int k = 0; k < 310; ++k)
+                //             {
+                //                 encryptedValue[k] = data[pos + k];
+                //             }
 
-                            break;
-                        }
-                        else
-                        {
-                            i = pos;
-                            continue;
-                        }
-                    }
-                }
+                //             var decodedData = System.Security.Cryptography.ProtectedData.Unprotect(encryptedValue, null, System.Security.Cryptography.DataProtectionScope.CurrentUser);
+                //             var plainText = Encoding.ASCII.GetString(decodedData);
+                //             cand_user_session = plainText;
+
+                //             break;
+                //         }
+                //         else
+                //         {
+                //             i = pos;
+                //             continue;
+                //         }
+                //     }
+                // }
+
+                //2022/08/07 UPDATE marky AES暗号化に対応
+                string local_state = System.Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Google\Chrome\User Data\Local State";
+                cand_user_session = GetDecryptData(data, local_state);
             }
             catch (Exception) { }
             return cand_user_session;
         }
 
-
         /// <summary>
-        /// IE7 から user_session を取得。エラーが起こった場合、例外を投げずに空文字を返す
+        /// 2022/08/07 ADD marky
+        /// Edge から user_session を取得。エラーが起こった場合、例外を投げずに空文字を返す
         /// </summary>
         /// <returns>user_session</returns>
-        public static string GetUserSessionFromIECookieFile()
+        public static string GetUserSessionFromEdge()
         {
-            string user_session = "";
+            string cand_user_session = "";
 
-            string profile_dir = System.Environment.GetEnvironmentVariable("USERPROFILE");
-            user_session = GetUserSessionFromDirectory(profile_dir + "\\AppData\\Roaming\\Microsoft\\Windows\\Cookies\\Low\\");
-            if (user_session == "")
+            try
             {
-                user_session = GetUserSessionFromDirectory(profile_dir + "\\AppData\\Roaming\\Microsoft\\Windows\\Cookies\\");
+                string cookie_filename = System.Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Microsoft\Edge\User Data\Default\Cookies";
+
+                if (cookie_filename == "" || !File.Exists(cookie_filename))
+                {
+                    //2022/08/07 ADD marky
+                    cookie_filename = System.Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Microsoft\Edge\User Data\Default\Network\Cookies";
+                    if (cookie_filename == "" || !File.Exists(cookie_filename))
+                    {
+                        return "";
+                    }
+                }
+
+                FileStream fs = new FileStream(cookie_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                byte[] data = new byte[fs.Length];
+                fs.Read(data, 0, data.Length);
+                fs.Close();
+
+                string local_state = System.Environment.GetEnvironmentVariable("USERPROFILE") + @"\AppData\Local\Microsoft\Edge\User Data\Local State";
+                cand_user_session = GetDecryptData(data, local_state);
             }
-            if (user_session == "")
-            {
-                user_session = GetUserSessionFromDirectory(profile_dir + "\\Cookies\\");
-            }
-            return user_session;
+            catch (Exception) { }
+            return cand_user_session;
         }
 
-        private static string GetUserSessionFromDirectory(string dir_name)
+        /// <summary>
+        /// 2022/08/07 ADD marky
+        /// encrypted_valueを復号化しuser_sessionを取得。
+        /// <param name="data">cookie data</param>
+        /// <param name="local_state">local_stateファイルパス</param>
+        /// </summary>
+        /// <returns>user_session</returns>
+        private static string GetDecryptData(byte[] data, string local_state)
         {
-            string user_session = "";
-            if (Directory.Exists(dir_name))
+            string plainText = "";
+
+            string str = IJFile.ReadVer2(local_state, IJFile.EncodingPriority.Auto);
+            int start = str.IndexOf("encrypted_key\":\"") + 16;   //"os_crypt":{"encrypted_key":"XXXXXX"}
+            if (start < 16)
             {
-                try
+                return "";
+            }
+            int end = str.IndexOf('"', start);
+            if (end < 0)
+            {
+                return "";
+            }
+            string key = str.Substring(start, end - start);
+
+            for (int i = 0; i < data.Length; ++i)
+            {
+                int pos = i;
+                if (MatchString(data, "user_session", ref pos))   //name="user_session",value="",encrypted_value=[],path="/"を探す（4回ヒットする）
                 {
-                    string[] files = Directory.GetFiles(dir_name);
-
-                    for (int i = 0; i < files.Length; ++i)
+                    //encrypted_valueは[v 1 0]で始まるぽい ->AESで暗号化されたcookie
+                    if (((long)data[pos] == 118) && ((long)data[pos + 1] == 49) && ((long)data[pos + 2] == 48))
                     {
-                        string filename = Path.GetFileName(files[i]);
-                        if (filename.IndexOf("nicovideo") >= 0 && filename.IndexOf("www") < 0)
+                        //pos = pos + 15;                       //'v10'+nonce 12bytesを除いた部分
+                        int len = 0;
+                        for (int k = 15; k < 150; ++k)
                         {
-                            user_session = CutUserSession(File.ReadAllText(files[i], Encoding.GetEncoding(932)));
-
-                            // user_sessionが見つかった場合は検索終了
-                            if (!string.IsNullOrEmpty(user_session))
+                            //path="/"を探す
+                            if (((long)data[pos + k] == 47) && ((long)data[pos + k + 1] == 0) && ((long)data[pos + k + 2] == 48))
                             {
+                                len = k;
                                 break;
                             }
                         }
+                        if (len == 0)
+                        {
+                            return "";
+                        }
+                        Byte[] encryptedValue = new Byte[len];  //encrypted_valueは116 or 117ﾊﾞｲﾄぽい
+                        for (int k = 0; k < len; ++k)
+                        {
+                            encryptedValue[k] = data[pos + k];
+                        }
+
+                        var decodedKey = System.Security.Cryptography.ProtectedData.Unprotect(Convert.FromBase64String(key).Skip(5).ToArray(), null, System.Security.Cryptography.DataProtectionScope.LocalMachine);
+                        plainText = _decryptWithKey(encryptedValue, decodedKey, 3);
+
+                        break;
+                    }
+                    else
+                    {
+                        i = pos;
+                        continue;
                     }
                 }
-                catch (Exception) { }
             }
-            return user_session;
+            return plainText;
+        }
+        /// <summary>
+        /// 2022/08/07 ADD marky
+        /// AES-GCMを復号化した文字列を返す
+        /// <param name="message">暗号化文字列</param>
+        /// <param name="key">復号キー</param>
+        /// <param name="nonSecretPayloadLength">非暗号化データ長？</param>
+        /// </summary>
+        /// <returns>plainText</returns>
+        private static string _decryptWithKey(byte[] message, byte[] key, int nonSecretPayloadLength)
+        {
+            const int KEY_BIT_SIZE = 256;
+            const int MAC_BIT_SIZE = 128;
+            const int NONCE_BIT_SIZE = 96;
+
+            if (key == null || key.Length != KEY_BIT_SIZE / 8)
+                throw new ArgumentException(String.Format("Key needs to be {0} bit!", KEY_BIT_SIZE), "key");
+            if (message == null || message.Length == 0)
+                throw new ArgumentException("Message required!", "message");
+
+            using (var cipherStream = new MemoryStream(message))
+            using (var cipherReader = new BinaryReader(cipherStream))
+            {
+                var nonSecretPayload = cipherReader.ReadBytes(nonSecretPayloadLength);
+                var nonce = cipherReader.ReadBytes(NONCE_BIT_SIZE / 8);
+                var cipher = new GcmBlockCipher(new AesEngine());
+                var parameters = new AeadParameters(new KeyParameter(key), MAC_BIT_SIZE, nonce);
+                cipher.Init(false, parameters);
+                var cipherText = cipherReader.ReadBytes(message.Length);
+                var plainText = new byte[cipher.GetOutputSize(cipherText.Length)];
+                try
+                {
+                    var len = cipher.ProcessBytes(cipherText, 0, cipherText.Length, plainText, 0);
+                    cipher.DoFinal(plainText, len);
+                }
+                catch (InvalidCipherTextException)
+                {
+                    return null;
+                }
+                return Encoding.Default.GetString(plainText);
+            }
         }
 
-        /// <summary>
-        /// 文字列から user_session_ で始まる文字列を切り出して返す。数字とアンダーバー以外の文字で切れる。
-        /// </summary>
-        /// <param name="str">切り出す対象文字列</param>
-        /// <returns>user_session 文字列。見つからなければ空文字を返す</returns>
-        private static string CutUserSession(string str)
-        {
-            int start = str.IndexOf("user_session_");
-            if (start >= 0)
-            {
-                int index = start + "user_session_".Length;
-                //--- 2014/10/22 UPDATE marky
-                //while (index < str.Length && ('0' <= str[index] && str[index] <= '9' || str[index] == '_'))
-                while (index < str.Length && ('0' <= str[index] && str[index] <= 'z' || str[index] == '_'))
-                //---
-                {
-                    ++index;
-                }
-                return str.Substring(start, index - start);
-            }
-            return "";
-        }
+        ///// <summary>
+        ///// IE7 から user_session を取得。エラーが起こった場合、例外を投げずに空文字を返す 2022/08/07 DEL marky
+        ///// </summary>
+        ///// <returns>user_session</returns>
+        //public static string GetUserSessionFromIECookieFile()
+        //{
+        //    string user_session = "";
+
+        //    string profile_dir = System.Environment.GetEnvironmentVariable("USERPROFILE");
+        //    user_session = GetUserSessionFromDirectory(profile_dir + "\\AppData\\Roaming\\Microsoft\\Windows\\Cookies\\Low\\");
+        //    if (user_session == "")
+        //    {
+        //        user_session = GetUserSessionFromDirectory(profile_dir + "\\AppData\\Roaming\\Microsoft\\Windows\\Cookies\\");
+        //    }
+        //    if (user_session == "")
+        //    {
+        //        user_session = GetUserSessionFromDirectory(profile_dir + "\\Cookies\\");
+        //    }
+        //    return user_session;
+        //}
+
+        //private static string GetUserSessionFromDirectory(string dir_name)
+        //{
+        //    string user_session = "";
+        //    if (Directory.Exists(dir_name))
+        //    {
+        //        try
+        //        {
+        //            string[] files = Directory.GetFiles(dir_name);
+
+        //            for (int i = 0; i < files.Length; ++i)
+        //            {
+        //                string filename = Path.GetFileName(files[i]);
+        //                if (filename.IndexOf("nicovideo") >= 0 && filename.IndexOf("www") < 0)
+        //                {
+        //                    user_session = CutUserSession(File.ReadAllText(files[i], Encoding.GetEncoding(932)));
+
+        //                    // user_sessionが見つかった場合は検索終了
+        //                    if (!string.IsNullOrEmpty(user_session))
+        //                    {
+        //                        break;
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        catch (Exception) { }
+        //    }
+        //    return user_session;
+        //}
+
+        ///// <summary>
+        ///// 文字列から user_session_ で始まる文字列を切り出して返す。数字とアンダーバー以外の文字で切れる。 2022/08/07 DEL marky
+        ///// </summary>
+        ///// <param name="str">切り出す対象文字列</param>
+        ///// <returns>user_session 文字列。見つからなければ空文字を返す</returns>
+        //private static string CutUserSession(string str)
+        //{
+        //    int start = str.IndexOf("user_session_");
+        //    if (start >= 0)
+        //    {
+        //        int index = start + "user_session_".Length;
+        //        //--- 2014/10/22 UPDATE marky
+        //        //while (index < str.Length && ('0' <= str[index] && str[index] <= '9' || str[index] == '_'))
+        //        while (index < str.Length && ('0' <= str[index] && str[index] <= 'z' || str[index] == '_'))
+        //        //---
+        //        {
+        //            ++index;
+        //        }
+        //        return str.Substring(start, index - start);
+        //    }
+        //    return "";
+        //}
 
         /// <summary>
         /// DateTime を Unix 時間に変換

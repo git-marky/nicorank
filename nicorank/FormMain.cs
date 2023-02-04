@@ -178,9 +178,13 @@ namespace nicorank
             {
                 string profile_dir = "";
                 NicoNetwork.CookieKind cookie_kind = NicoNetwork.CookieKind.None;
-                if (radioButtonBrowserIE.Checked)
+                //if (radioButtonBrowserIE.Checked)
+                //{
+                //    cookie_kind = NicoNetwork.CookieKind.IE;
+                // 2022/08/07 Update marky
+                if (radioButtonBrowserEdge.Checked)
                 {
-                    cookie_kind = NicoNetwork.CookieKind.IE;
+                    cookie_kind = NicoNetwork.CookieKind.Edge;
                 }
                 else if (radioButtonBrowserFirefox3.Checked)
                 {
@@ -1215,9 +1219,13 @@ namespace nicorank
                 if (((RadioButton)sender).Checked)
                 {
                     NicoNetwork.CookieKind cookie_kind = NicoNetwork.CookieKind.None;
-                    if (radioButtonBrowserIE.Checked)
+                    //if (radioButtonBrowserIE.Checked)
+                    //{
+                    //    cookie_kind = NicoNetwork.CookieKind.IE;
+                    // 2022/08/07 Update marky
+                    if (radioButtonBrowserEdge.Checked)
                     {
-                        cookie_kind = NicoNetwork.CookieKind.IE;
+                        cookie_kind = NicoNetwork.CookieKind.Edge;
                     }
                     else if (radioButtonBrowserFirefox3.Checked)
                     {
@@ -1226,6 +1234,11 @@ namespace nicorank
                     else if (radioButtonBrowserOpera.Checked)
                     {
                         cookie_kind = NicoNetwork.CookieKind.Opera;
+                    }
+                    // 2022/08/07 ADD marky 追加漏れ？
+                    else if (radioButtonBrowserChrome.Checked)
+                    {
+                        cookie_kind = NicoNetwork.CookieKind.Chrome;
                     }
                     nicorank_mgr_.SetCookieKind(cookie_kind);
                 }
