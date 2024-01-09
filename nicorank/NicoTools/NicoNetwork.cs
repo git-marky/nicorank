@@ -77,6 +77,10 @@ namespace NicoTools
             version = version.Remove(version.Length - 4, 4); // 後ろの ".0.0" を削る
             network_.UserAgent = nicovideo_user_agent_.Replace("%%version%%", version);
             issuer_ = issuer_.Replace("%%version%%", version);
+            // 2023/11/30 ADD marky TLS1.2化（規定値はSSL 3.0|TLS 1.0）
+            // 対象のフレームワークを.NET Framework 4.5.2以上にすることで以下記述が可能
+            // ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072;
         }
 
         /// <summary>

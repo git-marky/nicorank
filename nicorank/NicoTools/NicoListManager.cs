@@ -946,6 +946,13 @@ namespace NicoTools
             {
                 Video video = new Video();
 
+                // 2023/11/30 ADD marky
+                index = html.IndexOf("<li class=\"first-retrieve", index);
+                string date_str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
+                date_str = date_str.Replace("  <strong class=\"new\">New!</strong>", "").Replace(":", "：");
+                video.submit_date = NicoUtil.StringToDate(date_str);
+                index = html.IndexOf("<li class=\"total", index);
+
                 string view_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
                 string res_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
                 string mylist_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
@@ -955,10 +962,13 @@ namespace NicoTools
                 int ps = html.IndexOf("watch/", index) + 6;
                 int pe = html.IndexOf('"', ps);
                 video.video_id = html.Substring(ps, pe - ps);
+                // 2023/11/30 ADD marky
+                index = html.IndexOf("<li class=\"title", index);
                 video.title = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
-                index = html.IndexOf("<li class=\"release", index) - 1;
-                string date_str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
-                video.submit_date = NicoUtil.StringToDate(date_str);
+                // 2023/11/30 DEL marky
+                //index = html.IndexOf("<li class=\"release", index) - 1;
+                //string date_str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
+                //video.submit_date = NicoUtil.StringToDate(date_str);
                 if (RankFile.SearchVideo(video_list, video.video_id) < 0)
                 {
                     video_list.Add(video);
