@@ -167,22 +167,31 @@ namespace nicorank
             int pad_bottom = GetPaddingBottom();
 
             string pad_option = "";
-            if (pad_left > 0)
+            //if (pad_left > 0)
+            //{
+            //    pad_option += "-padleft " + pad_left.ToString() + " ";
+            //}
+            //if (pad_top > 0)
+            //{
+            //    pad_option += "-padtop " + pad_top.ToString() + " ";
+            //}
+            //if (pad_right > 0)
+            //{
+            //    pad_option += "-padright " + pad_right.ToString() + " ";
+            //}
+            //if (pad_bottom > 0)
+            //{
+            //    pad_option += "-padbottom " + pad_bottom.ToString() + " ";
+            //}
+            //2024/03/08 Update marky ffmpeg4以上に対応
+            if (pad_left > 0 || pad_top > 0)
             {
-                pad_option += "-padleft " + pad_left.ToString() + " ";
+                pad_option += ",pad=" + changing_width + ":" + changing_height + ":";
+                pad_option += "x=" + pad_left.ToString() + ":";
+                pad_option += "y=" + pad_top.ToString() + ":";
+                pad_option += "color=black ";
             }
-            if (pad_top > 0)
-            {
-                pad_option += "-padtop " + pad_top.ToString() + " ";
-            }
-            if (pad_right > 0)
-            {
-                pad_option += "-padright " + pad_right.ToString() + " ";
-            }
-            if (pad_bottom > 0)
-            {
-                pad_option += "-padbottom " + pad_bottom.ToString() + " ";
-            }
+
             if (pix_fmt == "bgr24" && pad_option != "")
             {
                 throw new FFmpegNotSupportPaddingException();
@@ -226,6 +235,13 @@ namespace nicorank
                 if (is_fix_aspect)
                 {
                     padding_option = GetPaddingOption();
+                    //2024/03/08 Add marky ffmpeg4以上に対応
+                    if (padding_option != "")
+                    {
+                        size_option = "-s " + changing_width + "x" + changing_height + " ";
+                        padding_option = "-vf scale=" + GetWidth() + ":" + GetHeight() + padding_option;
+                    }
+
                 }
             }
             if (video_codec_ != "")
@@ -437,6 +453,14 @@ namespace nicorank
             {
                 index = output.IndexOf(',', index) + 1;
                 index = output.IndexOf(',', index) + 2;
+                //2024/03/08 ADD marky ffmpeg4以上に対応
+                if ('0' > output[index] || output[index] > '9')
+                {
+                    //2.0 Video: h264, yuv420p, 1280x720
+                    //4.0 Video: h264 (Main) (avc1 / 0x31637661), yuv420p(tv, bt709), 1280x720
+                    //5.0 Video: h264 (Main) (avc1 / 0x31637661), yuv420p(tv, bt709, progressive), 1280x720
+                    index = output.IndexOf("),", index) + 3;
+                }
                 end = index;
                 while (end < output.Length && '0' <= output[end] && output[end] <= '9')
                 {
@@ -509,8 +533,17 @@ namespace nicorank
         /// <param name="after_filename">出力ファイル名</param>
         public void ComposeAviWav(string avi_filename, string wav_filename, string after_filename)
         {
-            string argument = "-i \"" + avi_filename + "\" -i \"" + wav_filename + "\" -vcodec copy -acodec copy -sameq \"" + after_filename + "\"";
-            IJProcess.RunProcessAndWaitForExit(app_path_.ffmpeg_path, argument, is_window_show);
+            //string argument = "-i \"" + avi_filename + "\" -i \"" + wav_filename + "\" -vcodec copy -acodec copy -sameq \"" + after_filename + "\"";
+            //IJProcess.RunProcessAndWaitForExit(app_path_.ffmpeg_path, argument, is_window_show);
+            //2024/03/08 Update marky ffmpeg4以上に対応
+            string argument = "-i \"" + avi_filename + "\" -i \"" + wav_filename + "\" -vcodec copy -acodec copy -qscale 0 \"" + after_filename + "\"";
+            int ret = IJProcess.RunProcessAndWaitForExit(app_path_.ffmpeg_path, argument, is_window_show);
+            if (ret != 0)
+            {
+                argument = "-i \"" + avi_filename + "\" -i \"" + wav_filename + "\" -vcodec copy -acodec copy -sameq \"" + after_filename + "\"";
+                IJProcess.RunProcessAndWaitForExit(app_path_.ffmpeg_path, argument, is_window_show);
+
+            }
         }
 
         /// <summary>
@@ -1088,19 +1121,19 @@ namespace nicorank
                             filepack.GetFilename(), ffmpeg, translating_option);
                     }
                     filepack.Move();
-                    // 上下を反転する（FFmpeg の仕様回避）
-                    if (!is_swf && translating_option.trans_avi_kind == TransDetailOption.TransAviKind.Bgr24Flip)
-                    {
-                        IJLib.IJAVI.IJAviManager avi_manager = new IJLib.IJAVI.IJAviManager(dest_avi_filename, true);
-                        try
-                        {
-                            avi_manager.FlipAndWriteAll();
-                        }
-                        finally
-                        {
-                            avi_manager.Close();
-                        }
-                    }
+                    //// 上下を反転する（FFmpeg の仕様回避）2024/03/08 Delete marky
+                    //if (!is_swf && translating_option.trans_avi_kind == TransDetailOption.TransAviKind.Bgr24Flip)
+                    //{
+                    //    IJLib.IJAVI.IJAviManager avi_manager = new IJLib.IJAVI.IJAviManager(dest_avi_filename, true);
+                    //    try
+                    //    {
+                    //        avi_manager.FlipAndWriteAll();
+                    //    }
+                    //    finally
+                    //    {
+                    //        avi_manager.Close();
+                    //    }
+                    //}
                 }
                 catch (Exception)
                 {
