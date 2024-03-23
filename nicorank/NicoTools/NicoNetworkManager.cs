@@ -689,14 +689,18 @@ namespace NicoTools
             msgout_.Write("ファイルに書き込みました。\r\n情報の取得を終了します。\r\n");
         }
 
-        public void DownloadFlv(InputOutputOption iooption, string dl_interval, string flv_save_dir, bool is_fixing_extension)
+        //public void DownloadFlv(InputOutputOption iooption, string dl_interval, string flv_save_dir, bool is_fixing_extension)
+        //2024/02/26 Update marky CMAF対応
+        public void DownloadFlv(InputOutputOption iooption, string dl_interval, string flv_save_dir, bool is_fixing_extension, string ffmpeg_dir)
         {
             double interval_min = 30.0, interval_max = 30.0;
             IJStringUtil.ParseDlInterval(dl_interval, ref interval_min, ref interval_max);
-            DownloadFlv(iooption, interval_min, interval_max, flv_save_dir, is_fixing_extension);
+            DownloadFlv(iooption, interval_min, interval_max, flv_save_dir, is_fixing_extension, ffmpeg_dir);
         }
 
-        public void DownloadFlv(InputOutputOption iooption, double interval_min, double interval_max, string flv_save_dir, bool is_fixing_extension)
+        //public void DownloadFlv(InputOutputOption iooption, double interval_min, double interval_max, string flv_save_dir, bool is_fixing_extension)
+        //2024/02/26 Update marky CMAF対応
+        public void DownloadFlv(InputOutputOption iooption, double interval_min, double interval_max, string flv_save_dir, bool is_fixing_extension, string ffmpeg_dir)
         {
             bool start_flag = true;
             bool error_flag = false;
@@ -727,11 +731,13 @@ namespace NicoTools
                         msgout_.Write("動画 " + rank_file[i] + " をDLしています…\r\n");
                         try
                         {
-                            niconico_network_.DownloadAndSaveFlv(rank_file[i], flv_save_dir + rank_file[i] + ".flv", InformDownloading);
-                            if (!is_fixing_extension)
-                            {
-                                RenameFlv(flv_save_dir + rank_file[i] + ".flv");
-                            }
+                            //niconico_network_.DownloadAndSaveFlv(rank_file[i], flv_save_dir + rank_file[i] + ".flv", InformDownloading);
+                            //if (!is_fixing_extension)
+                            //{
+                            //    RenameFlv(flv_save_dir + rank_file[i] + ".flv");
+                            //}
+                            //2024/02/26 Update marky CMAF対応
+                            niconico_network_.DownloadAndSaveFlv(rank_file[i], flv_save_dir, InformDownloading, ffmpeg_dir);
                         }
                         catch (MyCancelException)
                         {
@@ -776,7 +782,9 @@ namespace NicoTools
             }
         }
 
-        public void InformDownloading(ref bool is_cancel, long current_size, long file_size)
+        //public void InformDownloading(ref bool is_cancel, long current_size, long file_size)
+        //2024/02/26 Update marky CMAF対応
+        public void InformDownloading(ref bool is_cancel, long current_size, long file_size, bool is_cmaf)
         {
             if (is_cancel)
             {
@@ -791,7 +799,16 @@ namespace NicoTools
                 is_cancel = cancel_object_.IsCanceling();
                 if (SetDownloadInfo != null)
                 {
-                    SetDownloadInfo((current_size / 1024).ToString() + "KB / " + (file_size / 1024).ToString() + "KB");
+                    //SetDownloadInfo((current_size / 1024).ToString() + "KB / " + (file_size / 1024).ToString() + "KB");
+                    //2024/02/26 Update marky CMAF対応
+                    if (is_cmaf)
+                    {
+                        SetDownloadInfo(current_size.ToString() + " 件目" + " / " + file_size.ToString() + " 分割ファイル");
+                    }
+                    else
+                    {
+                        SetDownloadInfo((current_size / 1024).ToString() + "KB / " + (file_size / 1024).ToString() + "KB");
+                    }
                 }
             }
         }

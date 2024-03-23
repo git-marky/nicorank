@@ -621,6 +621,17 @@ namespace IJLib
             sw.Close();
         }
 
+        // 2024/02/26 ADD marky
+        public static void WriteUTF8_NoBOM(string filename, string str)
+        {
+            CreateDirectoryFromFilename(filename);
+            Encoding enc = new System.Text.UTF8Encoding(false);
+            StreamWriter sw = new StreamWriter(filename, false, enc);
+            sw.Write(str);
+            sw.Close();
+        }
+
+
         public static void WriteAppend(string filename, string str)
         {
             CreateDirectoryFromFilename(filename);

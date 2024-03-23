@@ -337,7 +337,10 @@ namespace nicorank
 
         public void DownloadFlv()
         {
-            nico_download_.DownloadFlv((InputOutputOption)param_[0], (string)param_[1], path_mgr_.GetFlvDlDir(), (bool)param_[2]);
+            //nico_download_.DownloadFlv((InputOutputOption)param_[0], (string)param_[1], path_mgr_.GetFlvDlDir(), (bool)param_[2]);
+            //
+            //2024/02/26 Update marky CMAF対応
+            nico_download_.DownloadFlv((InputOutputOption)param_[0], (string)param_[1], path_mgr_.GetFlvDlDir(), (bool)param_[2], path_mgr_.GetFFMpegPath());
         }
 
         public void RenameFlvInDirectory()

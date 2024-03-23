@@ -369,10 +369,13 @@ namespace NicoTools
         /// 動画をダウンロードする
         /// </summary>
         /// <param name="video_id">ダウンロードする動画ID</param>
-        /// <param name="save_flv_filename">ダウンロードしたファイルを保存するファイル名</param>
+        /// <param name="save_flv_dir">ダウンロードしたファイルを保存するファイル名</param>
         /// <param name="dlg">ダウンロード最中に呼び出されるコールバックメソッド。null でもよい。</param>
+        /// <param name="ffmpeg_dir">ffmepgの実行パス</param>
         /// <exception cref="System.Exception">erer</exception>
-        public void DownloadAndSaveFlv(string video_id, string save_flv_filename, IJNetwork.DownloadingEventDelegate dlg)
+        //public void DownloadAndSaveFlv(string video_id, string save_flv_filename, IJNetwork.DownloadingEventDelegate dlg)
+        //2024/02/26 Update marky CMAF対応
+        public void DownloadAndSaveFlv(string video_id, string save_flv_dir, IJNetwork.DownloadingEventDelegate dlg, string ffmpeg_dir)
         {
 
             string api_url = "";
@@ -441,7 +444,36 @@ namespace NicoTools
             endtstr = ",\"storyboard";
             if (data.IndexOf(startstr) == -1)
             {
-                throw new NiconicoAccessFailedException();
+                // 2024/02/26 ADD marky CMAF対応 start
+                //"watchTrackId":"TmF3Ip1rR1_1708519448256"},
+                index = 0;
+                string TrackId = IJStringUtil.GetValueByKey(ref index, "watchTrackId", data);
+                if (TrackId.Equals(""))
+                {
+                    throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+                }
+
+                //"accessRightKey":"XXXXXXXXX"},
+                index = 0;
+                string RightKey = IJStringUtil.GetValueByKey(ref index, "accessRightKey", data);
+                if (RightKey.Equals(""))
+                {
+                    startstr = "\"billingType\":\"member_only\"";
+                    if (data.IndexOf(startstr) > 0)
+                    {
+                        throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。有料動画の可能性があります。");
+                    }
+                    else
+                    {
+                        throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+                    }
+                }
+
+                string rate = GetVideoAudioRate(data);
+
+                DownloadAndSaveFlv_new(video_id, save_flv_dir, dlg, TrackId, RightKey, rate, ffmpeg_dir);
+                return;
+                // 2024/02/26 ADD marky CMAF対応 end
             }
             start = data.IndexOf(startstr) + startstr.Length;
             end = data.IndexOf(endtstr, start);
@@ -673,7 +705,9 @@ namespace NicoTools
             try
             {
                 Thread.Sleep(1000);
-                network_.GetAndSaveToFile(video_url, save_flv_filename);
+                //network_.GetAndSaveToFile(video_url, save_flv_filename);
+                //2024/02/26 Update marky CMAF対応
+                network_.GetAndSaveToFile(video_url, save_flv_dir + video_id + ".mp4");
             }
             finally
             {
@@ -685,6 +719,350 @@ namespace NicoTools
 
                 network_.Reset();
             }
+        }
+
+        /// <summary>
+        /// 映像、音声の利用可能なビットレートを取得する 2024/02/26 ADD marky CMAF対応
+        /// </summary>
+        private string GetVideoAudioRate(string data)
+        {
+            int index = data.IndexOf("\"media\":{\"domand\":{\"videos\":[");
+            if (index == -1)
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+
+            //映像最高解像度
+            string video_rate = IJStringUtil.GetValueByKey(ref index, "id", data);
+            if (video_rate.Equals(""))
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+
+            //利用可能？
+            string isAvailable = IJStringUtil.GetValueByKey(ref index, "isAvailable", data);
+            if (isAvailable.Equals(""))
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+
+            if (isAvailable.Equals("false"))
+            {
+                video_rate = IJStringUtil.GetValueByKey(ref index, "id", data);
+                //映像次点解像度
+                if (video_rate.Equals(""))
+                {
+                    throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+                }
+
+            }
+
+            //"audios":[{"id":"audio-aac-XXXkbps",を探す
+            String str = "\"audios\"";
+            if (data.IndexOf(str, index) == -1)
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+            index = data.IndexOf(str, index);
+
+            //音声最高解像度
+            string audio_rate = IJStringUtil.GetValueByKey(ref index, "id", data);
+            if (audio_rate.Equals(""))
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+
+            //利用可能？（不要かも）
+            isAvailable = IJStringUtil.GetValueByKey(ref index, "isAvailable", data);
+            if (isAvailable.Equals(""))
+            {
+                throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+            }
+
+            if (isAvailable.Equals("false"))
+            {
+                audio_rate = IJStringUtil.GetValueByKey(ref index, "id", data);
+                //音声次点解像度
+                if (audio_rate.Equals(""))
+                {
+                    throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
+                }
+
+            }
+
+            return "\"" + video_rate + "\",\"" + audio_rate + "\"";
+        }
+
+        /// <summary>
+        /// 動画をダウンロードする 2024/02/26 ADD marky CMAF対応
+        /// </summary>
+        /// <param name="video_id">ダウンロードする動画ID</param>
+        /// <param name="save_dir">ダウンロードしたファイルを保存するフォルダ名</param>
+        /// <param name="dlg">ダウンロード最中に呼び出されるコールバックメソッド。null でもよい。</param>
+        /// <param name="TrackId">トラックID</param>
+        /// <param name="RightKey">ライトキー</param>
+        /// <param name="rate">映像、音声の取得ビットレート</param>
+        /// <param name="ffmpeg_dir">ffmpeg.exeの保存パス名</param>
+        /// <exception cref="System.Exception">erer</exception>
+        public void DownloadAndSaveFlv_new(string video_id, string save_dir, IJNetwork.DownloadingEventDelegate dlg, string TrackId, string RightKey, string rate, string ffmpeg_dir)
+        {
+
+            if (!File.Exists(ffmpeg_dir))
+            {
+                throw new NiconicoAccessFailedException("FFmpeg のパスの設定が正しくありません。");
+            }
+
+            network_.AddCustomHeader("Access-Control-Request-Headers: content-type,x-access-right-key,x-frontend-id,x-frontend-version,x-request-with");
+            network_.AddCustomHeader("Access-Control-Request-Method: POST");
+            network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+            network_.SetReferer(nicovideo_uri_);
+            string video_url = "https://nvapi.nicovideo.jp/v1/watch/" + video_id + "/access-rights/hls?actionTrackId=" + TrackId;
+
+            string str = network_.OptionsToWeb(video_url);
+            network_.Reset();
+
+            if (!str.Equals("OK"))
+            {
+                throw new NiconicoAccessFailedException("動画ファイルの取得に失敗しました。");
+            }
+
+            network_.SetContentTypeJSON();
+            network_.AddCustomHeader("Origin: " + nicovideo_uri_);
+            network_.SetReferer(nicovideo_uri_);
+            network_.AddCustomHeader("X-Access-Right-Key: " + RightKey);
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            network_.AddCustomHeader("X-Request-With: " + nicovideo_uri_);
+            //string json = "{\"outputs\":[[\"video-h264-720p\",\"audio-aac-128kbps\"]]}";    //ひとまず固定値で
+            //string json = "{\"outputs\":[[\"video-h264-1080p\",\"audio-aac-192kbps\"]]}";    //ひとまず固定値で
+            string json = "{\"outputs\":[[" + rate + "]]}";    //取得ビットレート
+            try
+            {
+                str = network_.PostAndReadFromWebUTF8(video_url, json);
+            }
+            catch (Exception e)
+            {
+                throw new NiconicoAccessFailedException("動画ファイルの取得に失敗しました。" + e.Message);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            if (str.IndexOf("\"status\":201") < 0) // "status":201 Created
+            {
+                throw new NiconicoAccessFailedException("動画ファイルの取得に失敗しました。");
+            }
+
+            int index = 0;
+            //"contentUrl": "https://delivery.domand.nicovideo.jp/hlsbid/xxxxx/playlists/variants/xxxxx.m3u8?session=XXXXX&Policy=XXXX&Key-Pair-Id=XXXXXX",
+            string contentUrl = IJStringUtil.GetValueByKey(ref index, "contentUrl", str);
+            if (contentUrl.Equals(""))
+            {
+                throw new NiconicoAccessFailedException("動画ファイルの取得に失敗しました。");
+            }
+            //network_.GetAndSaveToFile(contentUrl, save_dir + video_id + ".m3u8");
+            string m3u8File = network_.GetAndReadFromWebUTF8(contentUrl); // xxxxx.m3u8
+            string[] m3u8Pages = m3u8File.Split('\n');
+            index = m3u8Pages[3].LastIndexOf("URI=\"") + 5;
+            string m3u8aURL = m3u8Pages[3].Substring(index, m3u8Pages[3].Length - 1 - index); //URI="audio-aac-192kbps.m3u8"
+            string m3u8vURL = m3u8Pages[5];
+
+            string m3u8aFile = network_.GetAndReadFromWebUTF8(m3u8aURL); // audio-aac-192kbps.m3u8
+            string[] m3u8aPages = m3u8aFile.Split('\n');
+
+            index = ("#EXT-X-MAP:URI=\"").Length;
+            string initaURL = m3u8aPages[5].Substring(index, m3u8aPages[5].Length - 1 - index); //#EXT-X-MAP:URI="https://XXX/init1.cmfa?session=XXX"
+            string initaFile = initaURL.Substring(0, initaURL.LastIndexOf('?'));
+            index = initaFile.LastIndexOf('/') + 1;
+            initaFile = initaFile.Substring(index, initaFile.Length - index);  //init1.cmfa
+
+            index = ("#EXT-X-KEY:METHOD=AES-128,URI=\"").Length;
+            string keyaURL = m3u8aPages[6].Substring(index, m3u8aPages[6].LastIndexOf('\"') - index); //#EXT-X-KEY:METHOD=AES-128,URI="https://XXX/audio-aac-192kbps.key?session=XXX",IV=XXX
+            string keyaFile = keyaURL.Substring(0, keyaURL.LastIndexOf('?'));
+            index = keyaFile.LastIndexOf('/') + 1;
+            keyaFile = keyaFile.Substring(index, keyaFile.Length - index);  //audio-aac-192kbps.key
+
+            int m3u8aCount = (m3u8aPages.Length - 9) / 2; //ヘッダー7行、フッター2行を除き、#EXTINF行を除く
+            string[] cmfaFile = new String[m3u8aCount];
+
+            string m3u8vFile = network_.GetAndReadFromWebUTF8(m3u8vURL); // video-h264-720p.m3u8
+            string[] m3u8vPages = m3u8vFile.Split('\n');
+
+            index = ("#EXT-X-MAP:URI=\"").Length;
+            string initvURL = m3u8vPages[5].Substring(index, m3u8vPages[5].Length - 1 - index); //#EXT-X-MAP:URI="https://XXX/init1.cmfv?session=XXX"
+            string initvFile = initvURL.Substring(0, initvURL.LastIndexOf('?'));
+            index = initvFile.LastIndexOf('/') + 1;
+            initvFile = initvFile.Substring(index, initvFile.Length - index);  //init1.cmfv
+
+            index = ("#EXT-X-KEY:METHOD=AES-128,URI=\"").Length;
+            string keyvURL = m3u8vPages[6].Substring(index, m3u8vPages[6].LastIndexOf('\"') - index); //#EXT-X-KEY:METHOD=AES-128,URI=""https://XXX/video-h264-720p.key?session=XXX",IV=XXX
+            string keyvFile = keyvURL.Substring(0, keyvURL.LastIndexOf('?'));
+            index = keyvFile.LastIndexOf('/') + 1;
+            keyvFile = keyvFile.Substring(index, keyvFile.Length - index);  //video-h264-720p.key
+
+            int m3u8vCount = (m3u8vPages.Length - 9) / 2; //ヘッダー7行、フッター2行を除き、#EXTINF行を除く
+            string[] cmfvFile = new String[m3u8vCount];
+
+            //network_.SetDownloadingEventDelegate(dlg);
+
+            //一時フォルダパス
+            //string temp_dir = save_dir + "temp\\";
+            string temp_dir = Environment.GetEnvironmentVariable("temp") + "\\" + video_id + "\\";
+
+            try
+            {
+                Thread.Sleep(1000);
+
+                //一時フォルダ作成
+                Directory.CreateDirectory(temp_dir);
+
+                string cmf = "";
+
+                //audio-aac-192kbps.key
+                network_.GetAndSaveToFile(initaURL, temp_dir + initaFile);
+                network_.GetAndSaveToFile(keyaURL, temp_dir + keyaFile);
+
+                for (int i = 0; i <= m3u8aCount - 1; i++)
+                {
+                    cmf = m3u8aPages[i * 2 + 8];
+                    cmfaFile[i] = cmf.Substring(0, cmf.LastIndexOf('?'));   //https://XXX/1.cmfa?session=XXX
+                    index = cmfaFile[i].LastIndexOf('/') + 1;
+                    cmfaFile[i] = cmfaFile[i].Substring(index, cmfaFile[i].Length - index);  //1.cmfa
+
+                    network_.GetAndSaveToFile(cmf, temp_dir + cmfaFile[i]);
+
+                    bool is_cancel = false;
+                    dlg(ref is_cancel, i + 1, m3u8aCount + m3u8vCount, true);
+                    if (is_cancel)
+                    {
+                        //一時ファイル削除
+                        Directory.Delete(temp_dir, true);
+                        dlg(ref is_cancel, 0, 0, true);
+                    }
+                }
+
+                // video-h264-720p.m3u8
+                network_.GetAndSaveToFile(initvURL, temp_dir + initvFile);
+                network_.GetAndSaveToFile(keyvURL, temp_dir + keyvFile);
+
+                for (int i = 0; i <= m3u8vCount - 1; i++)
+                {
+                    cmf = m3u8vPages[i * 2 + 8];
+                    cmfvFile[i] = cmf.Substring(0, cmf.LastIndexOf('?'));   //https://XXX/1.cmfv?session=XXX
+                    index = cmfvFile[i].LastIndexOf('/') + 1;
+                    cmfvFile[i] = cmfvFile[i].Substring(index, cmfvFile[i].Length - index);  //1.cmfv
+
+                    network_.GetAndSaveToFile(cmf, temp_dir + cmfvFile[i]);
+
+                    bool is_cancel = false;
+                    dlg(ref is_cancel, m3u8aCount + i + 1, m3u8aCount + m3u8vCount, true);
+                    if (is_cancel)
+                    {
+                        //一時ファイル削除
+                        Directory.Delete(temp_dir, true);
+                        dlg(ref is_cancel, 0,0, true);
+                    }
+                }
+
+                // xxxxx.m3u8
+                StringBuilder buff = new StringBuilder();
+                for (int i = 0; i <= m3u8Pages.Length - 1; i++)
+                {
+                    switch (i)
+                    {
+                        case 3:
+                            buff.Append(m3u8Pages[i].Replace(m3u8aURL, temp_dir + video_id + "a.m3u8").Replace("\\", "\\\\") + "\r\n");
+                            break;
+                        case 5:
+                            buff.Append(temp_dir + video_id + "v.m3u8" + "\r\n");
+                            break;
+                        default:
+                            buff.Append(m3u8Pages[i] + "\r\n");
+                            break;
+                    }
+                    
+                }
+                IJFile.WriteUTF8_NoBOM(temp_dir + video_id + ".m3u8", buff.ToString());
+
+                // audio-aac-192kbps.m3u8
+                buff = new StringBuilder();
+                for (int i = 0; i <= m3u8aPages.Length - 1; i++)
+                {
+                    switch (i)
+                    {
+                        case int n when n <= 4:
+                            buff.Append(m3u8aPages[i] + "\r\n");
+                             break;
+                        case 5:
+                            buff.Append(m3u8aPages[i].Replace(initaURL, temp_dir + initaFile).Replace("\\", "\\\\") + "\r\n");
+                            break;
+                        case 6:
+                            buff.Append(m3u8aPages[i].Replace(keyaURL, temp_dir + keyaFile).Replace("\\", "\\\\") + "\r\n");
+                            break;
+                        default:
+                            if ((i - 6) % 2 == 0 && !m3u8aPages[i].Equals(""))
+                            {
+                                buff.Append(temp_dir + cmfaFile[(i - 6) / 2 - 1] + "\r\n");
+                            }
+                            else
+                            {
+                                buff.Append(m3u8aPages[i] + "\r\n");
+                            }
+                            break;
+                    }
+                }
+                IJFile.WriteUTF8_NoBOM(temp_dir + video_id + "a.m3u8", buff.ToString());
+
+                // video-h264-720p.m3u8
+                buff = new StringBuilder();
+                for (int i = 0; i <= m3u8vPages.Length - 1; i++)
+                {
+                    switch (i)
+                    {
+                        case int n when n <= 4:
+                            buff.Append(m3u8vPages[i] + "\r\n");
+                            break;
+                        case 5:
+                            buff.Append(m3u8vPages[i].Replace(initvURL, temp_dir + initvFile).Replace("\\", "\\\\") + "\r\n");
+                            break;
+                        case 6:
+                            buff.Append(m3u8vPages[i].Replace(keyvURL, temp_dir + keyvFile).Replace("\\", "\\\\") + "\r\n");
+                            break;
+                        default:
+                            if ((i - 6) % 2 == 0 && !m3u8vPages[i].Equals(""))
+                            {
+                                buff.Append(temp_dir + cmfvFile[(i - 6) / 2 - 1] + "\r\n");
+                            }
+                            else
+                            {
+                                buff.Append(m3u8vPages[i] + "\r\n");
+                            }
+                            break;
+                    }
+                }
+                IJFile.WriteUTF8_NoBOM(temp_dir + video_id + "v.m3u8", buff.ToString());
+
+                //ffmpeg変換
+                nicorank.FFmpegAppPath ffPath = new nicorank.FFmpegAppPath(ffmpeg_dir,"");
+                nicorank.FFmpeg ffm = new nicorank.FFmpeg(ffPath, "");
+                ffm.TranslateToMp4(temp_dir + video_id + ".m3u8", save_dir + video_id + ".mp4");
+
+            }
+            catch (Exception e)
+            {
+                bool is_cancel = true;
+                dlg(ref is_cancel, 0, 0, true);
+                throw new Exception(e.Message);
+            }
+            finally
+            {
+                //一時ファイル削除
+                Directory.Delete(temp_dir, true);
+                network_.Reset();
+            }
+
+            return;
         }
 
         public string PostSessionAPI(string api_url, string post)
@@ -2565,8 +2943,10 @@ namespace NicoTools
 
                 network_.SetDefaultContentType();
                 //string str = network_.GetAndReadFromWebUTF8("http://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
-                // 2020/08/27 Update marky https化
-                string str = network_.GetAndReadFromWebUTF8("https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+                //// 2020/08/27 Update marky https化
+                //string str = network_.GetAndReadFromWebUTF8("https://api.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
+                // 2024/03/01 Update marky URL変更
+                string str = network_.GetAndReadFromWebUTF8("https://snapshot.search.nicovideo.jp/api/v2/snapshot/video/contents/search?" + json);
 
                 //CheckDenied(str);
                 return str;

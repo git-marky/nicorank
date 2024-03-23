@@ -16,7 +16,9 @@ namespace IJLib
 {
     public class IJNetwork
     {
-        public delegate void DownloadingEventDelegate(ref bool is_cancel, long current_size, long file_size);
+        //public delegate void DownloadingEventDelegate(ref bool is_cancel, long current_size, long file_size);
+        //2024/02/26 Update marky CMAF対応
+        public delegate void DownloadingEventDelegate(ref bool is_cancel, long current_size, long file_size, bool is_cmaf);
 
         private string referer_ = "";
         private WebProxy proxy_ = null;
@@ -237,10 +239,16 @@ namespace IJLib
                         count += s;
                         if (delegate_ != null)
                         {
-                            delegate_(ref is_cancel, count, file_size);
+                            //delegate_(ref is_cancel, count, file_size);
+                            //if (is_cancel)
+                            //{
+                            //    delegate_(ref is_cancel, count, file_size);
+                            //}
+                            //2024/02/26 Update marky CMAF対応
+                            delegate_(ref is_cancel, count, file_size, false);
                             if (is_cancel)
                             {
-                                delegate_(ref is_cancel, count, file_size);
+                                delegate_(ref is_cancel, count, file_size, false);
                             }
                         }
                     }

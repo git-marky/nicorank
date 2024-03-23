@@ -308,10 +308,44 @@ namespace nicorank
             SetCodecMp3();
             RunFFmpeg(src_filename, dest_filename);
         }
+        /// <summary>
+        /// m3u8->MP4 に変換する 2024/02/26 ADD marky
+        /// </summary>
+        public void TranslateToMp4(string src_filename, string dest_filename)
+        {
+            RunFFmpegCMAF(src_filename, dest_filename);
+        }
+
 
         private void RunFFmpeg(string before_filename, string after_filename)
         {
             string argument = "-i \"" + before_filename + "\" " + GetOption() + "\"" + after_filename + "\"";
+
+            try
+            {
+                int ret = IJProcess.RunProcessAndWaitForExit(
+                   app_path_.ffmpeg_path, argument,
+                   is_window_show, delegate_);
+                if (ret != 0)
+                {
+                    throw new FFmpegFailedException("FFmpeg の実行に失敗しました。");
+                }
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    File.Delete(after_filename);
+                }
+                catch (Exception) { }
+                throw;
+            }
+        }
+
+        //2024/02/26 ADD marky CMAF対応
+        private void RunFFmpegCMAF(string before_filename, string after_filename)
+        {
+            string argument = "-allowed_extensions ALL -y -i \"" + before_filename + "\" -codec copy -movflags faststart -f mp4 \"" + after_filename + "\"";
 
             try
             {
