@@ -150,8 +150,11 @@ namespace nrmc
                                 break;
                             case "video":
                                 LoadCookie(network);
+                                //network_mgr.DownloadFlv(iooption, option_["textBoxDlInterval"], MakeDirectoryPath(option_["textBoxFlvDlDir"]),
+                                //    bool.Parse(option_["checkBoxIsFixFlvDlExtension"]));
+                                //2024/03/17 Update marky CMAF対応
                                 network_mgr.DownloadFlv(iooption, option_["textBoxDlInterval"], MakeDirectoryPath(option_["textBoxFlvDlDir"]),
-                                    bool.Parse(option_["checkBoxIsFixFlvDlExtension"]));
+                                    bool.Parse(option_["checkBoxIsFixFlvDlExtension"]), (option_["textBoxFFmpegPath"]));
                                 break;
                             default:
                                 ShowInvalidAndUsage(args[1]);
@@ -336,9 +339,14 @@ namespace nrmc
 
         static void LoadCookie(NicoNetwork network)
         {
-            if (bool.Parse(option_["radioButtonBrowserIE"]))
+            //if (bool.Parse(option_["radioButtonBrowserIE"]))
+            //{
+            //    network.SetCookieKind(NicoNetwork.CookieKind.IE);
+            //}
+            ////2024/03/17 Update marky
+            if (bool.Parse(option_["radioButtonBrowserEdge"]))
             {
-                network.SetCookieKind(NicoNetwork.CookieKind.IE);
+                network.SetCookieKind(NicoNetwork.CookieKind.Edge);
             }
             else if (bool.Parse(option_["radioButtonBrowserFirefox3"]))
             {
