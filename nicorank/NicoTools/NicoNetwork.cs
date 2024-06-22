@@ -109,10 +109,15 @@ namespace NicoTools
         {
             network_.ClearCookie();
 
+            //string post_data = IJNetwork.ConstructPostData(
+            //    "mail",     username,
+            //    "password", password);
+            //string str = network_.PostAndReadFromWebUTF8("https://secure.nicovideo.jp/secure/login?site=niconico", post_data);
+            // 2024/05/25 Update marky 新ログインページに対応
             string post_data = IJNetwork.ConstructPostData(
-                "mail",     username,
+                "mail_tel", username,
                 "password", password);
-            string str = network_.PostAndReadFromWebUTF8("https://secure.nicovideo.jp/secure/login?site=niconico", post_data);
+            string str = network_.PostAndReadFromWebUTF8("https://account.nicovideo.jp/login/redirector?site=niconico", post_data);
             is_loaded_cookie_ = true;
 
             //if (str.IndexOf("入力したメールアドレスまたはパスワードが間違っています") >= 0) // login failed
@@ -120,6 +125,11 @@ namespace NicoTools
             if (str.IndexOf("メールアドレスまたはパスワードが間違っています") >= 0) // login failed
             { 
                 return false;
+            }
+            // 2024/05/25 ADD marky 二段階認証をチェック
+            else if (str.IndexOf("ログインするには確認コードが必要です") >= 0) // login failed
+            {
+                throw new NiconicoAccessFailedException("2段階認証が設定されています。二段階認証を解除してください。");
             }
             else
             {
@@ -3811,7 +3821,12 @@ namespace NicoTools
                     cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera Software\Opera Stable\Network\Cookies";
                     if (cookie_filename == "" || !File.Exists(cookie_filename))
                     {
-                        return "";
+                        //2024/05/25 ADD marky
+                        cookie_filename = System.Environment.GetEnvironmentVariable("APPDATA") + @"\Opera Software\Opera Stable\Default\Network\Cookies";
+                        if (cookie_filename == "" || !File.Exists(cookie_filename))
+                        {
+                            return "";
+                        }
                     }
                 }
                 FileStream fs = new FileStream(cookie_filename, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
@@ -4056,7 +4071,9 @@ namespace NicoTools
                         for (int k = 15; k < 150; ++k)
                         {
                             //path="/"を探す
-                            if (((long)data[pos + k] == 47) && ((long)data[pos + k + 1] == 0) && ((long)data[pos + k + 2] == 48))
+                            //if (((long)data[pos + k] == 47) && ((long)data[pos + k + 1] == 0) && ((long)data[pos + k + 2] == 48))
+                            // 2024/05/25 Update marky 3桁目が変更？
+                            if (((long)data[pos + k] == 47) && ((long)data[pos + k + 1] == 0) && ((long)data[pos + k + 2] == 47))
                             {
                                 len = k;
                                 break;
