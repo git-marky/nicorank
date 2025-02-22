@@ -129,7 +129,9 @@ namespace nrmc
                 GenreTagManager category_manager = new GenreTagManager();
                 category_manager.SetGenre(option_["dlrank_genre"]);
                 category_manager.SetString(option_["dlrank_category"]);
-                category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
+                //category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
+                // 2024/08/05 Update marky
+                category_manager.ParseGenreTagFile(network.GetGenreTag());
 
                 switch (args[0])
                 {
