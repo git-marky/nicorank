@@ -887,7 +887,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(266, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(272, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -902,7 +902,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(241, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(247, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -930,7 +930,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(268, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(274, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -1867,7 +1867,8 @@
             "詳細情報更新",
             "マイリスト検索",
             "新着投稿検索",
-            "ランキング解析"});
+            "ランキング解析",
+            "差分作成A"});
             this.comboBoxTimer2.Location = new System.Drawing.Point(92, 120);
             this.comboBoxTimer2.Name = "comboBoxTimer2";
             this.comboBoxTimer2.Size = new System.Drawing.Size(185, 20);
@@ -1922,7 +1923,8 @@
             "詳細情報更新",
             "マイリスト検索",
             "新着投稿検索",
-            "ランキング解析"});
+            "ランキング解析",
+            "差分作成A"});
             this.comboBoxTimer1.Location = new System.Drawing.Point(92, 38);
             this.comboBoxTimer1.Name = "comboBoxTimer1";
             this.comboBoxTimer1.Size = new System.Drawing.Size(185, 20);
@@ -5180,6 +5182,7 @@
             this.groupBox40.TabIndex = 48;
             this.groupBox40.TabStop = false;
             this.groupBox40.Text = "生成時間";
+            this.groupBox40.Visible = false;
             // 
             // radioButtonDlRankTime0
             // 
@@ -5256,6 +5259,7 @@
             this.groupBox13.TabIndex = 8;
             this.groupBox13.TabStop = false;
             this.groupBox13.Text = "日付";
+            this.groupBox13.Visible = false;
             // 
             // dateTimePickerDlRankDate2
             // 
@@ -5501,7 +5505,7 @@
             this.groupBox17.Controls.Add(this.radioButtonDlRankHtml);
             this.groupBox17.Location = new System.Drawing.Point(327, 61);
             this.groupBox17.Name = "groupBox17";
-            this.groupBox17.Size = new System.Drawing.Size(94, 69);
+            this.groupBox17.Size = new System.Drawing.Size(94, 50);
             this.groupBox17.TabIndex = 7;
             this.groupBox17.TabStop = false;
             this.groupBox17.Text = "ファイル種類";
@@ -5528,6 +5532,7 @@
             this.radioButtonDlRankHtml.TabStop = true;
             this.radioButtonDlRankHtml.Text = "過去ログ";
             this.radioButtonDlRankHtml.UseVisualStyleBackColor = true;
+            this.radioButtonDlRankHtml.Visible = false;
             this.radioButtonDlRankHtml.CheckedChanged += new System.EventHandler(this.radioButtonDlRank_CheckedChanged);
             // 
             // buttonDlRank

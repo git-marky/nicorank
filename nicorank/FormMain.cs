@@ -125,8 +125,10 @@ namespace nicorank
             // 2019/09/03 Update marky 403エラー対応
             try
             {
-                // タグリスト再作成
-                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                //// タグリスト再作成
+                //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                // 2024/08/05 Update marky
+                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
                 // 2020/02/11 ADD marky ジャンル追加
                 object[] items = new Object[comboBoxDlRankGenre.Items.Count];
                 comboBoxDlRankGenre.Items.CopyTo(items, 0);

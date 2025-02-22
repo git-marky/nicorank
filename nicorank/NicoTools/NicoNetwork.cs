@@ -408,16 +408,29 @@ namespace NicoTools
 
             //video_url = video_url.Replace("\\", "");  //リテラル文字除去
 
-            int index = page.IndexOf("js-initial-watch-data");
+            //int index = page.IndexOf("js-initial-watch-data");
+            //if (index == -1)
+            //{
+            //    throw new NiconicoAccessFailedException();
+            //}
+
+            ////<div id="js-initial-watch-data" data-api-data="{
+            //String startstr = "data-api-data=\"";
+            ////}" hidden></div>
+            //String endtstr = "\" hidden></div>";
+
+            // 2024/08/05 Update marky
+            int index = page.IndexOf("server-response");
             if (index == -1)
             {
                 throw new NiconicoAccessFailedException();
             }
 
-            //<div id="js-initial-watch-data" data-api-data="{
-            String startstr = "data-api-data=\"";
-            //}" hidden></div>
-            String endtstr = "\" hidden></div>";
+            //&quot;data&quot;:{&quot;metadata&quot;:
+            String startstr = "&quot;data&quot;:{&quot;metadata&quot;:";
+            //}"</>
+            String endtstr = "/>";
+
             if (page.IndexOf(startstr, index) == -1)
             {
                 throw new NiconicoAccessFailedException();
@@ -463,6 +476,8 @@ namespace NicoTools
                     throw new NiconicoAccessFailedException("ファイル情報の取得に失敗しました。仕様が変わった可能性があります。");
                 }
 
+                string rate = GetVideoAudioRate(data);
+
                 //"accessRightKey":"XXXXXXXXX"},
                 index = 0;
                 string RightKey = IJStringUtil.GetValueByKey(ref index, "accessRightKey", data);
@@ -479,7 +494,7 @@ namespace NicoTools
                     }
                 }
 
-                string rate = GetVideoAudioRate(data);
+                //string rate = GetVideoAudioRate(data);
 
                 DownloadAndSaveFlv_new(video_id, save_flv_dir, dlg, TrackId, RightKey, rate, ffmpeg_dir);
                 return;
@@ -2489,6 +2504,105 @@ namespace NicoTools
             return json;
         }
 
+        // ジャンル＋人気のタグ一覧を取得
+        // 2024/08/05 ADD marky
+        public string GetGenreTag()
+        {
+            string html = "";
+            string str = "";
+            string json = "[";
+            Dictionary<string, string> genre = new Dictionary<string, string>();
+
+            try
+            {
+                html = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/ranking?video_ranking_menu");
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            int index = -1;
+            //<ul class="RankingGenreListContainer">
+            index = html.IndexOf("RankingGenreListContainer");
+
+            while (html.IndexOf("RankingGenreListContainer-item", index + 1) >= 0)
+            {
+                //<li class="RankingGenreListContainer-item"><a href="https://www.nicovideo.jp/ranking/genre/entertainment?video_ranking_menu">エンターテイメント</a></li>
+                str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
+                if (str.IndexOf("genre") < 0) { continue; }
+                //ジャンル名
+                int local = 0;
+                string genrename = IJStringUtil.GetStringBetweenTag(ref local, "a", str);
+                //ジャンルID
+                int start = str.IndexOf("/ranking/genre/") + ("/ranking/genre/").Length;
+                int end = str.IndexOf("?video_ranking_menu", start);
+                string genreid = str.Substring(start, end - start);
+                genre.Add(genreid, genrename);
+                if (!json.Equals("["))
+                {
+                    json += ",";
+                }
+                json += "{\"genre\":\"" + genrename + "\",\"tag\":null,\"file\":\"" + genreid +  ".json\"}";
+            }
+
+            if (!genre.ContainsKey("r18"))
+            {
+                //R-18（未ログインだと非表示のため）
+                genre.Add("r18", "R-18");
+                json += ",{\"genre\":\"R-18\",\"tag\":null,\"file\":\"r18.json\"}";
+            }
+
+            foreach (var g in genre)
+            {
+                GetTag(ref json, g.Key, g.Value);
+            }
+
+            json += "]";
+            return json;
+        }
+
+        // 人気のタグ一覧を取得
+        // 2024/08/05 ADD marky
+        private string GetTag(ref string json, string genreid, string genrename)
+        {
+            string html = "";
+            string str = "";
+            string tag = "";
+            string genreurl = "/ranking/genre/" + genreid;
+
+            try
+            {
+                html = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + genreurl);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            int index = -1;
+            //<section class="RepresentedTagsContainer">
+            index = html.IndexOf("RepresentedTagsContainer");
+
+            while (html.IndexOf("RankingFilterTag", index + 1) >= 0)
+            {
+                //<li><a class="RankingFilterTag" href="/ranking/genre/game?tag=%E6%9D%B1%E6%96%B9"></a></li>
+                str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
+                if (str.IndexOf("tag=") < 0) { continue; }
+                //タグ名
+                int local = 0;
+                string tagname = IJStringUtil.GetStringBetweenTag(ref local, "a", str);
+                tagname = tagname.Replace("\r", "").Replace("\n", "").Trim();
+                ////タグ
+                //int start = str.IndexOf(genreurl + "?tag=") + (genreurl + "?tag=").Length;
+                //int end = str.IndexOf("\">", start);
+                //tag = str.Substring(start, end - start);
+                json += ",{\"genre\":\"" + genrename + "\",\"tag\":\"" + tagname + "\",\"file\":\"" + genreid + ".json\"}";
+            }
+
+            return json;
+        }
+
         public string GetDataFromNicoApi() // 実験用メソッド
         {
             network_.SetContentTypeJSON();
@@ -3485,7 +3599,8 @@ namespace NicoTools
                         string option = "?";
                         if (category_list[k].short_name != "")  //人気のタグの場合
                         {
-                            genre = genre.Substring(0, genre.Length - 3);
+                            // 2024/08/05 DEL file=genre_XXからfile=genreとなった
+                            //genre = genre.Substring(0, genre.Length - 3);
                             string name = category_list[k].name;
                             option += "tag=";
                             //option += name.Substring(name.IndexOf("：") + 1);

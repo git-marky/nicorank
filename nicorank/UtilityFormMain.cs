@@ -387,6 +387,10 @@ namespace nicorank
                                 {
                                     radioButtonBrowserEdge.Checked = true;
                                 }
+                                // 2024/08/05 ADD marky ランキング過去ログ廃止
+                                radioButtonDlRankRss.Checked = true;
+                                radioButtonDlRankHtml.Checked = false;
+
                                 break;
                             case "checkBox":
                                 ((CheckBox)c[0]).Checked = bool.Parse(sa[2]);
@@ -650,6 +654,11 @@ namespace nicorank
                 case 6:
                     buttonAnalyzeRanking_Click(null, null);
                     break;
+                // 2024/08/05 ADD marky
+                case 7:
+                    buttonMakeDiff_Click(null, null);
+                    break;
+
             }
         }
 

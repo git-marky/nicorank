@@ -462,6 +462,14 @@ namespace nicorank
         {
             return niconico_network_.GetGenreTag(getdate);
         }
+
+        // ランキングジャンル、人気のタグ一覧を取得
+        // 2024/08/05 ADD marky
+        public string GetGenreTag()
+        {
+            return niconico_network_.GetGenreTag();
+        }
+
     }
 
     public interface NicoRankManagerMsgReceiver : MessageOut
