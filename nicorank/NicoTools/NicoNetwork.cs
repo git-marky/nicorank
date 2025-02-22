@@ -129,7 +129,9 @@ namespace NicoTools
             // 2024/05/25 ADD marky 二段階認証をチェック
             else if (str.IndexOf("ログインするには確認コードが必要です") >= 0) // login failed
             {
-                throw new NiconicoAccessFailedException("2段階認証が設定されています。二段階認証を解除してください。");
+                //throw new NiconicoAccessFailedException("2段階認証が設定されています。二段階認証を解除してください。");
+                // 2025/01/26 Update marky 二段階認証に対応
+                throw new NiconicoAccessFailedException(str);
             }
             else
             {
@@ -147,7 +149,42 @@ namespace NicoTools
                 }
             }
         }
-        
+
+        /// <summary>
+        /// 2025/01/26 ADD marky 二段階認証に対応
+        /// ニコニコ動画に二段階認証でログインする
+        /// </summary>
+        /// <param name="username">ユーザー名</param>
+        /// <param name="password">パスワード</param>
+        /// <returns>ログインに成功したかどうか</returns>
+
+        public bool OptLoginNiconico(string otpCode, string urlPath)
+        {
+            string post_data = IJNetwork.ConstructPostData(
+                "otp", otpCode,
+                "loginBtn", "ログイン",
+                "device_name", "Google Chrome (Windows)");
+            string str = network_.PostAndReadFromWebUTF8("https://account.nicovideo.jp" + urlPath, post_data);
+
+            if (str.IndexOf("ログインするには確認コードが必要です") >= 0) // login failed
+            {
+                return false;
+            }
+            else
+            {
+                Match m = Regex.Match(str, "user.user_id = parseInt\\('[0-9]+");
+
+                if (m.Success) // login succeeded
+                {
+                    return true;
+                }
+                else // html parse error
+                {
+                    throw new NiconicoFormatException();
+                }
+            }
+        }
+
         /// <summary>
         /// ニコニコ動画にログインされていない場合はログインする
         /// </summary>
@@ -2549,8 +2586,11 @@ namespace NicoTools
             if (!genre.ContainsKey("r18"))
             {
                 //R-18（未ログインだと非表示のため）
-                genre.Add("r18", "R-18");
-                json += ",{\"genre\":\"R-18\",\"tag\":null,\"file\":\"r18.json\"}";
+                //genre.Add("r18", "R-18");
+                //json += ",{\"genre\":\"R-18\",\"tag\":null,\"file\":\"r18.json\"}";
+                // 2024/11/30 Update marky ジャンル名変更
+                genre.Add("r18", "例のソレ");
+                json += ",{\"genre\":\"例のソレ\",\"tag\":null,\"file\":\"r18.json\"}";
             }
 
             foreach (var g in genre)

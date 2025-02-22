@@ -120,33 +120,44 @@ namespace nicorank
             }
 
             //category_manager_.ParseCategoryFile2(this);
-            // 2019/06/26 Update marky ジャンル、人気のタグ対応
-            //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
-            // 2019/09/03 Update marky 403エラー対応
-            try
+            // 2025/01/22 add marky ジャンルを取得せず高速化
+            if (checkBoxNoGenre.Checked)
             {
-                //// タグリスト再作成
-                //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
-                // 2024/08/05 Update marky
-                category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
-                // 2020/02/11 ADD marky ジャンル追加
-                object[] items = new Object[comboBoxDlRankGenre.Items.Count];
-                comboBoxDlRankGenre.Items.CopyTo(items, 0);
-                comboBoxSearchGenre.Items.AddRange(items);
-                comboBoxSearchGenre.SelectedIndex = search_genre_;
-            }
-            catch (Exception)
-            {
-                MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                // 2020/02/11 ADD marky ジャンルが取得できなかった場合の規定値追加
+                category_manager_.ParseGenreTagFile("[{\"genre\":\"全ジャンル\",\"tag\":null,\"file\":\"all.json\"}]");
+                comboBoxDlRankGenre.SelectedIndex = 0;
                 comboBoxSearchGenre.Items.Add("全ジャンル");
                 comboBoxSearchGenre.SelectedIndex = 0;
             }
-            // 2019/06/26 ADD marky ジャンル、人気のタグ対応
-            dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
-            dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
-            checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
+            else
+            {
+                // 2019/06/26 Update marky ジャンル、人気のタグ対応
+                //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                // 2019/09/03 Update marky 403エラー対応
+                try
+                {
+                    //// タグリスト再作成
+                    //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
+                    // 2024/08/05 Update marky
+                    category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
+                    // 2020/02/11 ADD marky ジャンル追加
+                    object[] items = new Object[comboBoxDlRankGenre.Items.Count];
+                    comboBoxDlRankGenre.Items.CopyTo(items, 0);
+                    comboBoxSearchGenre.Items.AddRange(items);
+                    comboBoxSearchGenre.SelectedIndex = search_genre_;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    // 2020/02/11 ADD marky ジャンルが取得できなかった場合の規定値追加
+                    comboBoxSearchGenre.Items.Add("全ジャンル");
+                    comboBoxSearchGenre.SelectedIndex = 0;
+                }
+                // 2019/06/26 ADD marky ジャンル、人気のタグ対応 2025/01/22 DEL
+                //dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
+                //dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
+                //checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
+            }
 
             SetPath();
             SetButtonDialog();

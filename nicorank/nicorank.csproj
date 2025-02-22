@@ -142,6 +142,12 @@
     <Compile Include="IJLib\IJNetwork.cs" />
     <Compile Include="IJLib\Vfw.cs" />
     <Compile Include="Layout.cs" />
+    <Compile Include="MessageBoxWithTextBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MessageBoxWithTextBox.Designer.cs">
+      <DependentUpon>MessageBoxWithTextBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="MessageBoxWithCheckBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -198,6 +204,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormTransOption.resx">
       <DependentUpon>FormTransOption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MessageBoxWithTextBox.resx">
+      <DependentUpon>MessageBoxWithTextBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MessageBoxWithCheckBox.resx">
       <DependentUpon>MessageBoxWithCheckBox.cs</DependentUpon>

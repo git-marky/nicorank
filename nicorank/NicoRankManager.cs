@@ -207,10 +207,55 @@ namespace nicorank
                     msg_receiver_.Write("ログインに失敗しました。\r\n");
                 }
             }
+            // 2025/01/26 ADD marky 二段階認証に対応
+            catch (NiconicoAccessFailedException e)
+            {
+                int start = e.Message.IndexOf("action=\"") + 8;
+                int end = e.Message.IndexOf('"', start);
+                if (start > 0 && end > start)
+                {
+                    string path_url = e.Message.Substring(start, end - start);
+                    using (MessageBoxWithTextBox msgbox = new MessageBoxWithTextBox())
+                    {
+                        msgbox.SetText("確認コードを入力してください。", "確認コード入力", "");
+                        System.Windows.Forms.DialogResult result = msgbox.ShowDialog();
+                        if (result == System.Windows.Forms.DialogResult.Cancel)
+                        {
+                            msg_receiver_.Write("ログインに失敗しました。\r\n");
+                        }
+                        else
+                        {
+                            string otp = msgbox.InputText;
+                            if (otp.Equals(""))
+                            {
+                                msg_receiver_.Write("ログインに失敗しました。\r\n");
+                            }
+                            else if (OptLoginNiconico(otp, path_url))
+                            {
+                                msg_receiver_.Write("ログインに成功しました。\r\n");
+                            }
+                            else
+                            {
+                                msg_receiver_.Write("ログインに失敗しました。\r\n");
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    msg_receiver_.Write("ログインに成功したか確認できません。ニコニコ動画が仕様変更された可能性があります。\r\n");
+                }
+            }
             catch (NiconicoFormatException)
             {
                 msg_receiver_.Write("ログインに成功したか確認できません。ニコニコ動画が仕様変更された可能性があります。\r\n");
             }
+        }
+
+        // 2025/01/26 ADD marky 二段階認証に対応
+        public bool OptLoginNiconico(string otpCode, string urlPath)
+        {
+            return niconico_network_.OptLoginNiconico(otpCode, urlPath);
         }
 
         public void ReloadCookie(NicoNetwork.CookieKind cookie_kind, string profile_dir)

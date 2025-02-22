@@ -131,7 +131,36 @@ namespace nrmc
                 category_manager.SetString(option_["dlrank_category"]);
                 //category_manager.ParseGenreTagFile(network.GetGenreTag(category_manager.GetDate));
                 // 2024/08/05 Update marky
-                category_manager.ParseGenreTagFile(network.GetGenreTag());
+                //category_manager.ParseGenreTagFile(network.GetGenreTag());
+                // 2025/01/29 Update marky
+                bool nogenre = false;
+                try
+                {
+                    nogenre = bool.Parse(option_["checkBoxNoGenre"]);
+                }
+                catch (KeyNotFoundException e)
+                {
+                    // 設定がなければ規定値（ジャンル取得）
+                }
+                if (nogenre)
+                {
+                    // 全ジャンルに強制指定
+                    category_manager.SetGenre("全ジャンル");
+                    // 全ジャンルが含まれていればDLに指定
+                    if (option_["dlrank_category"].IndexOf("全ジャンル") >= 0)
+                    {
+                        category_manager.SetString("全ジャンル");
+                        category_manager.ParseGenreTagFile("[{\"genre\":\"全ジャンル\",\"tag\":null,\"file\":\"all.json\"}]");
+                    }
+                    else
+                    {
+                        category_manager.SetString("");
+                    }
+                }
+                else
+                {
+                    category_manager.ParseGenreTagFile(network.GetGenreTag());
+                }
 
                 switch (args[0])
                 {

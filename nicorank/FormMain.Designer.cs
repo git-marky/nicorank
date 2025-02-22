@@ -499,6 +499,7 @@
             this.selectFileBoxMakeUserIdFromDir = new nicorank.SelectFileBox();
             this.tabPageTagComment = new System.Windows.Forms.TabPage();
             this.label29 = new System.Windows.Forms.Label();
+            this.checkBoxNoGenre = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -887,7 +888,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(252, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(256, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -902,7 +903,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(227, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(231, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -930,7 +931,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(254, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(258, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -1683,7 +1684,7 @@
             // 
             // buttonLoadConfig
             // 
-            this.buttonLoadConfig.Location = new System.Drawing.Point(17, 253);
+            this.buttonLoadConfig.Location = new System.Drawing.Point(17, 254);
             this.buttonLoadConfig.Name = "buttonLoadConfig";
             this.buttonLoadConfig.Size = new System.Drawing.Size(127, 23);
             this.buttonLoadConfig.TabIndex = 15;
@@ -1693,7 +1694,7 @@
             // 
             // buttonSaveConfig
             // 
-            this.buttonSaveConfig.Location = new System.Drawing.Point(17, 224);
+            this.buttonSaveConfig.Location = new System.Drawing.Point(17, 225);
             this.buttonSaveConfig.Name = "buttonSaveConfig";
             this.buttonSaveConfig.Size = new System.Drawing.Size(127, 23);
             this.buttonSaveConfig.TabIndex = 14;
@@ -5147,6 +5148,7 @@
             // 
             // tabPageDlRank
             // 
+            this.tabPageDlRank.Controls.Add(this.checkBoxNoGenre);
             this.tabPageDlRank.Controls.Add(this.groupBox40);
             this.tabPageDlRank.Controls.Add(this.groupBox39);
             this.tabPageDlRank.Controls.Add(this.buttonDlRankUncheckAll);
@@ -5741,6 +5743,16 @@
             this.label29.Size = new System.Drawing.Size(224, 12);
             this.label29.TabIndex = 17;
             this.label29.Text = "このタブにあるボタンは各3回までしか押せません";
+            // 
+            // checkBoxNoGenre
+            // 
+            this.checkBoxNoGenre.AutoSize = true;
+            this.checkBoxNoGenre.Location = new System.Drawing.Point(122, 357);
+            this.checkBoxNoGenre.Name = "checkBoxNoGenre";
+            this.checkBoxNoGenre.Size = new System.Drawing.Size(297, 16);
+            this.checkBoxNoGenre.TabIndex = 49;
+            this.checkBoxNoGenre.Text = "ジャンル・人気のタグを取得しない （次回起動時より有効）";
+            this.checkBoxNoGenre.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
@@ -6369,6 +6381,7 @@
         private System.Windows.Forms.CheckBox checkBoxTagSearchDate;
         private System.Windows.Forms.CheckBox checkBoxIsFilterBeforeDetail;
         private System.Windows.Forms.RadioButton radioButtonBrowserEdge;
+        private System.Windows.Forms.CheckBox checkBoxNoGenre;
     }
 }
 
