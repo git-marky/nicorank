@@ -887,7 +887,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(272, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(252, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -902,7 +902,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(247, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(227, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -930,7 +930,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(274, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(254, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2

@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;       // 2024/08/13 ADD marky
 using IJLib;
 using System.Text.RegularExpressions;
 using System.Text;
@@ -447,6 +448,9 @@ namespace NicoTools
         public static List<Video> ParseRanking(string dir_name, DateTime getting_dt, ParseRankingKind kind)
         {
             string[] files = System.IO.Directory.GetFiles(dir_name);
+            // 2024/08/13 ADD marky
+            Array.Sort(files, new NaturalStringComparer());
+
             List<Video> video_list = new List<Video>();
             Dictionary<string, Video> video_dic = new Dictionary<string, Video>();
             for (int i = 0; i < files.Length; ++i)
@@ -1010,5 +1014,13 @@ namespace NicoTools
             }
             return video_list;
         }
+    }
+    // 2024/08/13 ADD marky
+    public class NaturalStringComparer : IComparer<string>
+    {
+        [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+        public static extern int StrCmpLogicalW(string psz1, string psz2);
+
+        public int Compare(string a, string b) => StrCmpLogicalW(a, b);
     }
 }
