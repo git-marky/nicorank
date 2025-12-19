@@ -888,7 +888,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(258, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(256, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -903,7 +903,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(233, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(231, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -931,7 +931,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(260, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(258, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -5179,9 +5179,9 @@
             this.checkBoxNoGenre.AutoSize = true;
             this.checkBoxNoGenre.Location = new System.Drawing.Point(122, 357);
             this.checkBoxNoGenre.Name = "checkBoxNoGenre";
-            this.checkBoxNoGenre.Size = new System.Drawing.Size(297, 16);
+            this.checkBoxNoGenre.Size = new System.Drawing.Size(330, 16);
             this.checkBoxNoGenre.TabIndex = 49;
-            this.checkBoxNoGenre.Text = "ジャンル・人気のタグを取得しない （次回起動時より有効）";
+            this.checkBoxNoGenre.Text = "ランキング区分・トレンドタグを取得しない （次回起動時より有効）";
             this.checkBoxNoGenre.UseVisualStyleBackColor = true;
             // 
             // groupBox40
@@ -5226,7 +5226,7 @@
             this.groupBox39.Size = new System.Drawing.Size(191, 50);
             this.groupBox39.TabIndex = 47;
             this.groupBox39.TabStop = false;
-            this.groupBox39.Text = "ジャンル";
+            this.groupBox39.Text = "ランキング区分";
             // 
             // comboBoxDlRankGenre
             // 
@@ -5370,9 +5370,9 @@
             this.label27.AutoSize = true;
             this.label27.Location = new System.Drawing.Point(120, 117);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(99, 12);
+            this.label27.Size = new System.Drawing.Size(132, 12);
             this.label27.TabIndex = 46;
-            this.label27.Text = "ジャンル・人気のタグ";
+            this.label27.Text = "ランキング区分・トレンドタグ";
             // 
             // checkedListBoxDlRankCategory
             // 

@@ -171,11 +171,12 @@ namespace nicorank
     }
 
     // 2019-07-22 ADD marky
+    // 2025/04/09 ジャンル専用として利用、nrmcではランキング区分として利用するので注意
     public class GenreTagManager : CategoryManager
     {
 
         protected  Dictionary<string, GenreTagItem> genre_item_dic_ = new Dictionary<string, GenreTagItem>();
-        protected  string genre_config_ = "全ジャンル";
+        protected string genre_config_ = "全ジャンル";
         protected  DateTime getdate_ = DateTime.Now.Date; //当日の過去ログをデフォルトとする
 
         public string GetGenre()
@@ -290,19 +291,46 @@ namespace nicorank
             return id;
         }
 
+        // 2025/04/09 ADD marky ジャンル名一覧をコンボボックスにセットする
+        public void SetGenreList(ComboBox combobox)
+        {
+            foreach (GenreTagItem genre in genre_item_dic_.Values)
+            {
+                if (genre.tag.Equals(""))
+                {
+                    combobox.Items.Add(genre.name);
+                }
+            }
+        }
+
     }
 
     // 2019/06/26 ADD marky
+    // 2025/04/09 ランキング区分専用として利用
     public class GenreTagManagerWithCListBox : GenreTagManager
     {
         private CheckedListBox clistbox_;
         private ComboBox combobox_;
         private bool loadflag = true;
+        // 2025/04/09 ADD marky ランキングの規定値を「総合」にする
+        protected new string genre_config_ = NicoRankManager.defaultRanking;
 
         public GenreTagManagerWithCListBox(CheckedListBox clistbox, ComboBox combobox)
         {
             clistbox_ = clistbox;
             combobox_ = combobox;
+        }
+
+        // 2025/04/09 ADD marky GenreTagManagerから分離
+        public new string GetGenre()
+        {
+            return genre_config_;
+        }
+
+        // 2025/04/09 ADD marky GenreTagManagerから分離
+        public new void SetGenre(string genre)
+        {
+            genre_config_ = genre;
         }
 
         public string GetSaveString()
@@ -389,7 +417,9 @@ namespace nicorank
 
             foreach (GenreTagItem genretag in genre_item_dic_.Values)
             {
-                if (genre.Equals("全ジャンル") || genretag.genre.Equals(genre))
+                //if (genre.Equals("全ジャンル") || genretag.genre.Equals(genre))
+                // 2025/04/09 Update marky
+                if (genre.Equals(NicoRankManager.defaultRanking) || genretag.genre.Equals(genre))
                 {
                     CategoryItem item = new CategoryItem();
                     item.id = genretag.id;

@@ -37,6 +37,9 @@ namespace nicorank
         // 非同期スレッド処理終了時に呼び出されるデリゲート
         public delegate void ThreadCompletedDelegate(AsyncCompletedEventArgs e);
 
+        // 2025/04/09 ADD marky
+        public const string defaultRanking = "総合";
+
         public NicoRankManager(NicoRankManagerMsgReceiver msg_receiver)
         {
             msg_receiver_ = msg_receiver;
@@ -515,6 +518,13 @@ namespace nicorank
             //return niconico_network_.GetGenreTag();
             // 2025/03/22 Update marky
             return niconico_network_.GetGenreTagAPI();
+        }
+
+        // ランキング区分、トレンドタグ一覧を取得
+        // 2025/04/09 ADD marky
+        public string GetTeibanTag()
+        {
+            return niconico_network_.GetTeibanTagAPI();
         }
 
     }

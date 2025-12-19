@@ -45,6 +45,8 @@ namespace nicorank
         //private CategoryManagerWithCListBox category_manager_;
         // 2019/06/26 Update marky
         private GenreTagManagerWithCListBox category_manager_;
+        // 2025/04/09 ADD marky ランキングDLと検索のジャンルを分離
+        private GenreTagManager genre_manager_;
         // 2020/02/16 ADD marky 前回の検索ジャンル
         private int search_genre_ = 0;
         // 2020/10/20 ADD marky 検索ワード無の最大取得ページ
@@ -57,7 +59,8 @@ namespace nicorank
             //category_manager_ = new CategoryManagerWithCListBox(checkedListBoxDlRankCategory);
             // 2019/06/26 Update marky
             category_manager_ = new GenreTagManagerWithCListBox(checkedListBoxDlRankCategory, comboBoxDlRankGenre);
-
+            // 2025/04/09 ADD marky
+            genre_manager_ = new GenreTagManager();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -123,8 +126,12 @@ namespace nicorank
             // 2025/01/22 add marky ジャンルを取得せず高速化
             if (checkBoxNoGenre.Checked)
             {
-                category_manager_.ParseGenreTagFile("[{\"genre\":\"全ジャンル\",\"tag\":null,\"file\":\"all.json\"}]");
-                comboBoxDlRankGenre.SelectedIndex = 0;
+                // 2025/04/09 DEL marky ランキング区分キーが不定のため規定値もセットしない
+                //category_manager_.ParseGenreTagFile("[{\"genre\":\"全ジャンル\",\"tag\":null,\"file\":\"all.json\"}]");
+                // 2025/04/09 Update marky →試しにセットした場合
+                //category_manager_.ParseGenreTagFile("[{\"genre\":\"" + NicoRankManager.defaultRanking + "\",\"tag\":null,\"file\":\"e9uj2uks.json\"}]");
+                //comboBoxDlRankGenre.SelectedIndex = 0;
+
                 comboBoxSearchGenre.Items.Add("全ジャンル");
                 comboBoxSearchGenre.SelectedIndex = 0;
             }
@@ -137,17 +144,33 @@ namespace nicorank
                 {
                     //// タグリスト再作成
                     //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag(category_manager_.GetDate));
-                    // 2024/08/05 Update marky
-                    category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
+                    //// 2024/08/05 Update marky
+                    //category_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
+                    // 2025/04/09 Update marky
+                    category_manager_.ParseGenreTagFile(nicorank_mgr_.GetTeibanTag());
+                    // 移行措置
+                    if (comboBoxDlRankGenre.SelectedIndex == -1 && comboBoxDlRankGenre.Items.Count > 0)
+                    {
+                        comboBoxDlRankGenre.SelectedIndex = 0;
+                    }
+
+
                     // 2020/02/11 ADD marky ジャンル追加
-                    object[] items = new Object[comboBoxDlRankGenre.Items.Count];
-                    comboBoxDlRankGenre.Items.CopyTo(items, 0);
-                    comboBoxSearchGenre.Items.AddRange(items);
+                    //object[] items = new Object[comboBoxDlRankGenre.Items.Count];
+                    //comboBoxDlRankGenre.Items.CopyTo(items, 0);
+                    //comboBoxSearchGenre.Items.AddRange(items);
+                    // 2025/04/09 Update marky
+                    genre_manager_.ParseGenreTagFile(nicorank_mgr_.GetGenreTag());
+                    genre_manager_.SetGenreList(comboBoxSearchGenre);
+
                     comboBoxSearchGenre.SelectedIndex = search_genre_;
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
+                    //MessageBox.Show(this, "ジャンル、人気のタグの読み込みに失敗しました。\r\n日付を変更するか、しばらく時間を空けてから起動して下さい。", "エラー",
+                    //    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    // 2025/04/09 Update marky
+                    MessageBox.Show(this, "ジャンル または ランキング区分、トレンドタグの読み込みに失敗しました。", "エラー",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     // 2020/02/11 ADD marky ジャンルが取得できなかった場合の規定値追加
                     comboBoxSearchGenre.Items.Add("全ジャンル");

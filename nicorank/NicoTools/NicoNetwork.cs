@@ -2782,6 +2782,112 @@ namespace NicoTools
             return json;
         }
 
+        // ランキング区分＋トレンドタグ一覧をAPIで取得
+        // 2025/03/22 ADD marky
+        public string GetTeibanTagAPI()
+        {
+            string json = "";
+            string apijson = "";
+            Dictionary<string, string> genre = new Dictionary<string, string>();
+
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            try
+            {
+                apijson = network_.GetAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/ranking/teiban/featured-keys");
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(TeibanAPIList));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(apijson)))
+                {
+                    TeibanAPIList result = (TeibanAPIList)serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        for (int j = 0; j < result.data.items.Count; ++j)
+                        {
+                            string genreid = result.data.items[j].featuredKey;
+                            string genrename = result.data.items[j].label;
+                            genre.Add(genreid, genrename);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("定番ランキング区分の取得に失敗しました。");
+            }
+
+            foreach (var g in genre)
+            {
+                if (json.Equals(""))
+                {
+                    json += "[";
+                }
+                else
+                {
+                    json += ",";
+                }
+                json += "{\"genre\":\"" + g.Value + "\",\"tag\":null,\"file\":\"" + g.Key + ".json\"}";
+            }
+            foreach (var g in genre)
+            {
+                GetTrendtagAPI(ref json, g.Key, g.Value);
+            }
+
+            json += "]";
+
+            return json;
+        }
+
+        // トレンドタグ一覧をAPIで取得
+        // 2025/03/22 ADD marky
+        private string GetTrendtagAPI(ref string json, string genreid, string genrename)
+        {
+            string apijson = "";
+            string tag = "";
+            string tagurl = "https://nvapi.nicovideo.jp/v1/ranking/teiban/featured-keys/" + genreid + "/trend-tags";
+
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            try
+            {
+                apijson = network_.GetAndReadFromWebUTF8(tagurl);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(TrendTagAPIList));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(apijson)))
+                {
+                    TrendTagAPIList result = (TrendTagAPIList)serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        for (int j = 0; j < result.data.trendTags.Count; ++j)
+                        {
+                            tag = result.data.trendTags[j];
+                            json += ",{\"genre\":\"" + genrename + "\",\"tag\":\"" + tag + "\",\"file\":\"" + genreid + ".json\"}";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("トレンドタグの取得に失敗しました。");
+            }
+
+            return json;
+        }
+
         public string GetDataFromNicoApi() // 実験用メソッド
         {
             network_.SetContentTypeJSON();
@@ -3946,7 +4052,9 @@ namespace NicoTools
                         option += "&pageSize =100";
                         if (name_list != null)
                         {
-                            name_list.Add("genre/" + genre + option);
+                            //name_list.Add("genre/" + genre + option);
+                            // 2025/04/09 Update marky
+                            name_list.Add("teiban/" + genre + option);
                         }
                         if (filename_list != null)
                         {
@@ -4986,6 +5094,274 @@ namespace NicoTools
         [DataContract]
         public class DataC
         {
+            [DataMember]
+            public List<ItemsC> items = null;
+
+            [DataContract]
+            public class ItemsC
+            {
+                [DataMember]
+                public string type = "";
+
+                [DataMember]
+                public string id = "";
+
+                [DataMember]
+                public string title = "";
+
+                [DataMember]
+                public string registeredAt = "";
+
+                [DataMember]
+                public CountC count = null;
+
+                [DataContract]
+                public class CountC
+                {
+                    [DataMember]
+                    public int view = 0;
+
+                    [DataMember]
+                    public int comment = 0;
+
+                    [DataMember]
+                    public int mylist = 0;
+
+                    [DataMember]
+                    public string like = "";
+                }
+
+                [DataMember]
+                public ThumbnailC thumbnail = null;
+
+                [DataContract]
+                public class ThumbnailC
+                {
+                    [DataMember]
+                    public string url = "";
+
+                    [DataMember]
+                    public string middleUrl = "";
+
+                    [DataMember]
+                    public string largeUrl = "";
+
+                    [DataMember]
+                    public string listingUrl = "";
+
+                    [DataMember]
+                    public string nHdUrl = "";
+                }
+
+                [DataMember]
+                public int duration = 0;
+
+                [DataMember]
+                public string shortDescription = "";
+
+                [DataMember]
+                public string latestCommentSummary = "";
+
+                [DataMember]
+                public Boolean isChannelVideo = false;
+
+                [DataMember]
+                public Boolean isPaymentRequired = false;
+
+                [DataMember]
+                public string playbackPosition = null;
+
+                [DataMember]
+                public OwnerlC owner = null;
+
+                [DataContract]
+                public class OwnerlC
+                {
+                    [DataMember]
+                    public string ownerType = "";
+
+                    [DataMember]
+                    public string type = "";
+
+                    [DataMember]
+                    public string visibility = "";
+
+                    [DataMember]
+                    public string id = "";
+
+                    [DataMember]
+                    public string name = "";
+
+                    [DataMember]
+                    public string iconUrl = "";
+                }
+
+                [DataMember]
+                public Boolean requireSensitiveMasking = false;
+
+                [DataMember]
+                public string videoLive = null;
+
+                [DataMember]
+                public Boolean isMuted = false;
+
+                [DataMember]
+                public Boolean qd091f87 = false;
+
+                [DataMember]
+                public Boolean acf68865 = false;
+            }
+
+            [DataMember]
+            public Boolean hasNext = false;
+
+        }
+    }
+
+    // 2025/04/09 ADD marky ランキング区分取得API
+    [DataContract]
+    class TeibanAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public List<ItemsC> items = null;
+
+            [DataContract]
+            public class ItemsC
+            {
+                [DataMember]
+                public string featuredKey = "";
+
+                [DataMember]
+                public string label = "";
+
+                [DataMember]
+                public Boolean isEnabledTrendTag = false;
+
+                [DataMember]
+                public Boolean isMajorFeatured = false;
+
+                [DataMember]
+                public Boolean isTopLevel = false;
+
+                [DataMember]
+                public Boolean isImmoral = false;
+
+                [DataMember]
+                public Boolean isEnabled = false;
+
+            }
+
+            [DataMember]
+            public DefinitionC definition = null;
+
+            [DataContract]
+            public class DefinitionC
+            {
+                [DataMember]
+                public MaxItemCountC maxItemCount = null;
+
+                [DataContract]
+                public class MaxItemCountC
+                {
+                    [DataMember]
+                    public int teiban = 0;
+
+                    [DataMember]
+                    public int trendTag = 0;
+
+                    [DataMember]
+                    public int forYou = 0;
+                }
+            }
+        }
+    }
+
+    // 2025/04/09 ADD marky トレンドタグ取得API
+    [DataContract]
+    class TrendTagAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public string featuredKey = "";
+
+            [DataMember]
+            public string label = "";
+
+            [DataMember]
+            public Boolean isTopLevel = false;
+
+            [DataMember]
+            public Boolean isImmoral = false;
+
+            [DataMember]
+            public List<string> trendTags = null;
+
+        }
+    }
+
+    // 2025/04/09 ADD marky 定番ランキング取得API
+    [DataContract]
+    class TeibanRankingAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public string featuredKey = "";
+
+            [DataMember]
+            public string label = "";
+
+            [DataMember]
+            public string tag = null;
+
+            [DataMember]
+            public int maxItemCount = 0;
+
             [DataMember]
             public List<ItemsC> items = null;
 
