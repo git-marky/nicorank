@@ -473,8 +473,10 @@ namespace NicoTools
                     //    case ParseRankingKind.TotalPoint:
                     //        throw new InvalidOperationException("ランキングHTMLは全ポイント解析できません。");
                     //}
-                    // 2019/06/26 Update marky
-                    ParseGenreTagLogFile(html, getting_dt, video_list);
+                    //// 2019/06/26 Update marky
+                    //ParseGenreTagLogFile(html, getting_dt, video_list);
+                    // 2025/03/22 Update marky
+                    ParseGenreTagAPIFile(html, getting_dt, video_list);
                 }
                 System.Diagnostics.Debug.Write((System.Environment.TickCount - t).ToString() + ", ");
             }
@@ -714,7 +716,7 @@ namespace NicoTools
             }
         }
 
-        // 2019-06-26 ADD marky
+        // 2019/06/26 ADD marky
         private static void ParseGenreTagLogFile(string json, DateTime getting_dt, List<Video> video_list)
         {
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(GenreTagLogList[]));
@@ -754,7 +756,47 @@ namespace NicoTools
                 throw new NiconicoFormatException("ランキングファイルが無効です。");           
             }
         }
-        
+
+        // 2025/03/22 ADD marky
+        private static void ParseGenreTagAPIFile(string json, DateTime getting_dt, List<Video> video_list)
+        {
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(GenreTagRankAPIList));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                {
+                    GenreTagRankAPIList result = (GenreTagRankAPIList)serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        StringBuilder buff = new StringBuilder();
+                        for (int j = 0; j < result.data.items.Count; ++j)
+                        {
+                            Video video = new Video();
+
+                            video.point.getting_date = getting_dt;
+                            video.video_id = result.data.items[j].id;
+                            video.point.view = result.data.items[j].count.view; ;
+                            video.point.res = result.data.items[j].count.comment;
+                            video.point.mylist = result.data.items[j].count.mylist;
+                            video.like = result.data.items[j].count.like;
+                            if (video.like == null) { video.like = ""; } // 2021/07/30以前はlike未定義
+                            video.thumbnail_url = result.data.items[j].thumbnail.url;
+                            video.title = result.data.items[j].title;
+                            video.submit_date = DateTime.Parse(result.data.items[j].registeredAt, null, System.Globalization.DateTimeStyles.RoundtripKind);
+                            if (RankFile.SearchVideo(video_list, video.video_id) < 0)
+                            {
+                                video_list.Add(video);
+                            }
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("ランキングファイルが無効です。");
+            }
+        }
+
         private static IEnumerable<int> EnumerateRankingHtmlVideoInfoIndex(string html)
         {
             int index = -1;

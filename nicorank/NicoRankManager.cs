@@ -512,7 +512,9 @@ namespace nicorank
         // 2024/08/05 ADD marky
         public string GetGenreTag()
         {
-            return niconico_network_.GetGenreTag();
+            //return niconico_network_.GetGenreTag();
+            // 2025/03/22 Update marky
+            return niconico_network_.GetGenreTagAPI();
         }
 
     }

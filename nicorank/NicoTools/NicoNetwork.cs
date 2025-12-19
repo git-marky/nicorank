@@ -379,6 +379,40 @@ namespace NicoTools
         }
 
         /// <summary>
+        /// ニコニコ動画公式ランキングをAPIでダウンロードする。 2025/03/22 ADD marky
+        /// </summary>
+        /// <param name="saved_dir">ランキング過去ログを保存するディレクトリ</param>
+        /// <param name="download_kind">ダウンロードするランキングの種類</param>
+        /// <param name="ranking_method">ランキングファイルオプション</param>
+        /// <param name="dlg">1件ダウンロードするごとに呼び出されるイベント関数</param>
+        public void DownloadRankingAPI(string saved_dir, DownloadKind download_kind, NetworkWaitDelegate dlg)
+        {
+            if (!saved_dir.EndsWith("\\") && saved_dir != "")
+            {
+                saved_dir += "\\";
+            }
+
+            if (saved_dir != "")
+            {
+                Directory.CreateDirectory(saved_dir);
+            }
+
+            List<string> name_list = new List<string>();
+            List<string> filename_list = new List<string>();
+
+            download_kind.GetRankingAPIList(ref name_list, ref filename_list);
+
+            for (int i = 0; i < name_list.Count; ++i)
+            {
+                DownloadRankingAPI(name_list[i], saved_dir, filename_list[i]);
+                if (dlg != null)
+                {
+                    dlg(name_list[i], i + 1, name_list.Count);
+                }
+            }
+        }
+
+        /// <summary>
         /// 動画をダウンロードする
         /// </summary>
         /// <param name="video_id">ダウンロードする動画ID</param>
@@ -2528,7 +2562,7 @@ namespace NicoTools
             }
         }
 
-        // ジャンル＋人気のタグ ファイル一覧を取得
+        // ジャンル＋人気のタグ ファイル一覧を過去ログから取得
         // 2019/06/26 ADD marky
         public string GetGenreTag(DateTime getdate)
         {
@@ -2541,7 +2575,7 @@ namespace NicoTools
             return json;
         }
 
-        // ジャンル＋人気のタグ一覧を取得
+        // ジャンル＋人気のタグ一覧をランキングページから取得
         // 2024/08/05 ADD marky
         public string GetGenreTag()
         {
@@ -2602,7 +2636,7 @@ namespace NicoTools
             return json;
         }
 
-        // 人気のタグ一覧を取得
+        // 人気のタグ一覧をランキングページから取得
         // 2024/08/05 ADD marky
         private string GetTag(ref string json, string genreid, string genrename)
         {
@@ -2638,6 +2672,111 @@ namespace NicoTools
                 //int end = str.IndexOf("\">", start);
                 //tag = str.Substring(start, end - start);
                 json += ",{\"genre\":\"" + genrename + "\",\"tag\":\"" + tagname + "\",\"file\":\"" + genreid + ".json\"}";
+            }
+
+            return json;
+        }
+
+        // ジャンル＋人気のタグ一覧をAPIで取得
+        // 2025/03/22 ADD marky
+        public string GetGenreTagAPI()
+        {
+            string json = "";
+            string apijson = "";
+            Dictionary<string, string> genre = new Dictionary<string, string>();
+
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            try
+            {
+                apijson = network_.GetAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v2/genres");
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(GenreAPIList));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(apijson)))
+                {
+                    GenreAPIList result = (GenreAPIList)serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        for (int j = 0; j < result.data.genres.Count; ++j)
+                        {
+                            string genreid = result.data.genres[j].key;
+                            string genrename = result.data.genres[j].label;
+                            genre.Add(genreid, genrename);
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("ジャンルの取得に失敗しました。");
+            }
+
+            if (!genre.ContainsKey("r18"))
+            {
+                genre.Add("r18", "例のソレ");
+            }
+
+            json = "[{\"genre\":\"全ジャンル\",\"tag\":null,\"file\":\"all.json\"}";
+
+            foreach (var g in genre)
+            {
+                json += ",{\"genre\":\"" + g.Value + "\",\"tag\":null,\"file\":\"" + g.Key + ".json\"}";
+            }
+            foreach (var g in genre)
+            {
+                GetTagAPI(ref json, g.Key, g.Value);
+            }
+
+            json += "]";
+
+            return json;
+        }
+
+        // 人気のタグ一覧をAPIで取得
+        // 2025/03/22 ADD marky
+        private string GetTagAPI(ref string json, string genreid, string genrename)
+        {
+            string apijson = "";
+            string tag = "";
+            string tagurl = "https://nvapi.nicovideo.jp/v1/genres/" + genreid + "/popular-tags";
+
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            try
+            {
+                apijson = network_.GetAndReadFromWebUTF8(tagurl);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+
+            DataContractJsonSerializer serializer = new DataContractJsonSerializer(typeof(TagAPIList));
+            try
+            {
+                using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(apijson)))
+                {
+                    TagAPIList result = (TagAPIList)serializer.ReadObject(ms);
+                    if (result != null)
+                    {
+                        for (int j = 0; j < result.data.tags.Count; ++j)
+                        {
+                            tag = result.data.tags[j];
+                            json += ",{\"genre\":\"" + genrename + "\",\"tag\":\"" + tag + "\",\"file\":\"" + genreid + ".json\"}";
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                throw new NiconicoFormatException("人気のタグの取得に失敗しました。");
             }
 
             return json;
@@ -2758,6 +2897,40 @@ namespace NicoTools
                 {
                     filename = filename.Replace(c.ToString(), "");
                 } 
+                string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm") + ".json";
+
+                File.WriteAllText(save_filename, json, Encoding.UTF8);
+            }
+            finally
+            {
+                network_.Reset();
+            }
+        }
+
+        // 2025/03/22 ADD marky
+        private void DownloadRankingAPI(string url, string dir_name, string filename)
+        {
+            DateTime current_datetime = DateTime.Now;
+
+            if (is_no_cache_)
+            {
+                network_.SetMaxAgeZero();
+            }
+
+            network_.AddCustomHeader("X-Frontend-Id: 6");
+            network_.AddCustomHeader("X-Frontend-Version: 0");
+            try
+            {
+                ////テスト用
+                //string json = File.ReadAllText("D:\\dev\\entertainment.json", Encoding.UTF8);
+                string json = network_.GetAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v1/ranking/" + url);
+
+                //ファイル名に使用できない文字を削除する
+                char[] removeChars = new char[] { '\\', '/', ':', '*', '?', '"', '<', '>', '|' };
+                foreach (char c in removeChars)
+                {
+                    filename = filename.Replace(c.ToString(), "");
+                }
                 string save_filename = dir_name + filename + current_datetime.ToString("yyyyMMddHHmm") + ".json";
 
                 File.WriteAllText(save_filename, json, Encoding.UTF8);
@@ -3732,6 +3905,59 @@ namespace NicoTools
             }
         }
 
+        /// <summary>
+        /// ダウンロードするランキングAPIのURLをリストで取得 2025/03/22 ADD marky
+        /// </summary>
+        /// <param name="name_list">URL のリスト</param>
+        /// <param name="filename_list">ある規則に従ったファイル名のリスト</param>
+        public virtual void GetRankingAPIList(ref List<string> name_list, ref List<string> filename_list)
+        {
+            for (int j = 0; j < duration_name.Length; ++j)
+            {
+                if (!duration_[j])
+                {
+                    continue;
+                }
+                for (int k = 0; k < category_list.Count; ++k)
+                {
+
+                    int end = category_list[k].page[j];
+                    for (int m = 1; m <= end; ++m)
+                    {
+
+                        string genre = category_list[k].id;
+                        string option = "?";
+                        if (category_list[k].short_name != "")  //人気のタグの場合
+                        {
+                            string name = category_list[k].name;
+                            option += "tag=";
+                            //タグ名をURLエンコードする
+                            string tag = name.Substring(name.IndexOf("：") + 1);
+                            tag = Uri.EscapeDataString(tag).Replace("%20", "+");
+                            option += tag;
+                        }
+                        option += "&term=" + term_name[j];
+
+                        if (m >= 2)
+                        {
+                            option += "&page=" + m.ToString();
+                        }
+
+                        option += "&pageSize =100";
+                        if (name_list != null)
+                        {
+                            name_list.Add("genre/" + genre + option);
+                        }
+                        if (filename_list != null)
+                        {
+                            filename_list.Add(duration_short_name[j] + "_" + category_list[k].name + "_" + m.ToString() + "_");
+                        }
+                    }
+                }
+            }
+        }
+
+
     }
 
     /// <summary>
@@ -4676,4 +4902,211 @@ namespace NicoTools
         }
     }
 
+    // 2025/03/22 ADD marky ジャンルAPI
+    [DataContract]
+    class GenreAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public List<GenresC> genres = null;
+
+            [DataContract]
+            public class GenresC
+            {
+                [DataMember]
+                public string key = "";
+
+                [DataMember]
+                public string label = "";
+            }
+        }
+    }
+
+    // 2025/03/22 ADD marky 人気のタグAPI
+    [DataContract]
+    class TagAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public string startAt = "";
+
+            [DataMember]
+            public List<string> tags = null;
+
+        }
+    }
+
+    // 2025/03/22 ADD marky ジャンルor人気のタグ ランキングAPI
+    [DataContract]
+    class GenreTagRankAPIList
+    {
+        [DataMember]
+        public MetaC meta = null;
+
+        [DataContract]
+        public class MetaC
+        {
+            [DataMember]
+            public int status = 0;
+        }
+
+        [DataMember]
+        public DataC data = null;
+
+        [DataContract]
+        public class DataC
+        {
+            [DataMember]
+            public List<ItemsC> items = null;
+
+            [DataContract]
+            public class ItemsC
+            {
+                [DataMember]
+                public string type = "";
+
+                [DataMember]
+                public string id = "";
+
+                [DataMember]
+                public string title = "";
+
+                [DataMember]
+                public string registeredAt = "";
+
+                [DataMember]
+                public CountC count = null;
+
+                [DataContract]
+                public class CountC
+                {
+                    [DataMember]
+                    public int view = 0;
+
+                    [DataMember]
+                    public int comment = 0;
+
+                    [DataMember]
+                    public int mylist = 0;
+
+                    [DataMember]
+                    public string like = "";
+                }
+
+                [DataMember]
+                public ThumbnailC thumbnail = null;
+
+                [DataContract]
+                public class ThumbnailC
+                {
+                    [DataMember]
+                    public string url = "";
+
+                    [DataMember]
+                    public string middleUrl = "";
+
+                    [DataMember]
+                    public string largeUrl = "";
+
+                    [DataMember]
+                    public string listingUrl = "";
+
+                    [DataMember]
+                    public string nHdUrl = "";
+                }
+
+                [DataMember]
+                public int duration = 0;
+
+                [DataMember]
+                public string shortDescription = "";
+
+                [DataMember]
+                public string latestCommentSummary = "";
+
+                [DataMember]
+                public Boolean isChannelVideo = false;
+
+                [DataMember]
+                public Boolean isPaymentRequired = false;
+
+                [DataMember]
+                public string playbackPosition = null;
+
+                [DataMember]
+                public OwnerlC owner = null;
+
+                [DataContract]
+                public class OwnerlC
+                {
+                    [DataMember]
+                    public string ownerType = "";
+
+                    [DataMember]
+                    public string type = "";
+
+                    [DataMember]
+                    public string visibility = "";
+
+                    [DataMember]
+                    public string id = "";
+
+                    [DataMember]
+                    public string name = "";
+
+                    [DataMember]
+                    public string iconUrl = "";
+                }
+
+                [DataMember]
+                public Boolean requireSensitiveMasking = false;
+
+                [DataMember]
+                public string videoLive = null;
+
+                [DataMember]
+                public Boolean isMuted = false;
+
+                [DataMember]
+                public Boolean qd091f87 = false;
+
+                [DataMember]
+                public Boolean acf68865 = false;
+            }
+
+            [DataMember]
+            public Boolean hasNext = false;
+
+        }
+    }
 }

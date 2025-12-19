@@ -67,14 +67,17 @@ namespace NicoTools
             Directory.CreateDirectory(rank_dl_dir);
             //niconico_network_.DownloadRanking(rank_dl_dir, download_kind, /*hour, */OnDownloadRankingEvent);
             // 2019/06/26 Update marky
-            if (download_kind.IsRss)
-            {
-                niconico_network_.DownloadRanking(rank_dl_dir, download_kind, OnDownloadRankingEvent);
-            }
-            else
-            {
-                niconico_network_.DownloadRankingLog(rank_dl_dir, download_kind, OnDownloadRankingEvent);
-            }
+            //if (download_kind.IsRss)
+            //{
+            //    niconico_network_.DownloadRanking(rank_dl_dir, download_kind, OnDownloadRankingEvent);
+            //}
+            //else
+            //{
+            //    niconico_network_.DownloadRankingLog(rank_dl_dir, download_kind, OnDownloadRankingEvent);
+            //}
+            // 2025/03/22 Update marky APIに変更
+            niconico_network_.DownloadRankingAPI(rank_dl_dir, download_kind, OnDownloadRankingEvent);
+
             msgout_.Write("すべてのランキングのDLが完了しました。\r\n");
             return rank_dl_dir;
         }
