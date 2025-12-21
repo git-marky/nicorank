@@ -272,6 +272,13 @@ namespace nicorank
             niconico_network_.SetCookieKind(cookie_kind);
         }
 
+        // 2025/04/26 ADD marky Firefoxフォルダ指定に対応
+        public void SetCookieKind(NicoNetwork.CookieKind cookie_kind, string profile_dir)
+        {
+            niconico_network_.ProfileDir = profile_dir;
+            niconico_network_.SetCookieKind(cookie_kind);
+        }
+
         public bool LoginNiconico(string user, string password)
         {
             return niconico_network_.LoginNiconico(user, password);

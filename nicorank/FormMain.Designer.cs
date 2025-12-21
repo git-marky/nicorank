@@ -446,6 +446,7 @@
             this.buttonCheckLogin = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageDlRank = new System.Windows.Forms.TabPage();
+            this.checkBoxAllcheck = new System.Windows.Forms.CheckBox();
             this.checkBoxNoGenre = new System.Windows.Forms.CheckBox();
             this.groupBox40 = new System.Windows.Forms.GroupBox();
             this.radioButtonDlRankTime0 = new System.Windows.Forms.RadioButton();
@@ -888,7 +889,7 @@
             // 
             this.buttonSelectOutputRankFilePath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonSelectOutputRankFilePath.Font = new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128)));
-            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(256, 19);
+            this.buttonSelectOutputRankFilePath.Location = new System.Drawing.Point(262, 19);
             this.buttonSelectOutputRankFilePath.Name = "buttonSelectOutputRankFilePath";
             this.buttonSelectOutputRankFilePath.Size = new System.Drawing.Size(21, 21);
             this.buttonSelectOutputRankFilePath.TabIndex = 9;
@@ -903,7 +904,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOutputRankFilePath.Location = new System.Drawing.Point(19, 20);
             this.textBoxOutputRankFilePath.Name = "textBoxOutputRankFilePath";
-            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(231, 19);
+            this.textBoxOutputRankFilePath.Size = new System.Drawing.Size(237, 19);
             this.textBoxOutputRankFilePath.TabIndex = 8;
             this.textBoxOutputRankFilePath.Text = "rank.txt";
             this.textBoxOutputRankFilePath.DragDrop += new System.Windows.Forms.DragEventHandler(this.textBox_DragDrop);
@@ -931,7 +932,7 @@
             this.textBoxOutputRank.Multiline = true;
             this.textBoxOutputRank.Name = "textBoxOutputRank";
             this.textBoxOutputRank.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOutputRank.Size = new System.Drawing.Size(258, 97);
+            this.textBoxOutputRank.Size = new System.Drawing.Size(264, 97);
             this.textBoxOutputRank.TabIndex = 10;
             // 
             // splitContainer2
@@ -5148,6 +5149,7 @@
             // 
             // tabPageDlRank
             // 
+            this.tabPageDlRank.Controls.Add(this.checkBoxAllcheck);
             this.tabPageDlRank.Controls.Add(this.checkBoxNoGenre);
             this.tabPageDlRank.Controls.Add(this.groupBox40);
             this.tabPageDlRank.Controls.Add(this.groupBox39);
@@ -5174,10 +5176,20 @@
             this.tabPageDlRank.Text = "ランキングDL";
             this.tabPageDlRank.UseVisualStyleBackColor = true;
             // 
+            // checkBoxAllcheck
+            // 
+            this.checkBoxAllcheck.AutoSize = true;
+            this.checkBoxAllcheck.Location = new System.Drawing.Point(122, 376);
+            this.checkBoxAllcheck.Name = "checkBoxAllcheck";
+            this.checkBoxAllcheck.Size = new System.Drawing.Size(384, 16);
+            this.checkBoxAllcheck.TabIndex = 50;
+            this.checkBoxAllcheck.Text = "起動時にランキング区分・トレンドタグを全チェックする （次回起動時より有効）";
+            this.checkBoxAllcheck.UseVisualStyleBackColor = true;
+            // 
             // checkBoxNoGenre
             // 
             this.checkBoxNoGenre.AutoSize = true;
-            this.checkBoxNoGenre.Location = new System.Drawing.Point(122, 357);
+            this.checkBoxNoGenre.Location = new System.Drawing.Point(122, 349);
             this.checkBoxNoGenre.Name = "checkBoxNoGenre";
             this.checkBoxNoGenre.Size = new System.Drawing.Size(330, 16);
             this.checkBoxNoGenre.TabIndex = 49;
@@ -5265,7 +5277,7 @@
             this.groupBox13.Controls.Add(this.dateTimePickerDlRankDate1);
             this.groupBox13.Controls.Add(this.radioButtonDlRankDesignating);
             this.groupBox13.Controls.Add(this.radioButtonDlRankDateLatest);
-            this.groupBox13.Location = new System.Drawing.Point(122, 308);
+            this.groupBox13.Location = new System.Drawing.Point(122, 305);
             this.groupBox13.Name = "groupBox13";
             this.groupBox13.Size = new System.Drawing.Size(191, 43);
             this.groupBox13.TabIndex = 8;
@@ -5483,7 +5495,7 @@
             // 
             this.checkBoxRankingDlSetHour.AutoSize = true;
             this.checkBoxRankingDlSetHour.Enabled = false;
-            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(334, 260);
+            this.checkBoxRankingDlSetHour.Location = new System.Drawing.Point(334, 255);
             this.checkBoxRankingDlSetHour.Name = "checkBoxRankingDlSetHour";
             this.checkBoxRankingDlSetHour.Size = new System.Drawing.Size(184, 16);
             this.checkBoxRankingDlSetHour.TabIndex = 39;
@@ -5495,7 +5507,7 @@
             // 
             this.label28.AutoSize = true;
             this.label28.Enabled = false;
-            this.label28.Location = new System.Drawing.Point(404, 282);
+            this.label28.Location = new System.Drawing.Point(404, 277);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(17, 12);
             this.label28.TabIndex = 42;
@@ -5505,7 +5517,7 @@
             // textBoxRankingDlHour
             // 
             this.textBoxRankingDlHour.Enabled = false;
-            this.textBoxRankingDlHour.Location = new System.Drawing.Point(362, 279);
+            this.textBoxRankingDlHour.Location = new System.Drawing.Point(362, 274);
             this.textBoxRankingDlHour.Name = "textBoxRankingDlHour";
             this.textBoxRankingDlHour.Size = new System.Drawing.Size(36, 19);
             this.textBoxRankingDlHour.TabIndex = 40;
@@ -5550,7 +5562,7 @@
             // 
             // buttonDlRank
             // 
-            this.buttonDlRank.Location = new System.Drawing.Point(433, 308);
+            this.buttonDlRank.Location = new System.Drawing.Point(433, 303);
             this.buttonDlRank.Name = "buttonDlRank";
             this.buttonDlRank.Size = new System.Drawing.Size(90, 24);
             this.buttonDlRank.TabIndex = 9;
@@ -5579,6 +5591,7 @@
             this.button1.TabIndex = 4;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // textBoxFirefoxProfileDir
@@ -6383,6 +6396,7 @@
         private System.Windows.Forms.CheckBox checkBoxIsFilterBeforeDetail;
         private System.Windows.Forms.RadioButton radioButtonBrowserEdge;
         private System.Windows.Forms.CheckBox checkBoxNoGenre;
+        private System.Windows.Forms.CheckBox checkBoxAllcheck;
     }
 }
 

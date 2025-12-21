@@ -178,6 +178,7 @@ namespace nicorank
         protected  Dictionary<string, GenreTagItem> genre_item_dic_ = new Dictionary<string, GenreTagItem>();
         protected string genre_config_ = "全ジャンル";
         protected  DateTime getdate_ = DateTime.Now.Date; //当日の過去ログをデフォルトとする
+        protected bool is_allcheck_ = false; // 2025/04/26 ADD marky
 
         public string GetGenre()
         {
@@ -193,6 +194,11 @@ namespace nicorank
         {
             get { return getdate_; }
             set { getdate_ = value; }
+        }
+
+        public void SetAllcheck(bool is_all)
+        {
+            is_allcheck_ = is_all;
         }
 
         // ランキングジャンル、人気のタグ一覧を取得
@@ -266,7 +272,9 @@ namespace nicorank
 
             foreach (CategoryItem item in category_item_dic_.Values)
             {
-                if (Array.IndexOf(category_config_, item.name) >= 0)
+                //if (Array.IndexOf(category_config_, item.name) >= 0)
+                // 2025/04/26 ADD marky 起動時に全チェックするか
+                if (Array.IndexOf(category_config_, item.name) >= 0 || is_allcheck_)
                 {
                     c_list.Add(item);
                 }
@@ -443,7 +451,9 @@ namespace nicorank
                     item.genre = genretag.genre;
                     category_item_dic_.Add(item.name, item);
 
-                    clistbox_.Items.Add(item.name, Array.IndexOf(category_config_, item.name) >= 0);
+                    //clistbox_.Items.Add(item.name, Array.IndexOf(category_config_, item.name) >= 0);
+                    // 2025/04/26 ADD marky 起動時に全チェックするか
+                    clistbox_.Items.Add(item.name, (Array.IndexOf(category_config_, item.name) >= 0 || (loadflag && is_allcheck_)));
                 }
             }
         }

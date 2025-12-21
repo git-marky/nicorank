@@ -122,6 +122,9 @@ namespace nicorank
                 textBoxPassword.Text = IJStringUtil.DecryptString(sArray[1], "dailyvocaran");
             }
 
+            // 2025/04/26 ADD marky 起動時に全チェックするか
+            category_manager_.SetAllcheck(checkBoxAllcheck.Checked);
+
             //category_manager_.ParseCategoryFile2(this);
             // 2025/01/22 add marky ジャンルを取得せず高速化
             if (checkBoxNoGenre.Checked)
@@ -180,6 +183,12 @@ namespace nicorank
                 //dateTimePickerDlRankDate1.Value = category_manager_.GetDate;
                 //dateTimePickerDlRankDate1.Enabled = radioButtonDlRankHtml.Checked;   //日付は過去ログのみ
                 //checkBoxDlRankDurationHourly.Enabled = radioButtonDlRankRss.Checked; //毎時はRSSのみ
+            }
+
+            // 2025/04/26 ADD marky Firefoxフォルダ指定に対応
+            if (!textBoxFirefoxProfileDir.Text.Equals(""))
+            {
+                radioButtonBrowser_CheckedChanged(radioButtonBrowserFirefox3, e);
             }
 
             SetPath();
@@ -1254,6 +1263,7 @@ namespace nicorank
             {
                 if (((RadioButton)sender).Checked)
                 {
+                    string profile_dir = "";    //2025/04/26 ADD marky Firefoxフォルダ指定に対応
                     NicoNetwork.CookieKind cookie_kind = NicoNetwork.CookieKind.None;
                     //if (radioButtonBrowserIE.Checked)
                     //{
@@ -1266,6 +1276,7 @@ namespace nicorank
                     else if (radioButtonBrowserFirefox3.Checked)
                     {
                         cookie_kind = NicoNetwork.CookieKind.Firefox3;
+                        profile_dir = textBoxFirefoxProfileDir.Text;    //2025/04/26 ADD marky Firefoxフォルダ指定に対応
                     }
                     else if (radioButtonBrowserOpera.Checked)
                     {
@@ -1276,7 +1287,9 @@ namespace nicorank
                     {
                         cookie_kind = NicoNetwork.CookieKind.Chrome;
                     }
-                    nicorank_mgr_.SetCookieKind(cookie_kind);
+                    //nicorank_mgr_.SetCookieKind(cookie_kind);
+                    // 2025/04/26 Update marky Firefoxフォルダ指定に対応
+                    nicorank_mgr_.SetCookieKind(cookie_kind, profile_dir);
                 }
             }
             catch (Exception) { }

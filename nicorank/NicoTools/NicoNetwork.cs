@@ -4535,7 +4535,10 @@ namespace NicoTools
             string plainText = "";
 
             string str = IJFile.ReadVer2(local_state, IJFile.EncodingPriority.Auto);
-            int start = str.IndexOf("encrypted_key\":\"") + 16;   //"os_crypt":{"encrypted_key":"XXXXXX"}
+            //int start = str.IndexOf("encrypted_key\":\"") + 16;   //"os_crypt":{"app_bound_encrypted_key":"XXXXXX"}
+            // 2025/04/26 ADD marky
+            int start = str.IndexOf("app_bound_encrypted_key\":\"") + 26;   //"os_crypt":{"app_bound_encrypted_key":"XXXXXX"}は飛ばす
+            start = str.IndexOf("encrypted_key\":\"", start) + 16;   //"os_crypt":{"encrypted_key":"XXXXXX"}
             if (start < 16)
             {
                 return "";
@@ -4553,9 +4556,12 @@ namespace NicoTools
                 if (MatchString(data, "user_session", ref pos))   //name="user_session",value="",encrypted_value=[],path="/"を探す（4回ヒットする）
                 {
                     //encrypted_valueは[v 1 0]で始まるぽい ->AESで暗号化されたcookie
-                    if (((long)data[pos] == 118) && ((long)data[pos + 1] == 49) && ((long)data[pos + 2] == 48))
+                    //if (((long)data[pos] == 118) && ((long)data[pos + 1] == 49) && ((long)data[pos + 2] == 48))
+                    // 2025/04/26 Update marky encrypted_valueは[v 2 0]で始まるぽい ->AESで暗号化されたcookie
+                    if (((long)data[pos] == 118) && ((long)data[pos + 1] == 50) && ((long)data[pos + 2] == 48))
                     {
                         //pos = pos + 15;                       //'v10'+nonce 12bytesを除いた部分
+                        //pos = pos + 3;                          //'v20' 3bytesを除いた部分
                         int len = 0;
                         for (int k = 15; k < 150; ++k)
                         {
