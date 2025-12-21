@@ -370,7 +370,16 @@ namespace nicorank
                    is_window_show, delegate_);
                 if (ret != 0)
                 {
-                    throw new FFmpegFailedException("FFmpeg の実行に失敗しました。");
+                    // 2025/08/24 ADD marky FFmpeg ver7以降に対応
+                    argument = "-allowed_extensions ALL -extension_picky 0 -y -i \"" + before_filename + "\" -codec copy -movflags faststart -f mp4 \"" + after_filename + "\"";
+
+                    ret = IJProcess.RunProcessAndWaitForExit(
+                       app_path_.ffmpeg_path, argument,
+                       is_window_show, delegate_);
+                    if (ret != 0)
+                    {
+                        throw new FFmpegFailedException("FFmpeg の実行に失敗しました。");
+                    }
                 }
             }
             catch (Exception)

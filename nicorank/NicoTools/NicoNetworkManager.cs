@@ -527,7 +527,9 @@ namespace NicoTools
             for (int i = 0; i < mylist_number_list.Count; ++i)
             {
                 List<Video> temp_list = new List<Video>();
-                NicoListManager.ParsePointRss(niconico_network_.GetMylistHtml(mylist_number_list[i], true), DateTime.Now, temp_list, false, true);
+                //NicoListManager.ParsePointRss(niconico_network_.GetMylistHtml(mylist_number_list[i], true), DateTime.Now, temp_list, false, true);
+                // 2025/09/02 Update marky マイリストRSS提供終了に対応
+                niconico_network_.GetMylistJsonV2(mylist_number_list[i], temp_list);
                 msgout_.Write("マイリスト" + mylist_number_list[i] + "を取得しました。\r\n");
                 video_list.AddRange(temp_list);
                 if (i < mylist_number_list.Count - 1)
@@ -1004,81 +1006,132 @@ namespace NicoTools
             List<Video> list = new List<Video>();
             int count = 0;
 
-            //while ((index = html.IndexOf("videoList01Wrap\">", index + 1)) >= 0)
-            // 2018/12/12 Update marky 広告枠を取得しないようキーワード変更
-            while ((index = html.IndexOf("data-video-id", index + 1)) >= 0)
-            {
-                // 2022/05/05 ADD marky 次の投稿日時がないか、ライブ公開中を含む場合は除外
-                if (html.IndexOf("video_uploaded", index + 1) < 0 ||
-                    html.Substring(index, html.IndexOf("video_uploaded", index + 1) - index).IndexOf("<span class=\"videoLive\">") >= 0)
-                { continue; }
+            ////while ((index = html.IndexOf("videoList01Wrap\">", index + 1)) >= 0)
+            //// 2018/12/12 Update marky 広告枠を取得しないようキーワード変更
+            //while ((index = html.IndexOf("data-video-id", index + 1)) >= 0)
+            //{
+            //    // 2022/05/05 ADD marky 次の投稿日時がないか、ライブ公開中を含む場合は除外
+            //    if (html.IndexOf("video_uploaded", index + 1) < 0 ||
+            //        html.Substring(index, html.IndexOf("video_uploaded", index + 1) - index).IndexOf("<span class=\"videoLive\">") >= 0)
+            //    { continue; }
 
+            //    Video video = new Video();
+
+            //    //投稿日時
+            //    index = html.IndexOf("video_uploaded", index + 1); // この行は 2015/11/1 に挿入。Thanks to marky-san.
+            //    string dateStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html).Trim();
+            //    if (!DateTime.TryParseExact(dateStr, "MM/dd HH:mm", null, System.Globalization.DateTimeStyles.None, out video.submit_date))
+            //    {
+            //        //video.submit_date = DateTime.ParseExact(dateStr, "yy/MM/dd HH:mm", null);
+            //        // 2018/12/12 Update marky 投稿年の表記変更に対応
+            //        video.submit_date = DateTime.ParseExact(dateStr, "yyyy/MM/dd HH:mm", null);
+            //    }
+
+            //    //動画ID
+            //    int start = html.IndexOf("watch/", index) + 6;
+            //    int end = html.IndexOf('"', start);
+            //    int c = html.IndexOf('?', start);
+            //    if (end > c)
+            //    {
+            //        end = c;
+            //    }
+            //    video.video_id = html.Substring(start, end - start);
+            //    index = end;    // 2018/12/12 ADD marky 再生時間が取得出来ていなかったのでインデックスを進める
+
+            //    //サムネイルURL 2021/06/29 ADD marky
+            //    //start = html.IndexOf("data-original=\"", index) + 15;
+            //    // 2023/01/21 Update marky フォーマット変更に対応
+            //    start = html.IndexOf("img class=\"thumb\" src=\"", index) + 23;
+            //    end = html.IndexOf('"', start);
+            //    c = html.IndexOf(".M", start);
+            //    //if (end > c)
+            //    // 2021/07/04 Update marky 中サイズサムネが無い動画がページ末に来た時に対応
+            //    if (c > 0 && end > c)
+            //    {
+            //        end = c;
+            //    }
+            //    video.thumbnail_url = html.Substring(start, end - start);
+            //    index = end;
+
+            //    //再生時間
+            //    video.length = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+
+            //    index = html.IndexOf("itemContent", index + 1);
+            //    //タイトル
+            //    video.title = IJStringUtil.UnescapeHtml(IJStringUtil.GetStringBetweenTag(ref index, "a", html));
+
+            //    //再生
+            //    string viewStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+            //    video.point.view = IJStringUtil.ToIntFromCommaValue(viewStr);
+            //    //コメント
+            //    string resStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+            //    video.point.res = IJStringUtil.ToIntFromCommaValue(resStr);
+            //    //いいね！ 2021/06/29 ADD marky
+            //    string likeStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+            //    //video.like = likeStr;
+            //    // 2021/07/05 Update marky カンマ除去
+            //    video.like = IJStringUtil.ToIntFromCommaValueWithDef(likeStr, 0).ToString();
+            //    //マイリスト
+            //    //string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
+            //    //2020/07/28 Update marky 07/27仕様変更に伴うマイリストコメントページへのリンク削除に対応
+            //    string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+            //    video.point.mylist = IJStringUtil.ToIntFromCommaValue(mylistStr);
+
+            //    //// 宣伝ポイント。将来実装するときのため 2021/06/29 DELETE marky
+            //    ////string comStr = 
+            //    //IJStringUtil.GetStringBetweenTag(ref index, "a", html); // 読み捨て
+            //    ////video.com = IJStringUtil.ToIntFromCommaValue(comStr);
+
+            //    ++count;
+            //    if (count >= start_num)
+            //    {
+            //        list.Add(video);
+            //    }
+            //}
+
+            // 2025/08/24 Update marky 新検索に対応更
+            html = IJStringUtil.UnescapeHtml(html);
+            while ((index = html.IndexOf("essential", index + 1)) >= 0)
+            {
                 Video video = new Video();
 
-                //投稿日時
-                index = html.IndexOf("video_uploaded", index + 1); // この行は 2015/11/1 に挿入。Thanks to marky-san.
-                string dateStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html).Trim();
-                if (!DateTime.TryParseExact(dateStr, "MM/dd HH:mm", null, System.Globalization.DateTimeStyles.None, out video.submit_date))
-                {
-                    //video.submit_date = DateTime.ParseExact(dateStr, "yy/MM/dd HH:mm", null);
-                    // 2018/12/12 Update marky 投稿年の表記変更に対応
-                    video.submit_date = DateTime.ParseExact(dateStr, "yyyy/MM/dd HH:mm", null);
-                }
-
                 //動画ID
-                int start = html.IndexOf("watch/", index) + 6;
-                int end = html.IndexOf('"', start);
-                int c = html.IndexOf('?', start);
-                if (end > c)
-                {
-                    end = c;
-                }
-                video.video_id = html.Substring(start, end - start);
-                index = end;    // 2018/12/12 ADD marky 再生時間が取得出来ていなかったのでインデックスを進める
+                video.video_id = IJStringUtil.GetValueByKey(ref index, "id", html);
 
-                //サムネイルURL 2021/06/29 ADD marky
-                //start = html.IndexOf("data-original=\"", index) + 15;
-                // 2023/01/21 Update marky フォーマット変更に対応
-                start = html.IndexOf("img class=\"thumb\" src=\"", index) + 23;
-                end = html.IndexOf('"', start);
-                c = html.IndexOf(".M", start);
-                //if (end > c)
-                // 2021/07/04 Update marky 中サイズサムネが無い動画がページ末に来た時に対応
-                if (c > 0 && end > c)
-                {
-                    end = c;
-                }
-                video.thumbnail_url = html.Substring(start, end - start);
-                index = end;
-
-                //再生時間
-                video.length = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
-
-                index = html.IndexOf("itemContent", index + 1);
                 //タイトル
-                video.title = IJStringUtil.UnescapeHtml(IJStringUtil.GetStringBetweenTag(ref index, "a", html));
+                video.title = System.Text.RegularExpressions.Regex.Unescape(IJStringUtil.GetValueByKey(ref index, "title", html));
+
+                //投稿日時
+                string dateStr = IJStringUtil.GetValueByKey(ref index, "registeredAt", html);
+                video.submit_date = DateTime.Parse(dateStr, null, System.Globalization.DateTimeStyles.RoundtripKind);
 
                 //再生
-                string viewStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+                string viewStr = IJStringUtil.GetValueByKey(ref index, "view", html);
                 video.point.view = IJStringUtil.ToIntFromCommaValue(viewStr);
                 //コメント
-                string resStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+                string resStr = IJStringUtil.GetValueByKey(ref index, "comment", html);
                 video.point.res = IJStringUtil.ToIntFromCommaValue(resStr);
-                //いいね！ 2021/06/29 ADD marky
-                string likeStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
-                //video.like = likeStr;
-                // 2021/07/05 Update marky カンマ除去
-                video.like = IJStringUtil.ToIntFromCommaValueWithDef(likeStr, 0).ToString();
                 //マイリスト
-                //string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "a", html);
                 //2020/07/28 Update marky 07/27仕様変更に伴うマイリストコメントページへのリンク削除に対応
-                string mylistStr = IJStringUtil.GetStringBetweenTag(ref index, "span", html);
+                string mylistStr = IJStringUtil.GetValueByKey(ref index, "mylist", html);
                 video.point.mylist = IJStringUtil.ToIntFromCommaValue(mylistStr);
+                //いいね！ 2021/06/29 ADD marky
+                string likeStr = IJStringUtil.GetValueByKey(ref index, "like", html);
+                video.like = IJStringUtil.ToIntFromCommaValueWithDef(likeStr, 0).ToString();
 
-                //// 宣伝ポイント。将来実装するときのため 2021/06/29 DELETE marky
-                ////string comStr = 
-                //IJStringUtil.GetStringBetweenTag(ref index, "a", html); // 読み捨て
-                ////video.com = IJStringUtil.ToIntFromCommaValue(comStr);
+                //サムネイルURL
+                video.thumbnail_url = IJStringUtil.GetValueByKey(ref index, "url", html).Replace("\\/","/");
+
+                //再生時間
+                video.length = IJStringUtil.GetValueByKey(ref index, "duration", html);
+
+                //説明文
+                video.description = System.Text.RegularExpressions.Regex.Unescape(IJStringUtil.GetValueByKey(ref index, "shortDescription", html));
+
+                //投稿者ID
+                video.user_id = IJStringUtil.GetValueByKey(ref index, "id", html);
+                //投稿者名
+                video.user_name = System.Text.RegularExpressions.Regex.Unescape(IJStringUtil.GetValueByKey(ref index, "name", html));
 
                 ++count;
                 if (count >= start_num)

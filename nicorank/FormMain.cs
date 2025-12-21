@@ -519,7 +519,9 @@ namespace nicorank
             // 2020/02/11 ADD marky ジャンル追加
             searching_tag_option.genre = comboBoxSearchGenre.SelectedItem.ToString();
             // 2020/02/16 ADD marky ジャンルID追加
-            searching_tag_option.genre_id = ((comboBoxSearchGenre.Items.Count == 1) ? "all" : category_manager_.GetGenreId(searching_tag_option.genre));
+            //searching_tag_option.genre_id = ((comboBoxSearchGenre.Items.Count == 1) ? "all" : category_manager_.GetGenreId(searching_tag_option.genre));
+            // 2025/08/24 UpdateD marky genre_manager_に変更
+            searching_tag_option.genre_id = ((comboBoxSearchGenre.Items.Count == 1) ? "all" : genre_manager_.GetGenreId(searching_tag_option.genre));
 
             // 処理の最初にボタンのテキストを「中止」にする
             NicoRankManager.ThreadStarterDelegate ts_delegate = delegate {

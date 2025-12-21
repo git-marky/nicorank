@@ -1523,6 +1523,41 @@ namespace NicoTools
             }
         }
 
+        // 2025/09/02 ADD marky
+        /// <summary>
+        /// 指定したマイリストIDのJsonデータから動画リストを取得する（公開マイリストのみ取得可能）
+        /// </summary>
+        /// <param name="mylist_id">マイリストID</param>
+        /// <param name="mylist_video">マイリストの動画リスト</param>
+        public void GetMylistJsonV2(string mylist_id, List<Video> mylist_video)
+        {
+            CheckCookie();
+
+            int page = 1;
+            bool isNext = true;
+            string str = "";
+
+            while (isNext)
+            {
+                try
+                {
+                    str = network_.GetAndReadFromWebUTF8("https://nvapi.nicovideo.jp/v2/mylists/" + mylist_id + "?&_frontendId=6&pageSize=100&page=" + page.ToString());
+                }
+                catch { str = ""; }
+                finally
+                {
+                    network_.Reset();
+                }
+
+                if (!str.Equals(""))
+                {
+                    NicoListManager.ParseMylistJson(str, mylist_video, ref isNext);
+                    page++;
+                }
+                else { break; }
+            }
+        }
+
         /// <summary>
         /// マイページのマイリスト編集画面からマイリストの情報を取得する
         /// </summary>
@@ -3501,34 +3536,64 @@ namespace NicoTools
             {
                 str += ((str != "" ? "&" : "?") + "genre=" + genre_id);
             }
+            //switch (sort_method)
+            //{
+            //    case SearchSortMethod.SubmitDate:
+            //        str += ((str != "" ? "&" : "?") + "sort=f");
+            //        break;
+            //    case SearchSortMethod.View:
+            //        str += ((str != "" ? "&" : "?") + "sort=v");
+            //        break;
+            //    case SearchSortMethod.Res:
+            //        str += ((str != "" ? "&" : "?") + "sort=r");
+            //        break;
+            //    case SearchSortMethod.ResNew:
+            //        str += ((str != "" ? "&" : "?") + "sort=n");
+            //        break;
+            //    case SearchSortMethod.Mylist:
+            //        str += ((str != "" ? "&" : "?") + "sort=m");
+            //        break;
+            //    case SearchSortMethod.Time:
+            //        str += ((str != "" ? "&" : "?") + "sort=l");
+            //        break;
+            //}
+            //if (order == SearchOrder.Asc)
+            //{
+            //    str += ((str != "" ? "&" : "?") + "order=a");
+            //}
+            //else
+            //{
+            //    str += ((str != "" ? "&" : "?") + "order=d");
+            //}
+            // 2025/08/24 Update marky
             switch (sort_method)
             {
                 case SearchSortMethod.SubmitDate:
-                    str += ((str != "" ? "&" : "?") + "sort=f");
+                    str += ((str != "" ? "&" : "?") + "sort=registeredAt");
                     break;
                 case SearchSortMethod.View:
-                    str += ((str != "" ? "&" : "?") + "sort=v");
+                    str += ((str != "" ? "&" : "?") + "sort=viewCount");
                     break;
                 case SearchSortMethod.Res:
-                    str += ((str != "" ? "&" : "?") + "sort=r");
+                    str += ((str != "" ? "&" : "?") + "sort=commentCount");
                     break;
                 case SearchSortMethod.ResNew:
-                    str += ((str != "" ? "&" : "?") + "sort=n");
+                    str += ((str != "" ? "&" : "?") + "sort=lastCommentTime");
                     break;
                 case SearchSortMethod.Mylist:
-                    str += ((str != "" ? "&" : "?") + "sort=m");
+                    str += ((str != "" ? "&" : "?") + "sort=mylistCount");
                     break;
                 case SearchSortMethod.Time:
-                    str += ((str != "" ? "&" : "?") + "sort=l");
+                    str += ((str != "" ? "&" : "?") + "sort=duration");
                     break;
             }
             if (order == SearchOrder.Asc)
             {
-                str += ((str != "" ? "&" : "?") + "order=a");
+                str += ((str != "" ? "&" : "?") + "order=asc");
             }
             else
             {
-                str += ((str != "" ? "&" : "?") + "order=d");
+                str += ((str != "" ? "&" : "?") + "order=desc");
             }
             return str;
         }
