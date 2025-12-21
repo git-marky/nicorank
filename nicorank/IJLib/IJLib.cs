@@ -128,7 +128,48 @@ namespace IJLib
             start = start + keyName.Length + 3;
             start_index = start + 1;
             // }で終わる時はそちらを取得、それ以外はカンマまでを取得
-            int end = (str.IndexOf('}', start) < str.IndexOf(',', start) ? str.IndexOf('}', start) : str.IndexOf(',', start));
+            //int end = (str.IndexOf('}', start) < str.IndexOf(',', start) ? str.IndexOf('}', start) : str.IndexOf(',', start));
+            // 2025/09/07 Update marky カンマを含む文字列に対応
+            int end = -1;
+            //if (str.IndexOf('}', start) < str.IndexOf(',', start))
+            //{
+            //    end = str.IndexOf('}', start);
+            //}
+            //else
+            //{ if (str.Substring(start, 1).Equals("\""))
+            //{
+            //        end = str.IndexOf("\",", start) + 1;
+            //    } else
+            //    {
+            //        end = str.IndexOf(',', start);
+            //    }
+            //}
+            // 2025/09/10 Update marky }を含む文字列に対応
+            // 文字型の時
+            if (str.Substring(start, 1).Equals("\""))
+            {
+                if (str.IndexOf("\"}", start + 1) < str.IndexOf("\",", start + 1))
+                {
+                    end = str.IndexOf("\"}", start + 1) + 1;
+                }
+                else
+                { 
+                    end = str.IndexOf("\",", start + 1) + 1;
+                }
+            }
+            // 数値型の時
+            else
+            {
+                if (str.IndexOf('}', start) < str.IndexOf(',', start))
+                {
+                    end = str.IndexOf('}', start);
+                }
+                else
+                {
+                    end = str.IndexOf(',', start);
+                }
+            }
+
             if (end < 0)
             {
                 return "";
@@ -137,7 +178,14 @@ namespace IJLib
             {
                 start_index = end + 1;
                 value = IJStringUtil.UnescapeHtml(str.Substring(start, end - start));
-                return value.Replace("\"", "");     // 数値型はそのまま、文字列型はダブルクォーテーションを除いて返す
+                //return value.Replace("\"", "");     // 数値型はそのまま、文字列型はダブルクォーテーションを除いて返す
+                // 2025/09/07 Update marky ダブルクォーテーションを含む文字列に対応
+                if (value.IndexOf("\"") >= 0)
+                {
+                    //value = value.Replace("\\\"", "\""); //不要
+                    value = value.Substring(1, value.Length - 2);
+                }
+                return value;
             }
         }
 

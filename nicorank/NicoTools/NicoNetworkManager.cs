@@ -349,6 +349,11 @@ namespace NicoTools
                             {
                                 break;
                             }
+                            //2025/09/10 ADD marky 新HTML検索で157ページを超えると400エラーを返す現象に対応
+                            if (((System.Net.HttpWebResponse)e.Response).StatusCode == System.Net.HttpStatusCode.BadRequest)
+                            {
+                                break;
+                            }
                         }
                         //2020/11/23 ADD marky .NET4.0にすると、HTMLタグ検索の最終ページ超えで「要求は中止されました: 接続が予期せずに閉じられました」エラーを返す現象に対応
                         else if (e.Status == System.Net.WebExceptionStatus.ConnectionClosed)
@@ -1125,8 +1130,8 @@ namespace NicoTools
                 //再生時間
                 video.length = IJStringUtil.GetValueByKey(ref index, "duration", html);
 
-                //説明文
-                video.description = System.Text.RegularExpressions.Regex.Unescape(IJStringUtil.GetValueByKey(ref index, "shortDescription", html));
+                //説明文 2025/09/07 DEL marky 予測不能な文字が含まれるため取得をしない
+                //video.description = System.Text.RegularExpressions.Regex.Unescape(IJStringUtil.GetValueByKey(ref index, "shortDescription", html));
 
                 //投稿者ID
                 video.user_id = IJStringUtil.GetValueByKey(ref index, "id", html);
