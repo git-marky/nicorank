@@ -208,7 +208,9 @@ namespace NicoTools
                 {
                     if (option.IsEndSearch(current_list[i]))
                     {
-                        return ret_list;
+                        //return ret_list;
+                        // 2026/05/03 Update marky ショート動画の検索へ移動する
+                        goto searching_short;
                     }
                     if (option.IsConditionSatisfy(current_list[i]))
                     {
@@ -253,6 +255,7 @@ namespace NicoTools
                 }
             }
 
+            searching_short:    // 2026/05/03 Update marky
             // 2026/04/26 ADD marky start HTML検索の場合、ショート動画も検索
             if (!option.is_searching_get_kind_api) {
 
@@ -1271,6 +1274,8 @@ namespace NicoTools
                                 //video.title = result.data[j].title;
                                 // 2019/08/18 Update marky title:null対策
                                 video.title = result.data[j].title ?? "";
+                                // 2026/05/03 ADD marky 特殊文字を変換
+                                video.title = IJStringUtil.UnescapeHtml(video.title);
                                 video.submit_date = DateTime.Parse(result.data[j].startTime, null, System.Globalization.DateTimeStyles.RoundtripKind);
                                 video.thumbnail_url = result.data[j].thumbnailUrl;
                                 //video.length = result.data[j].lengthSeconds;
