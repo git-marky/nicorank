@@ -996,6 +996,17 @@ namespace NicoTools
                 index = html.IndexOf("<li class=\"first-retrieve", index);
                 string date_str = IJStringUtil.GetStringBetweenTag(ref index, "li", html);
                 date_str = date_str.Replace("  <strong class=\"new\">New!</strong>", "").Replace(":", "：");
+ 
+                // 2026/05/30 ADD marky 未来日付に対応
+                date_str = date_str.Replace("  <strong class=\"future\">New?</strong>", "").Replace(":", "：");
+                // デバッグ用ソース
+                //string[] format = { "yyyy年MM月dd日 HH：mm：ss", "yyyy/MM/dd HH:mm:ss", "yy/MM/dd HH:mm", "yyyy年MM月dd日 HH:mm" };
+                //DateTime submit_date;
+                //if (!DateTime.TryParseExact(date_str, format, null, System.Globalization.DateTimeStyles.None, out submit_date))
+                //{
+                //    submit_date = DateTime.Today;
+                //}
+
                 video.submit_date = NicoUtil.StringToDate(date_str);
                 index = html.IndexOf("<li class=\"total", index);
 

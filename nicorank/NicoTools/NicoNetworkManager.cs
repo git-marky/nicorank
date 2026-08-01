@@ -989,7 +989,9 @@ namespace NicoTools
                 System.IO.Directory.CreateDirectory(dir_name);
                 for (int i = 0; i < name_list.Count; ++i)
                 {
-                    string html = network.GetAndReadFromWebUTF8("http://www.nicochart.jp/ranking/" +
+                    //string html = network.GetAndReadFromWebUTF8("http://www.nicochart.jp/ranking/" +
+                    // 2026/05/30 Update marky https化
+                    string html = network.GetAndReadFromWebUTF8("https://www.nicochart.jp/ranking/" +
                                                                 dt.ToString("yyyyMMdd") + name_list[i]);
                     IJFile.Write(dir_name + filename_list[i] + ".txt", html);
                     msgout_.Write("ランキングをDLしました。" + (i + 1).ToString() +
@@ -1555,13 +1557,17 @@ namespace NicoTools
                         {
                             option = "page=" + m.ToString();
                         }
-                        if (target_name[i] == "view" || target_name[i] == "res")
+                        //if (target_name[i] == "view" || target_name[i] == "res")
+                        // 2026/05/30 Update marky マイリスト追加
+                        if (target_name[i] != "fav")
                         {
                             if (option != "")
                             {
                                 option += "&";
                             }
-                            option += ((target_name[i] == "view") ? "type=vd" : "type=rd");
+                            //option += ((target_name[i] == "view") ? "type=vd" : "type=rd");
+                            // 2026/05/30 Update marky マイリスト追加
+                            option += ((target_name[i] == "view") ? "type=vd" : (target_name[i] == "res") ? "type=rd" : "type=md");
                         }
                         if (option != "")
                         {
