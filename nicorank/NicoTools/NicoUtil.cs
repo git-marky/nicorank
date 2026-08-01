@@ -72,7 +72,9 @@ namespace NicoTools
         // 文字列から sm1234567 など動画IDを探して取得。index 文字目から探し始める。
         public static string CutNicoVideoId(string str, ref int index)
         {
-            string[] prefix = { "sm", "nm", "fz", "yo", "ig", "ax", "na", "za", "yk", "sk", "fx", "cw", "zc", "zb", "ca", "zd", "so" };
+            //string[] prefix = { "sm", "nm", "fz", "yo", "ig", "ax", "na", "za", "yk", "sk", "fx", "cw", "zc", "zb", "ca", "zd", "so" };
+            // 2026/04/26 Update marky ニコニコショートに対応
+            string[] prefix = { "sm", "nm", "fz", "yo", "ig", "ax", "na", "za", "yk", "sk", "fx", "cw", "zc", "zb", "ca", "zd", "so", "ss" };
 
             for (int i = index; i < str.Length; ++i)
             {

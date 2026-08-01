@@ -3098,8 +3098,11 @@ namespace NicoTools
                 //string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/" + (is_tag ? "tag" : "search") +
                 //    "/" + escapedWord + GetOption(page, sort_method, order, is_tag));
                 //2020/02/16 Update marky
+                //string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/" + (is_tag ? "tag" : "search") +
+                //    "/" + escapedWord + GetOption(page, option));
+                // 2026/04/26 Update marky 
                 string str = network_.GetAndReadFromWebUTF8(nicovideo_uri_ + "/" + (is_tag ? "tag" : "search") +
-                    "/" + escapedWord + GetOption(page, option));
+                    (option.is_searching_short ? "_shorts/" : "/") + escapedWord + GetOption(page, option));
                 CheckDenied(str);
                 return str;
             }

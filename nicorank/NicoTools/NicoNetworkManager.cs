@@ -194,6 +194,7 @@ namespace NicoTools
             option.last_value = ""; // 2019/07/06 ADD marky
 
             wait_required = false;
+            option.is_searching_short = false;  // 2026/04/26 Update marky ニコニコショートに対応
 
             for (int page = start_page; page <= end_page; ++page)
             {
@@ -251,6 +252,41 @@ namespace NicoTools
                     cancel_object_.Wait((int)(tag_search_interval_lower * 1000), (int)(tag_search_interval_upper * 1000));
                 }
             }
+
+            // 2026/04/26 ADD marky start HTML検索の場合、ショート動画も検索
+            if (!option.is_searching_get_kind_api) {
+
+                wait_required = false;
+                option.is_searching_short = true;
+
+                for (int page = start_page; page <= end_page; ++page)
+                {
+                    List<Video> current_list = GetPage(tag_word, page, option, ref log_number, option.is_searching_kind_tag, redundant_search_count, out wait_required);
+                    cancel_object_.CheckCancel();
+                    if (current_list.Count == 0)
+                    {
+                        break;
+                    }
+                    for (int i = 0; i < current_list.Count; ++i)
+                    {
+                        if (option.IsEndSearch(current_list[i]))
+                        {
+                            return ret_list;
+                        }
+                        if (option.IsConditionSatisfy(current_list[i]))
+                        {
+                            ret_list.Add(current_list[i]);
+                        }
+                    }
+
+                    if (wait_required == true &&
+                        page < end_page)
+                    {
+                        cancel_object_.Wait((int)(tag_search_interval_lower * 1000), (int)(tag_search_interval_upper * 1000));
+                    }
+                }
+            }   // 2026/04/26 ADD marky end HTML検索の場合、ショート動画も検索
+            
             return ret_list;
         }
 
@@ -264,7 +300,9 @@ namespace NicoTools
             string download_file_path;
             if (option.ticket_id != null)
             {
-                download_file_path = SearchingTicketManager.GetPageDownloadPath(option.ticket_id, redundant_search_count, page);
+                //download_file_path = SearchingTicketManager.GetPageDownloadPath(option.ticket_id, redundant_search_count, page);
+                // 2026/04/26 Update marky ショート動画に対応
+                download_file_path = SearchingTicketManager.GetPageDownloadPath(option.ticket_id, redundant_search_count, page, option.is_searching_short);
             }
             else
             {

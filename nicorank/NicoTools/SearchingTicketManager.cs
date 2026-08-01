@@ -213,8 +213,11 @@ namespace NicoTools
 
                 writer.WriteLine("is_searching_kind_tag={0}", option.is_searching_kind_tag.ToString() ?? string.Empty);
 
+                writer.WriteLine("is_searching_short={0}", option.is_searching_short.ToString() ?? string.Empty);   // 2026/04/26 ADD marky
+
                 writer.WriteLine("is_detail_getting={0}", option.is_detail_getting.ToString());
                 writer.WriteLine("detail_info_lower={0}", option.detail_info_lower.ToString());
+                writer.WriteLine("is_filter_before_detail={0}", option.is_filter_before_detail.ToString());   // 2026/04/26 ADD marky
 
                 writer.WriteLine("sort_kind_num={0}", option.sort_kind_num.ToString());
                 writer.WriteLine("is_page_all={0}", option.is_page_all.ToString());
@@ -223,6 +226,7 @@ namespace NicoTools
                 writer.WriteLine("page_end={0}", option.page_end.ToString());
 
                 writer.WriteLine("is_using_condition={0}", option.is_using_condition.ToString());
+                writer.WriteLine("is_using_date={0}", option.is_using_date.ToString());    // 2026/04/26 ADD marky
 
                 writer.WriteLine("date_from={0},{1}", option.date_from.Ticks.ToString(), option.date_from.Kind.ToString());
                 writer.WriteLine("date_to={0},{1}", option.date_to.Ticks.ToString(), option.date_to.Kind.ToString());
@@ -237,6 +241,9 @@ namespace NicoTools
 
                 writer.WriteLine("save_html_dir={0}", option.save_html_dir);
                 writer.WriteLine("is_sending_user_session={0}", option.is_sending_user_session);
+
+                writer.WriteLine("offset={0}", option.offset.ToString() ?? string.Empty);   // 2026/04/26 ADD marky
+                writer.WriteLine("last_value={0}", option.last_value ?? string.Empty);      // 2026/04/26 ADD marky
 
                 writer.WriteLine("genre={0}", option.genre ?? "全ジャンル");        //2020/02/16 ADD marky
                 writer.WriteLine("genre_id={0}", option.genre_id ?? "all");         //2020/02/16 ADD marky
@@ -287,11 +294,19 @@ namespace NicoTools
                             case "is_searching_kind_tag":
                                 option.is_searching_kind_tag = bool.Parse(value);
                                 break;
+                            // 2026/04/26 ADD marky
+                            case "is_searching_short":
+                                option.is_searching_short = bool.Parse(value);
+                                break;
                             case "is_detail_getting":
                                 option.is_detail_getting = bool.Parse(value);
                                 break;
                             case "detail_info_lower":
                                 option.detail_info_lower = int.Parse(value);
+                                break;
+                            // 2026/04/26 ADD marky
+                            case "is_filter_before_detail":
+                                option.is_filter_before_detail = bool.Parse(value);
                                 break;
                             case "sort_kind_num":
                                 option.sort_kind_num = int.Parse(value);
@@ -307,6 +322,10 @@ namespace NicoTools
                                 break;
                             case "is_using_condition":
                                 option.is_using_condition = bool.Parse(value);
+                                break;
+                            // 2026/04/26 ADD marky
+                            case "is_using_date":
+                                option.is_using_date = bool.Parse(value);
                                 break;
                             case "date_from":
                                 string[] ticks_kind_from = value.Split(',');
@@ -348,6 +367,14 @@ namespace NicoTools
                                 break;
                             case "is_sending_user_session":
                                 option.is_sending_user_session = bool.Parse(value);
+                                break;
+
+                            // 2026/04/26 ADD marky
+                            case "offset":
+                                option.offset = int.Parse(value);
+                                break;
+                            case "last_value":
+                                option.last_value = value;
                                 break;
 
                             //2020/02/16 ADD marky
@@ -404,10 +431,14 @@ namespace NicoTools
         /// <param name="redundant_search_count">冗長検索の回数。</param>
         /// <param name="page">ページ数。</param>
         /// <returns>ダウンロードしたファイルを保存するファイルパス。</returns>
-        public static string GetPageDownloadPath(string ticket_id, int redundant_search_count, int page)
+        //public static string GetPageDownloadPath(string ticket_id, int redundant_search_count, int page)
+        // 2026/04/26 Update marky ニコニコショートに対応
+        public static string GetPageDownloadPath(string ticket_id, int redundant_search_count, int page, bool is_searching_short)
         {
             string ticket_directory = GetTicketDirectory(ticket_id);
-            string file_name = string.Format("{0}_{1,3:d3}", redundant_search_count, page);
+            //string file_name = string.Format("{0}_{1,3:d3}", redundant_search_count, page);
+            // 2026/04/26 Update marky
+            string file_name = string.Format("{0}_{1,3:d3}", redundant_search_count, page) + (is_searching_short ? "s": "");
             return Path.Combine(ticket_directory, file_name);
         }
 
