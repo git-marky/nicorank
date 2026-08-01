@@ -1012,6 +1012,11 @@ namespace NicoTools
 
                 string view_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
                 string res_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
+
+                // 2026/06/04 ADD marky
+                string like_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
+                video.like = like_str.Equals("?") ? "" : IJStringUtil.ToIntFromCommaValueWithDef(like_str, 0).ToString(); ;
+
                 string mylist_str = IJStringUtil.GetStringBetweenTag(ref index, "em", html);
                 video.point.view = IJStringUtil.ToIntFromCommaValue(view_str);
                 video.point.res = IJStringUtil.ToIntFromCommaValue(res_str);
